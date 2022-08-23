@@ -1,6 +1,14 @@
-from curses import raw
 import requests as curl
 
+url = 'https://wise.logisticsteam.com/v2/shared/bam/v1/public/user/login'
+
+headers = {'Content-Type':'application/json'}
+data_raw = {'username':'',
+            'password':''}
+
+r = curl.post(url, headers=headers, data=data_raw)
+
+'''
 facility = 'valleyview'
 url = 'https://wise.logisticsteam.com/v2/' + facility + '/report-center/activity/activity-reportv2'
 
@@ -19,3 +27,4 @@ data_raw = {"customerId":"ORG-34557",
 
 r = curl.post(url, headers=headers, data=data_raw)
 r.status_code
+'''
