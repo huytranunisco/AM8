@@ -1,4 +1,3 @@
-from genericpath import isfile
 import time
 from selenium import webdriver
 from selenium.webdriver.chrome.service import Service
@@ -36,8 +35,14 @@ def exportHandle(acc, fac, start, end, userPath):
     periodStart = start
     periodEnd = end
 
+    #Setting directory
+    path = r"C:\\Users\\" + userPath + "\\Downloads"
+    chrome_options = webdriver.ChromeOptions()
+    prefs = {'download.default_directory' : path}
+    chrome_options.add_experimental_option('prefs', prefs)
+
     #Getting BNP
-    driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()))
+    driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), chrome_options=chrome_options)
     action = ActionChains(driver)
     driver.get("http://bnp.unisco.com/")
     assert len(driver.window_handles) == 1
