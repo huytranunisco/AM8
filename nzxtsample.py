@@ -21,7 +21,7 @@ facility = facility.capitalize()
 reportLoc = BNPauto.invoiceToReport(user, accName, facility, billCycle)
 
 #Input file path for activity report
-activityLoc = r"C:\\Users\\kevin\\Documents\\AUTOM8\\NZXT\\activityReoport(NZXT - 2022-08-01 - 2022-08-15).xlsx"
+activityLoc = r"C:\\Users\\kenguyen\\Documents\\SOPS\\NZXT\\Activity Reports\\activityReoport(NZXT - 2022-08-01 - 2022-08-15).xlsx"
 
 report = pd.read_excel(reportLoc)
 billingitems = report['Description'].tolist()
@@ -139,6 +139,22 @@ def rushOrder(arPath):
 
     return df, count
 
+# accessorial noaction per unit, materialtype,stretch wrap;
+def stretchWrap(arPath):
+    df = pd.read_excel(io=arPath, sheet_name='Materials')
+    df = df[df['ITEM DESCRIPTION'].str.contains('stretch wrap', case=False, na=False)]
+    sum = df['QTY'].sum()
+
+    return df, sum
+
+# accessorial noaction per unit, materialtype,grade b pallet (40 x 48);
+def gradeBPallet(arPath):
+    df = pd.read_excel(io=arPath, sheet_name='Materials')
+    df = df[df['ITEM DESCRIPTION'].str.contains('Grade B Pallet', case=False, na=False)]
+    sum = df['QTY'].sum()
+
+    return df, sum
+
 for index, item in enumerate(billingitems):
     print(item)
     if item == 'accessorial cancel order per order, ispicked,yes;' or item == 'cancellation charge':
@@ -165,10 +181,14 @@ for index, item in enumerate(billingitems):
         df, qty = pickPerPalletRG(activityLoc)
         report['WISE Qty'][index] = qty
         dataCopy(df, 'PICK PER PALLET RG')
-    elif item == 'storage income initial storage per case' or item == 'initial storage – per carton':
+    elif item == 'storage income initial storage per case':
         df, qty = initialStorage(activityLoc)
         report['WISE Qty'][index] = qty
-        dataCopy(df, 'INITIAL STORAGE')
+        dataCopy(df, 'INITIAL STORAGE PER CASE')
+    elif 'initial storage - per carton':
+        df, qty = initialStorage(activityLoc)
+        report['WISE Qty'][index] = qty
+        dataCopy(df, 'INITIAL STORAGE PER CARTON')
     elif item == 'handling order processing per order, ordertype,rg;':
         df, qty = handlingOrderProcessingRG(activityLoc)
         report['WISE Qty'][index] = qty
@@ -185,6 +205,14 @@ for index, item in enumerate(billingitems):
         df, qty = rushOrder(activityLoc)
         report['WISE Qty'][index] = qty
         dataCopy(df, 'RUSH ORDER')
+    elif item == 'accessorial noaction per unit, materialtype,stretch wrap;':
+        df, qty = stretchWrap(activityLoc)
+        report['WISE Qty'][index] = qty
+        dataCopy(df, 'STRETCH WRAP')
+    elif item == 'accessorial noaction per unit, materialtype,grade b pallet (40 x 48);':
+        df, qty = gradeBPallet(activityLoc)
+        report['WISE Qty'][index] = qty
+        dataCopy(df, 'GRADE B PALLET')
 
 
 report.to_excel(reportLoc, index=False)

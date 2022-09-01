@@ -1,4 +1,6 @@
+from msilib.schema import Error
 import time
+from tkinter import E
 from selenium import webdriver
 from selenium.webdriver.chrome.service import Service
 from webdriver_manager.chrome import ChromeDriverManager
@@ -9,6 +11,7 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver import ActionChains
 from difflib import SequenceMatcher
+import glob
 import pandas as pd
 import os.path
 
@@ -64,7 +67,7 @@ def exportHandle(acc, fac, start, end, userPath):
     #Clicking Invoice Management from Invoice Dropdown Menu
     select = WebDriverWait(driver, 5).until(EC.presence_of_element_located((By.XPATH, '//*[@id="headmenu"]/li[3]/span')))
     select.click()
-    select = WebDriverWait(driver, 5).until(EC.presence_of_element_located((By.XPATH, '//*[@id="headmenu_mn_active"]/div/ul/li[1]')))
+    select = WebDriverWait(driver, 5).until(EC.presence_of_element_located((By.XPATH, '/html/body/div/div/header/div[1]/ul/li[3]/div/ul/li[1]/a')))
     select.click()
 
     #Inputting information on the Invoice Management Page and Searching
@@ -98,13 +101,29 @@ def exportHandle(acc, fac, start, end, userPath):
     interactor.send_keys('Handling')
 
     #Clicking Search
-    interactor = driver.find_element(By.XPATH, '//*[@id="sitecontent"]/div[2]/div[3]/div[11]/button')
+    interactor = driver.find_element(By.XPATH, '/html/body/div[1]/div/div/div[2]/div[3]/div[11]/button')
+    interactor.click()
+    interactor = driver.find_element(By.XPATH, '/html/body/div[1]/div/div/div[2]/div[3]/div[11]/button')
     interactor.click()
     time.sleep(2)
 
+    table = driver.find_element(By.XPATH, '/html/body/div[1]/div/div/div[3]/div/div/div[3]/table')
+    rows = table.find_elements(By.TAG_NAME, 'tr')
+    
+    for count, row in enumerate(rows):
+        col = row.find_elements(By.TAG_NAME, 'td')
+        print(col[11].text + ' ' + col[12].text)
+        if col[11].text == periodStart and col[12].text == periodEnd:
+            index = count
+
+    try:
+        interactor = driver.find_element(By.XPATH, '//*[@id=\"invoicegrid\"]/div[3]/table/tbody/tr[' + str(index + 1) +']/td[1]/label')
+        action.move_to_element(interactor).perform()
+        interactor.click()
+    except (ValueError):
+        print("No Invoice Values.") 
+
     #Exporting Handling Invoice
-    interactor = driver.find_element(By.XPATH, '/html/body/div[1]/div/div/div[3]/div/div/div[2]/div/table/thead/tr/th[1]/label')
-    interactor.click()
     time.sleep(3)
     interactor = driver.find_element(By.ID, 'btnExportInvoiceDetail')
     interactor.click()
