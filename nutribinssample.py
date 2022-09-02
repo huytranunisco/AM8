@@ -14,11 +14,11 @@ endPeriod = '08/15/22'
 user = 'kenguyen'
 billCycle = 'Bimonthly'
 
-facility = BNPauto.exportHandle(billingAcc, facility, startPeriod, endPeriod, user)
+facility, invoiceNum = BNPauto.exportHandle(billingAcc, facility, startPeriod, endPeriod, user)
 facility = facility.lower()
 facility = facility.capitalize()
 
-reportLoc = BNPauto.invoiceToReport(user, accName, facility, billCycle)
+reportLoc = BNPauto.invoiceToReport(user, accName, facility, billCycle, invoiceNum)
 activityLoc = r"C:\\Users\\kenguyen\\Documents\\SOPS\\Nutribins LLC\\Activity Reports\\activityReoport(Nutribins LLC - 2022-08-01 - 2022-08-15).xlsx"
 
 report = pd.read_excel(reportLoc)
@@ -91,13 +91,13 @@ def stretchWrap(arPath):
 
 # storage income initial storage per pallet, locationtype,1 high;palletsize,none;
 def initialStorage(arPath):
-    df = pd.read_excel(io=activityLoc, sheet_name='Receive Task')
+    df = pd.read_excel(io=arPath, sheet_name='Receive Task')
     sum = df['PALLET QTY'].sum()
 
     return df, sum
 
 # customized shipping documents
-def customizedShippingDocs(arPath, index):
+def customizedShippingDocs(arPath):
     df = pd.read_excel(io=arPath, sheet_name='Accessories')
     df2 = df[df['DESCRIPTION'].str.contains('CUSTOMIZED SHIPPING DOCUMENTS', case=False, na=False)]
     sum = df2['QTY'].sum()

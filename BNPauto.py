@@ -1,6 +1,4 @@
-from msilib.schema import Error
 import time
-from tkinter import E
 from selenium import webdriver
 from selenium.webdriver.chrome.service import Service
 from webdriver_manager.chrome import ChromeDriverManager
@@ -39,13 +37,13 @@ def exportHandle(acc, fac, start, end, userPath):
     periodEnd = end
 
     #Setting directory
-    path = r"C:\\Users\\" + userPath + "\\Downloads"
+    path = 'C:\\Users\\' + userPath + '\Downloads'
     chrome_options = webdriver.ChromeOptions()
-    prefs = {'download.default_directory' : path}
+    prefs = {'download.default_directory' : path, 'download.prompt_for_download' : False}
     chrome_options.add_experimental_option('prefs', prefs)
 
     #Getting BNP
-    driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), chrome_options=chrome_options)
+    driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()))
     action = ActionChains(driver)
     driver.get("http://bnp.unisco.com/")
     assert len(driver.window_handles) == 1
@@ -107,42 +105,33 @@ def exportHandle(acc, fac, start, end, userPath):
     interactor.click()
     time.sleep(2)
 
-    table = driver.find_element(By.XPATH, '/html/body/div[1]/div/div/div[3]/div/div/div[3]/table')
-    rows = table.find_elements(By.TAG_NAME, 'tr')
-    
-    for count, row in enumerate(rows):
-        col = row.find_elements(By.TAG_NAME, 'td')
-        print(col[11].text + ' ' + col[12].text)
-        if col[11].text == periodStart and col[12].text == periodEnd:
-            index = count
-
-    try:
-        interactor = driver.find_element(By.XPATH, '//*[@id=\"invoicegrid\"]/div[3]/table/tbody/tr[' + str(index + 1) +']/td[1]/label')
-        action.move_to_element(interactor).perform()
-        interactor.click()
-    except (ValueError):
-        print("No Invoice Values.") 
+    #Checking first invoice
+    interactor = driver.find_element(By.XPATH, '//*[@id=\"invoicegrid\"]/div[3]/table/tbody/tr[1]/td[1]/label')
+    action.move_to_element(interactor).perform()
+    interactor.click()
 
     #Exporting Handling Invoice
-    time.sleep(3)
+    time.sleep(2)
     interactor = driver.find_element(By.ID, 'btnExportInvoiceDetail')
     interactor.click()
 
-    interactor = WebDriverWait(driver, 5).until(EC.presence_of_element_located((By.CLASS_NAME, 'layui-layer-btn0')))
-    interactor.click()
+    table = driver.find_element(By.XPATH, '//*[@id="invoicegrid"]/div[3]/table')
+    row = table.find_elements(By.TAG_NAME, 'tr')[0]
+    col = row.find_elements(By.TAG_NAME, 'td')[3]
+    invoiceNum = col.text
 
-    path = 'C:\\Users\\' + userPath + "\\Downloads\\Invoice[ALLData].xlsx"
+    path = 'C:\\Users\\' + userPath + '\\Downloads\\Invoice[' + invoiceNum + '].xlsx'
     while not os.path.exists(path):
         time.sleep(1)
         if os.path.isfile(path):
             break
 
-    return facility
+    return facility, invoiceNum
 
-def invoiceToReport(userPath, acc, fac, billingPeriod):
+def invoiceToReport(userPath, acc, fac, billingPeriod, invoiceNum):
     reportName = acc + '-' + fac + '-' + billingPeriod + '.xlsx'
 
-    path = 'C:\\Users\\' + userPath + "\\Downloads\\Invoice[ALLData].xlsx"
+    path = 'C:\\Users\\' + userPath + '\\Downloads\\Invoice[' + invoiceNum + '].xlsx'
     report = pd.read_excel(path, sheet_name='Item Summary')
     
     new_cols = ['Category', 'InvoiceNumber', 'Header Billing Period Start', 'Header Billing Period End', 'ItemName', 'Description', 'UnitPrice', 'Qty']
@@ -153,8 +142,7 @@ def invoiceToReport(userPath, acc, fac, billingPeriod):
     report['CSR Qty'] = ''
 
     report.to_excel(reportName, index=False)
-
+    
     print("Discrepancy Report has been made!")
 
     return reportName
-    

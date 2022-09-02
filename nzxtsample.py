@@ -1,3 +1,4 @@
+from dataclasses import dataclass
 import time
 import pandas as pd
 import numpy as np
@@ -11,34 +12,21 @@ accName = 'NZXT'
 facility = 'Valley View'
 startPeriod = '08/01/22'
 endPeriod = '08/15/22'
-user = 'kevin'
+user = 'kenguyen'
 billCycle = 'Bimonthly'
 
-facility = BNPauto.exportHandle(billingAcc, facility, startPeriod, endPeriod, user)
+facility, invoicePath = BNPauto.exportHandle(billingAcc, facility, startPeriod, endPeriod, user)
 facility = facility.lower()
+facility = facility.replace(' ', '')
 facility = facility.capitalize()
 
-reportLoc = BNPauto.invoiceToReport(user, accName, facility, billCycle)
+reportLoc = BNPauto.invoiceToReport(user, accName, facility, billCycle, '19064728')
 
 #Input file path for activity report
 activityLoc = r"C:\\Users\\kenguyen\\Documents\\SOPS\\NZXT\\Activity Reports\\activityReoport(NZXT - 2022-08-01 - 2022-08-15).xlsx"
 
-report = pd.read_excel(reportLoc)
-billingitems = report['Description'].tolist()
-for count, name in enumerate(billingitems):
-    billingitems[count] = name.lower()
-
-print(billingitems)
-
-book = load_workbook(reportLoc)
-writer = pd.ExcelWriter(reportLoc, engine = 'openpyxl')
-writer.book = book
-
 def dataCopy(dataframe, sheetName):
-    if sheetName in writer.sheets:
-        dataframe.to_excel(writer, sheet_name = sheetName,startrow = writer.sheets[sheetName].max_row, index = False, header = False)
-    else:
-        dataframe.to_excel(writer, sheet_name = sheetName, index = False)
+    dataframe.to_excel(writer, sheet_name = sheetName, index = False)
 
     writer.save()
 
@@ -155,66 +143,40 @@ def gradeBPallet(arPath):
 
     return df, sum
 
+billingItemDict = {'accessorial cancel order per order, ispicked,yes;' : [0, 'CANCELLED ORDER'], 'cancellation charge' : [0, 'CANCELLED ORDER'], 
+                   'outbound handling ds : over 750 cartons' : [1, 'OUTBOUND HANDLING DS'], 'routing' : [2, 'ROUTING'], 'receive inbound per carton' : [3, 'INBOUND PER CARTON'],
+                   'receive inbound palletized' : [4, 'INBOUND PALLETIZED'], 'handling pick per pallet, ordertype,rg;' : [5, 'PICK PER PALLET RG'], 
+                   'pallet pick (regular order)' : [5, 'PICK PER PALLET RG'], 'storage income initial storage per case' : [6, 'INITIAL STORAGE PER CASE'],
+                   'initial storage - per carton' : [6, 'INITIAL STORAGE PER CARTON'], 'handling order processing per order, ordertype,rg;' : [7, 'HANDLING ORDER PROCESSING RG'],
+                   'case pick (amazon order)' : [8, 'CASE PICK AMAZON'], 'amazon labeling' : [8, 'CASE PICK AMAZON'], 'case pick if 30lbs or less (regular order)' :
+                   [9, 'CASE PICK 30LBS OR LESS'], 'rush order' : [10, 'RUSH ORDER'], 'accessorial noaction per unit, materialtype,stretch wrap;' : [11, 'STRETCH WRAP'],
+                   'accessorial noaction per unit, materialtype,grade b pallet (40 x 48);' : [12, 'GRADE B PALLET']}
+itemStepsList = [cancelledOrder, outboundHandlingDS, routing, inboundPerCarton, inboundPalletized, pickPerPalletRG, initialStorage, handlingOrderProcessingRG, 
+                 casePickAmazon, casePick30lbsOrLess, rushOrder, stretchWrap, gradeBPallet]
+
+report = pd.read_excel(reportLoc)
+billingitems = report['Description'].tolist()
+for count, name in enumerate(billingitems):
+    billingitems[count] = name.lower()
+
+writer = pd.ExcelWriter('itemsReport.xlsx', engine='openpyxl')
+
 for index, item in enumerate(billingitems):
-    print(item)
-    if item == 'accessorial cancel order per order, ispicked,yes;' or item == 'cancellation charge':
-        df, qty = cancelledOrder(activityLoc)
-        report['WISE Qty'][index] = qty
-        dataCopy(df, 'CANCELLED ORDER')
-    elif item == 'outbound handling ds : over 750 cartons':
-        df, qty = outboundHandlingDS(activityLoc)
-        report['WISE Qty'][index] = qty
-        dataCopy(df, 'OUTBOUND HANDLING DS')
-    elif item == 'routing':
-        df, qty = routing(activityLoc)
-        report['WISE Qty'][index] = qty
-        dataCopy(df, 'ROUTING')
-    elif item == 'receive inbound per carton':
-        df, qty = inboundPerCarton(activityLoc)
-        report['WISE Qty'][index] = qty
-        dataCopy(df, 'INBOUND PER CARTON')
-    elif item == 'receive inbound palletized':
-        df, qty = inboundPalletized(activityLoc)
-        report['WISE Qty'][index] = qty
-        dataCopy(df, 'INBOUND PALLETIZED')
-    elif item == 'handling pick per pallet, ordertype,rg;' or item == 'pallet pick (regular order)':
-        df, qty = pickPerPalletRG(activityLoc)
-        report['WISE Qty'][index] = qty
-        dataCopy(df, 'PICK PER PALLET RG')
-    elif item == 'storage income initial storage per case':
-        df, qty = initialStorage(activityLoc)
-        report['WISE Qty'][index] = qty
-        dataCopy(df, 'INITIAL STORAGE PER CASE')
-    elif 'initial storage - per carton':
-        df, qty = initialStorage(activityLoc)
-        report['WISE Qty'][index] = qty
-        dataCopy(df, 'INITIAL STORAGE PER CARTON')
-    elif item == 'handling order processing per order, ordertype,rg;':
-        df, qty = handlingOrderProcessingRG(activityLoc)
-        report['WISE Qty'][index] = qty
-        dataCopy(df, 'HANDLING ORDER PROCESSING RG')
-    elif item == 'case pick (amazon order)' or item == 'amazon labeling':
-        df, qty = casePickAmazon(activityLoc)
-        report['WISE Qty'][index] = qty
-        dataCopy(df, 'CASE PICK AMAZON')
-    elif item == 'case pick if 30lbs or less (regular order)':
-        df, qty = casePick30lbsOrLess(activityLoc)
-        report['WISE Qty'][index] = qty
-        dataCopy(df, 'CASE PICK 30LBS OR LESS')
-    elif item == 'rush order':
-        df, qty = rushOrder(activityLoc)
-        report['WISE Qty'][index] = qty
-        dataCopy(df, 'RUSH ORDER')
-    elif item == 'accessorial noaction per unit, materialtype,stretch wrap;':
-        df, qty = stretchWrap(activityLoc)
-        report['WISE Qty'][index] = qty
-        dataCopy(df, 'STRETCH WRAP')
-    elif item == 'accessorial noaction per unit, materialtype,grade b pallet (40 x 48);':
-        df, qty = gradeBPallet(activityLoc)
-        report['WISE Qty'][index] = qty
-        dataCopy(df, 'GRADE B PALLET')
+    try:
+        itemStep = itemStepsList[billingItemDict[item][0]]
+    except (KeyError):
+        continue
+
+    sheetName = billingItemDict[item][1]
+
+    print(f'Item: {item}, Sheet name: {sheetName}')
+
+    df, qty = itemStep(activityLoc)
+
+    report['WISE Qty'][index] = qty
+    dataCopy(df, sheetName)
 
 
 report.to_excel(reportLoc, index=False)
-
+print('DONE!')
 print("--- %s seconds ---" % (time.time() - start_time))
