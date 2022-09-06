@@ -1,4 +1,5 @@
 import time
+from unicodedata import category
 from selenium import webdriver
 from selenium.webdriver.chrome.service import Service
 from webdriver_manager.chrome import ChromeDriverManager
@@ -9,7 +10,7 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver import ActionChains
 from difflib import SequenceMatcher
-import pandas as pd
+from pandas import read_excel
 import os.path
 
 facilityList = ['804- GARDEN CITY', '825-NORTHAMPTON','Alessandro','BolingBrook','Charleston','COPPELL','COR1','Fontana','FOREST','GARDENA','GOODYEAR','GOURGAR','Grand Prairie','GREENWOOD','Hayward','Hazelton','Houston','Indiana','Innovation','Joliet','Kansas','KENT','Lakewood','Marlay','Morgan Lakes','Murphy','NAVIGATION','New Jersey','Ontario','QUA','Quality-4400','Red Bluff','Reverse Service','Reyes','ROANOKE','Sacramento','Savannah','Seabrook','TACOMA','TOLLESON','Tucker','Turnbull','Valley','Valley View','Valley View B','Valley View C','Via Baron','WALB','Walnut','Willow']
@@ -34,6 +35,8 @@ def exportHandle(acc, fac, start, end, userPath):
     facility = facilityMatcher(facility)
     periodStart = start
     periodEnd = end
+    userbnp = input('Username for BNP: ')
+    pwbnp = input('Password for BNP: ')
 
     #Setting directory
     path = 'C:\\Users\\' + userPath + '\Downloads'
@@ -49,9 +52,9 @@ def exportHandle(acc, fac, start, end, userPath):
 
     #Logging into BNP
     interactor = driver.find_element(By.ID,"inputUserName")
-    interactor.send_keys("kevinnguyen")
+    interactor.send_keys(userbnp)
     interactor = driver.find_element(By.ID,"inputPassword")
-    interactor.send_keys("kevinn")
+    interactor.send_keys(pwbnp)
     interactor = driver.find_element(By.XPATH,"/html/body/div/footer/div/button")
     interactor.click()
 
@@ -131,7 +134,7 @@ def invoiceToReport(userPath, acc, fac, billingPeriod, invoiceNum):
     reportName = acc + '-' + fac + '-' + billingPeriod + '.xlsx'
 
     path = 'C:\\Users\\' + userPath + '\\Downloads\\Invoice[' + invoiceNum + '].xlsx'
-    report = pd.read_excel(path, sheet_name='Item Summary')
+    report = read_excel(path, sheet_name='Item Summary')
     
     new_cols = ['Category', 'InvoiceNumber', 'Header Billing Period Start', 'Header Billing Period End', 'ItemName', 'Description', 'UnitPrice', 'Qty']
     report = report.reindex(columns=new_cols)
@@ -140,8 +143,15 @@ def invoiceToReport(userPath, acc, fac, billingPeriod, invoiceNum):
     report['WISE Qty'] = ''
     report['CSR Qty'] = ''
 
+    report.loc[(report['Category'] != 'Outbound'), 'Category'] = ''
+    report.loc[report['ItemName'] == 'HANDLING OUT', 'Category'] = 'Outbound'
+    report.loc[report['ItemName'] == 'HANDLING IN', 'Category'] = 'Inbound'
+
+
     report.to_excel(reportName, index=False)
     
     print("Discrepancy Report has been made!")
 
     return reportName
+
+invoiceToReport('kenguyen', 'NZXT', 'Valleyview', 'Bimonthly', '19063398')

@@ -1,5 +1,6 @@
 import time
-import pandas as pd
+from pandas import read_excel
+from pandas import ExcelWriter
 import BNPauto
 
 start_time = time.time()
@@ -7,8 +8,8 @@ start_time = time.time()
 billingAcc = 'NZXT'
 accName = 'NZXT'
 facility = 'Valley View'
-startPeriod = input('Input Start Date: ')
-endPeriod = input('Input End Date: ')
+startPeriod = input('Input Start Date (MM/DD/YY): ')
+endPeriod = input('Input End Date (MM/DD/YY): ')
 user = input('Input Username for Computer: ')
 billCycle = 'Bimonthly'
 
@@ -20,7 +21,8 @@ facility = facility.capitalize()
 reportLoc = BNPauto.invoiceToReport(user, accName, facility, billCycle, '19064728')
 
 #Input file path for activity report
-activityLoc = input('Input File Path for Wise Activity Report: ')
+activityLoc = input('Input File Path for Wise Activity Report (Remove ""): ')
+activityLoc.replace('/', '//')
 
 def dataCopy(dataframe, sheetName):
     dataframe.to_excel(writer, sheet_name = sheetName, index = False)
@@ -29,7 +31,7 @@ def dataCopy(dataframe, sheetName):
 
 # accessorial cancel order per order, ispicked,yes; / cancellation charge
 def cancelledOrder(arPath):
-    df = pd.read_excel(io=arPath, sheet_name='Order & Receipt')
+    df = read_excel(io=arPath, sheet_name='Order & Receipt')
     df = df[df['Shipment'].isin(['OUTBOUND'])]
     df = df[df['STATUS'].isin(['CANCELLED'])]
     count = df['STATUS'].count()
@@ -38,7 +40,7 @@ def cancelledOrder(arPath):
 
 # outbound handling ds : over 750 cartons
 def outboundHandlingDS(arPath):
-    df = pd.read_excel(io=arPath, sheet_name='Order & Receipt')
+    df = read_excel(io=arPath, sheet_name='Order & Receipt')
     df = df[df['Shipment'].isin(['OUTBOUND'])]
     df = df[df['TYPE'].isin(['DropShip Order'])]
     sum = df['CS QTY'].sum()
@@ -47,7 +49,7 @@ def outboundHandlingDS(arPath):
 
 # routing
 def routing(arPath):
-    df = pd.read_excel(io=arPath, sheet_name='Accessories')
+    df = read_excel(io=arPath, sheet_name='Accessories')
     df = df[df['ACCOUNT ITEM'].isin(['ROUTING'])]
     sum = df['QTY'].sum()
 
@@ -55,7 +57,7 @@ def routing(arPath):
 
 # receive inbound per carton
 def inboundPerCarton(arPath):
-    df = pd.read_excel(io=arPath, sheet_name='Order & Receipt')
+    df = read_excel(io=arPath, sheet_name='Order & Receipt')
     df = df[df['Shipment'].isin(['INBOUND'])]
     df = df[df['Offload Type'].isin(['BY_HAND_NO_PALLET'])]
     sum = df['CS QTY'].sum()
@@ -64,7 +66,7 @@ def inboundPerCarton(arPath):
 
 # receive inbound palletized
 def inboundPalletized(arPath):
-    df = pd.read_excel(io=arPath, sheet_name='Order & Receipt')
+    df = read_excel(io=arPath, sheet_name='Order & Receipt')
     df = df[df['RN/DN'].str.contains('RN', case=False, na=False)]
     df = df[df['Offload Type'].isin(['FORKLIFT_WITH_PALLET'])]
     sum = df['PALLET QTY'].sum()
@@ -73,7 +75,7 @@ def inboundPalletized(arPath):
 
 # handling pick per pallet, ordertype,rg; / pallet pick (regular order)
 def pickPerPalletRG(arPath):
-    df = pd.read_excel(io=arPath, sheet_name='Pick Task')
+    df = read_excel(io=arPath, sheet_name='Pick Task')
     df = df[df['TYPE'].isin(['Regular Order'])]
     sum = df['PALLETPICKQTY'].sum()
 
@@ -81,7 +83,7 @@ def pickPerPalletRG(arPath):
 
 # storage income initial storage per case / initial storage – per carton
 def initialStorage(arPath):
-    df = pd.read_excel(io=arPath, sheet_name='Order & Receipt')
+    df = read_excel(io=arPath, sheet_name='Order & Receipt')
     df = df[df['Shipment'].isin(['INBOUND'])]
     sum = df['CS QTY'].sum()
 
@@ -89,7 +91,7 @@ def initialStorage(arPath):
 
 # handling order processing per order, ordertype,rg;
 def handlingOrderProcessingRG(arPath):
-    df = pd.read_excel(io=arPath, sheet_name='Order & Receipt')
+    df = read_excel(io=arPath, sheet_name='Order & Receipt')
     df = df[df['STATUS'].isin(['SHIPPED'])]
     df = df[df['TYPE'].isin(['Regular Order'])]
     count = df['TYPE'].count()
@@ -98,7 +100,7 @@ def handlingOrderProcessingRG(arPath):
 
 # case pick (amazon order) / amazon labeling
 def casePickAmazon(arPath):
-    df = pd.read_excel(io=arPath, sheet_name='Order & Receipt')
+    df = read_excel(io=arPath, sheet_name='Order & Receipt')
     df = df[df['Shipment'].isin(['OUTBOUND'])]
     df = df[df['TYPE'].isin(['Regular Order', 'DropShip Order'])]
     df = df[df['RETAILER'].isin(['Amazon'])]
@@ -108,7 +110,7 @@ def casePickAmazon(arPath):
 
 # case pick if 30lbs or less (regular order)
 def casePick30lbsOrLess(arPath):
-    df = pd.read_excel(io=arPath, sheet_name='Pick Task')
+    df = read_excel(io=arPath, sheet_name='Pick Task')
     df = df[df['TYPE'].isin(['Regular Order'])]
     df = df[~df['SHIPTO'].isin(['Amazon', 'Amazon.com Services INC.'])]
     sum = df['CASEPICKQTY'].sum() + df['INNERPICKQTY'].sum() + df['PIECEPICKQTY'].sum()
@@ -117,7 +119,7 @@ def casePick30lbsOrLess(arPath):
 
 # rush order
 def rushOrder(arPath):
-    df = pd.read_excel(io=arPath, sheet_name='Order & Receipt')
+    df = read_excel(io=arPath, sheet_name='Order & Receipt')
     df = df[df['Shipment'].isin(['OUTBOUND'])]
     df = df[df['IS RUSH'].isin(['Y'])]
     count = df['IS RUSH'].count()
@@ -126,7 +128,7 @@ def rushOrder(arPath):
 
 # accessorial noaction per unit, materialtype,stretch wrap;
 def stretchWrap(arPath):
-    df = pd.read_excel(io=arPath, sheet_name='Materials')
+    df = read_excel(io=arPath, sheet_name='Materials')
     df = df[df['ITEM DESCRIPTION'].str.contains('stretch wrap', case=False, na=False)]
     sum = df['QTY'].sum()
 
@@ -134,7 +136,7 @@ def stretchWrap(arPath):
 
 # accessorial noaction per unit, materialtype,grade b pallet (40 x 48);
 def gradeBPallet(arPath):
-    df = pd.read_excel(io=arPath, sheet_name='Materials')
+    df = read_excel(io=arPath, sheet_name='Materials')
     df = df[df['ITEM DESCRIPTION'].str.contains('Grade B Pallet', case=False, na=False)]
     sum = df['QTY'].sum()
 
@@ -151,12 +153,12 @@ billingItemDict = {'accessorial cancel order per order, ispicked,yes;' : [0, 'CA
 itemStepsList = [cancelledOrder, outboundHandlingDS, routing, inboundPerCarton, inboundPalletized, pickPerPalletRG, initialStorage, handlingOrderProcessingRG, 
                  casePickAmazon, casePick30lbsOrLess, rushOrder, stretchWrap, gradeBPallet]
 
-report = pd.read_excel(reportLoc)
+report = read_excel(reportLoc)
 billingitems = report['Description'].tolist()
 for count, name in enumerate(billingitems):
     billingitems[count] = name.lower()
 
-writer = pd.ExcelWriter('itemsReport.xlsx', engine='openpyxl')
+writer = ExcelWriter('itemsReport.xlsx', engine='openpyxl')
 
 for index, item in enumerate(billingitems):
     
