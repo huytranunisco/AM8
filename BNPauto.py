@@ -38,12 +38,6 @@ def exportHandle(acc, fac, start, end, userPath):
     userbnp = input('Username for BNP: ')
     pwbnp = input('Password for BNP: ')
 
-    #Setting directory
-    path = 'C:\\Users\\' + userPath + '\Downloads'
-    chrome_options = webdriver.ChromeOptions()
-    prefs = {'download.default_directory' : path, 'download.prompt_for_download' : False}
-    chrome_options.add_experimental_option('prefs', prefs)
-
     #Getting BNP
     driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()))
     action = ActionChains(driver)
@@ -153,5 +147,3 @@ def invoiceToReport(userPath, acc, fac, billingPeriod, invoiceNum):
     print("Discrepancy Report has been made!")
 
     return reportName
-
-invoiceToReport('kenguyen', 'NZXT', 'Valleyview', 'Bimonthly', '19063398')

@@ -123,7 +123,6 @@ def gradeBPallet(arPath):
 
 
 try:
-    
     start_time = time.time()
 
     billingAcc = 'NZXT'
@@ -179,10 +178,14 @@ try:
         report['WISE Qty'][index] = qty
         dataCopy(df, sheetName)
 
-
     report.to_excel(reportLoc, index=False)
     print('DONE!')
     print("--- %s seconds ---" % (time.time() - start_time))
+
+    x = input('Press Enter to Exit')
+
+    if not x:
+        exit()
 
 except Exception as e:
     if hasattr(e, 'message'):
