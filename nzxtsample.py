@@ -1,3 +1,4 @@
+import traceback
 import time
 from pandas import read_excel
 from pandas import ExcelWriter
