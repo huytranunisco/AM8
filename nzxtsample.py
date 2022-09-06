@@ -3,27 +3,6 @@ from pandas import read_excel
 from pandas import ExcelWriter
 import BNPauto
 
-start_time = time.time()
-
-billingAcc = 'NZXT'
-accName = 'NZXT'
-facility = 'Valley View'
-startPeriod = input('Input Start Date (MM/DD/YY): ')
-endPeriod = input('Input End Date (MM/DD/YY): ')
-user = input('Input Username for Computer: ')
-billCycle = 'Bimonthly'
-
-facility, invoicePath = BNPauto.exportHandle(billingAcc, facility, startPeriod, endPeriod, user)
-facility = facility.lower()
-facility = facility.replace(' ', '')
-facility = facility.capitalize()
-
-reportLoc = BNPauto.invoiceToReport(user, accName, facility, billCycle, '19064728')
-
-#Input file path for activity report
-activityLoc = input('Input File Path for Wise Activity Report (Remove ""): ')
-activityLoc.replace('/', '//')
-
 def dataCopy(dataframe, sheetName):
     dataframe.to_excel(writer, sheet_name = sheetName, index = False)
 
@@ -142,41 +121,74 @@ def gradeBPallet(arPath):
 
     return df, sum
 
-billingItemDict = {'accessorial cancel order per order, ispicked,yes;' : [0, 'CANCELLED ORDER'], 'cancellation charge' : [0, 'CANCELLED ORDER'], 
-                   'outbound handling ds : over 750 cartons' : [1, 'OUTBOUND HANDLING DS'], 'routing' : [2, 'ROUTING'], 'receive inbound per carton' : [3, 'INBOUND PER CARTON'],
-                   'receive inbound palletized' : [4, 'INBOUND PALLETIZED'], 'handling pick per pallet, ordertype,rg;' : [5, 'PICK PER PALLET RG'], 
-                   'pallet pick (regular order)' : [5, 'PICK PER PALLET RG'], 'storage income initial storage per case' : [6, 'INITIAL STORAGE PER CASE'],
-                   'initial storage - per carton' : [6, 'INITIAL STORAGE PER CARTON'], 'handling order processing per order, ordertype,rg;' : [7, 'HANDLING ORDER PROCESSING RG'],
-                   'case pick (amazon order)' : [8, 'CASE PICK AMAZON'], 'amazon labeling' : [8, 'CASE PICK AMAZON'], 'case pick if 30lbs or less (regular order)' :
-                   [9, 'CASE PICK 30LBS OR LESS'], 'rush order' : [10, 'RUSH ORDER'], 'accessorial noaction per unit, materialtype,stretch wrap;' : [11, 'STRETCH WRAP'],
-                   'accessorial noaction per unit, materialtype,grade b pallet (40 x 48);' : [12, 'GRADE B PALLET']}
-itemStepsList = [cancelledOrder, outboundHandlingDS, routing, inboundPerCarton, inboundPalletized, pickPerPalletRG, initialStorage, handlingOrderProcessingRG, 
-                 casePickAmazon, casePick30lbsOrLess, rushOrder, stretchWrap, gradeBPallet]
 
-report = read_excel(reportLoc)
-billingitems = report['Description'].tolist()
-for count, name in enumerate(billingitems):
-    billingitems[count] = name.lower()
-
-writer = ExcelWriter('itemsReport.xlsx', engine='openpyxl')
-
-for index, item in enumerate(billingitems):
+try:
     
-    try:
-        itemStep = itemStepsList[billingItemDict[item][0]]
-    except (KeyError):
-        continue
+    start_time = time.time()
 
-    sheetName = billingItemDict[item][1]
+    billingAcc = 'NZXT'
+    accName = 'NZXT'
+    facility = 'Valley View'
+    startPeriod = input('Input Start Date (MM/DD/YY): ')
+    endPeriod = input('Input End Date (MM/DD/YY): ')
+    user = input('Input Username for Computer: ')
+    billCycle = 'Bimonthly'
 
-    print(f'Item: {item}, Sheet name: {sheetName}')
+    facility, invoicePath = BNPauto.exportHandle(billingAcc, facility, startPeriod, endPeriod, user)
+    facility = facility.lower()
+    facility = facility.replace(' ', '')
+    facility = facility.capitalize()
 
-    df, qty = itemStep(activityLoc)
+    reportLoc = BNPauto.invoiceToReport(user, accName, facility, billCycle, invoicePath)
 
-    report['WISE Qty'][index] = qty
-    dataCopy(df, sheetName)
+    #Input file path for activity report
+    activityLoc = input('Input File Path for Wise Activity Report (Remove ""): ')
+    activityLoc.replace('/', '//')
+
+    billingItemDict = {'accessorial cancel order per order, ispicked,yes;' : [0, 'CANCELLED ORDER'], 'cancellation charge' : [0, 'CANCELLED ORDER'], 
+                    'outbound handling ds : over 750 cartons' : [1, 'OUTBOUND HANDLING DS'], 'routing' : [2, 'ROUTING'], 'receive inbound per carton' : [3, 'INBOUND PER CARTON'],
+                    'receive inbound palletized' : [4, 'INBOUND PALLETIZED'], 'handling pick per pallet, ordertype,rg;' : [5, 'PICK PER PALLET RG'], 
+                    'pallet pick (regular order)' : [5, 'PICK PER PALLET RG'], 'storage income initial storage per case' : [6, 'INITIAL STORAGE PER CASE'],
+                    'initial storage - per carton' : [6, 'INITIAL STORAGE PER CARTON'], 'handling order processing per order, ordertype,rg;' : [7, 'HANDLING ORDER PROCESSING RG'],
+                    'case pick (amazon order)' : [8, 'CASE PICK AMAZON'], 'amazon labeling' : [8, 'CASE PICK AMAZON'], 'case pick if 30lbs or less (regular order)' :
+                    [9, 'CASE PICK 30LBS OR LESS'], 'rush order' : [10, 'RUSH ORDER'], 'accessorial noaction per unit, materialtype,stretch wrap;' : [11, 'STRETCH WRAP'],
+                    'accessorial noaction per unit, materialtype,grade b pallet (40 x 48);' : [12, 'GRADE B PALLET']}
+    itemStepsList = [cancelledOrder, outboundHandlingDS, routing, inboundPerCarton, inboundPalletized, pickPerPalletRG, initialStorage, handlingOrderProcessingRG, 
+                    casePickAmazon, casePick30lbsOrLess, rushOrder, stretchWrap, gradeBPallet]
+
+    report = read_excel(reportLoc)
+    billingitems = report['Description'].tolist()
+    for count, name in enumerate(billingitems):
+        billingitems[count] = name.lower()
+
+    writer = ExcelWriter('itemsReport.xlsx', engine='openpyxl')
+
+    for index, item in enumerate(billingitems):
+        
+        try:
+            itemStep = itemStepsList[billingItemDict[item][0]]
+        except (KeyError):
+            continue
+
+        sheetName = billingItemDict[item][1]
+
+        print(f'Item: {item}, Sheet name: {sheetName}')
+
+        df, qty = itemStep(activityLoc)
+
+        report['WISE Qty'][index] = qty
+        dataCopy(df, sheetName)
 
 
-report.to_excel(reportLoc, index=False)
-print('DONE!')
-print("--- %s seconds ---" % (time.time() - start_time))
+    report.to_excel(reportLoc, index=False)
+    print('DONE!')
+    print("--- %s seconds ---" % (time.time() - start_time))
+
+except Exception as e:
+    if hasattr(e, 'message'):
+        print(e.message)
+        time.sleep(7)
+    else:
+        print('An error occured at ',e.args,e.__doc__)
+        print('An error occured at ')
+        time.sleep(7)
