@@ -1,4 +1,3 @@
-from dataclasses import dataclass
 import time
 import pandas as pd
 import numpy as np
@@ -10,9 +9,9 @@ start_time = time.time()
 billingAcc = 'NZXT'
 accName = 'NZXT'
 facility = 'Valley View'
-startPeriod = '08/01/22'
-endPeriod = '08/15/22'
-user = 'kenguyen'
+startPeriod = input('Input Start Date: ')
+endPeriod = input('Input End Date: ')
+user = input('Input Username for Computer: ')
 billCycle = 'Bimonthly'
 
 facility, invoicePath = BNPauto.exportHandle(billingAcc, facility, startPeriod, endPeriod, user)
@@ -23,7 +22,7 @@ facility = facility.capitalize()
 reportLoc = BNPauto.invoiceToReport(user, accName, facility, billCycle, '19064728')
 
 #Input file path for activity report
-activityLoc = r"C:\\Users\\kenguyen\\Documents\\SOPS\\NZXT\\Activity Reports\\activityReoport(NZXT - 2022-08-01 - 2022-08-15).xlsx"
+activityLoc = input('Input File Path for Wise Activity Report: ')
 
 def dataCopy(dataframe, sheetName):
     dataframe.to_excel(writer, sheet_name = sheetName, index = False)
@@ -162,6 +161,7 @@ for count, name in enumerate(billingitems):
 writer = pd.ExcelWriter('itemsReport.xlsx', engine='openpyxl')
 
 for index, item in enumerate(billingitems):
+    
     try:
         itemStep = itemStepsList[billingItemDict[item][0]]
     except (KeyError):
