@@ -2,7 +2,7 @@ import traceback
 import time
 from pandas import read_excel
 from pandas import ExcelWriter
-import BNPauto
+import report_automate.BNPauto as BNPauto
 
 def dataCopy(dataframe, sheetName):
     dataframe.to_excel(writer, sheet_name = sheetName, index = False)
@@ -134,16 +134,16 @@ try:
     user = input('Input Username for Computer: ')
     billCycle = 'Bimonthly'
 
+    #Input file path for activity report
+    activityLoc = input('Input File Path for Wise Activity Report (Remove ""): ')
+    activityLoc.replace('/', '//')
+
     facility, invoicePath = BNPauto.exportHandle(billingAcc, facility, startPeriod, endPeriod, user)
     facility = facility.lower()
     facility = facility.replace(' ', '')
     facility = facility.capitalize()
 
     reportLoc = BNPauto.invoiceToReport(user, accName, facility, billCycle, invoicePath)
-
-    #Input file path for activity report
-    activityLoc = input('Input File Path for Wise Activity Report (Remove ""): ')
-    activityLoc.replace('/', '//')
 
     billingItemDict = {'accessorial cancel order per order, ispicked,yes;' : [0, 'CANCELLED ORDER'], 'cancellation charge' : [0, 'CANCELLED ORDER'], 
                     'outbound handling ds : over 750 cartons' : [1, 'OUTBOUND HANDLING DS'], 'routing' : [2, 'ROUTING'], 'receive inbound per carton' : [3, 'INBOUND PER CARTON'],
@@ -185,14 +185,19 @@ try:
 
     x = input('Press Enter to Exit')
 
-    if not x:
-        exit()
+    exit()
 
 except Exception as e:
     if hasattr(e, 'message'):
         print(e.message)
-        time.sleep(7)
+
+        x = input('Press Enter to Exit')
+        
+        exit()
     else:
         print('An error occured at ',e.args,e.__doc__)
         print('An error occured at ')
-        time.sleep(7)
+
+        x = input('Press Enter to Exit')
+
+        exit()

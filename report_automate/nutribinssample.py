@@ -2,7 +2,7 @@ import time
 import pandas as pd
 import numpy as np
 from openpyxl import load_workbook
-import BNPauto
+import report_automate.BNPauto as BNPauto
 
 start_time = time.time()
 
