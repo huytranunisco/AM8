@@ -137,7 +137,7 @@ def invoiceToReport(userPath, acc, fac, billingPeriod, invoiceNum):
     report['WISE Qty'] = ''
     report['CSR Qty'] = ''
 
-    report.loc[(report['Category'] != 'Outbound'), 'Category'] = ''
+    report.loc[report['Category'] != 'Outbound', 'Category'] = ''
     report.loc[report['ItemName'] == 'HANDLING OUT', 'Category'] = 'Outbound'
     report.loc[report['ItemName'] == 'HANDLING IN', 'Category'] = 'Inbound'
 
