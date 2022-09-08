@@ -40,8 +40,10 @@ def imageCapture(accName, accFacility, directory):
     accName = accName[:5]
     facility = facilityMatcher(accFacility)
 
+    
     #Getting BNP
     driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()))
+    '''
     driver.get("http://bnp.unisco.com/")
     action = ActionChains(driver)
     assert len(driver.window_handles) == 1
@@ -114,9 +116,33 @@ def imageCapture(accName, accFacility, directory):
     action.move_to_element(interactor).perform()
     interactor.click()
 
+    time.sleep(3)
+
     imagescreen = screenshot()
     imagescreen.save(directory + '\\image2.png')
     print('Second image saved!')
+    '''
+
+    driver.get('https://wise.logisticsteam.com/v2/#/login')
+
+    driver.maximize_window()
+
+    interactor = driver.find_element(By.XPATH,'/html/body/div1/div/div[2]/div/div/div/form/input[1]')
+    interactor.send_keys('marionz')
+    interactor = driver.find_element(By.NAME,"password")
+    interactor.send_keys('qwer1234')
+    interactor = driver.find_element(By.XPATH,'//*[@id="loginBtn"]/button')
+    interactor.click()
+
+    interactor = driver.find_element(By.XPATH,"/html/body/div1/header/div[1]/div[5]/ul/li[1]/ul")
+    items = interactor.find_elements(By.TAG_NAME,'ng-repeat')
+    for company, index in enumerate(items):
+        item = company.find_element(By.TAG_NAME,'ng-click')
+        item = item.find_elements(By.CLASS_NAME,'menu-li-content ng-binding')[1]
+        print(item.text)
+
+    time.sleep(10)
+
 
 
 
