@@ -1,5 +1,4 @@
 import time
-from unicodedata import category
 from selenium import webdriver
 from selenium.webdriver.chrome.service import Service
 from webdriver_manager.chrome import ChromeDriverManager
@@ -35,14 +34,13 @@ def exportHandle(acc, fac, start, end, userPath):
     facility = facilityMatcher(facility)
     periodStart = start
     periodEnd = end
-    userbnp = input('Username for BNP: ')
-    pwbnp = input('Password for BNP: ')
+    userbnp = 'wiserpa'
+    pwbnp = '#rpa#1234'
 
     #Getting BNP
     driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()))
     action = ActionChains(driver)
     driver.get("http://bnp.unisco.com/")
-    assert len(driver.window_handles) == 1
 
     #Logging into BNP
     interactor = driver.find_element(By.ID,"inputUserName")
@@ -53,7 +51,7 @@ def exportHandle(acc, fac, start, end, userPath):
     interactor.click()
 
     #Clicking Sales Module from Module Dropdown Menu
-    select = WebDriverWait(driver, 5).until(EC.element_to_be_clickable((By.ID, 'TS_span_menu')))
+    select = WebDriverWait(driver, 20).until(EC.element_to_be_clickable((By.ID, 'TS_span_menu')))
     select.click()
     select = WebDriverWait(driver, 5).until(EC.presence_of_element_located((By.XPATH, '//*[@id="headmenu_mn_active"]/div/ul/li[1]')))
     select.click()
