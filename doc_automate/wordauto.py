@@ -1,4 +1,5 @@
 from argparse import Action
+from code import interact
 from msilib.schema import File
 from docx import Document
 from selenium import webdriver
@@ -127,21 +128,27 @@ def imageCapture(accName, accFacility, directory):
 
     driver.maximize_window()
 
-    interactor = driver.find_element(By.XPATH,'/html/body/div1/div/div[2]/div/div/div/form/input[1]')
+    interactor = WebDriverWait(driver, 5).until(EC.presence_of_element_located((By.XPATH, '/html/body/div1/div/div[2]/div/div/div/form/input[1]')))
     interactor.send_keys('marionz')
     interactor = driver.find_element(By.NAME,"password")
     interactor.send_keys('qwer1234')
-    interactor = driver.find_element(By.XPATH,'//*[@id="loginBtn"]/button')
+    interactor = WebDriverWait(driver, 5).until(EC.presence_of_element_located((By.XPATH, '//*[@id="loginBtn"]/button')))
     interactor.click()
 
-    interactor = driver.find_element(By.XPATH,"/html/body/div1/header/div[1]/div[5]/ul/li[1]/ul")
-    items = interactor.find_elements(By.TAG_NAME,'ng-repeat')
-    for company, index in enumerate(items):
-        item = company.find_element(By.TAG_NAME,'ng-click')
-        item = item.find_elements(By.CLASS_NAME,'menu-li-content ng-binding')[1]
-        print(item.text)
+    interactor = WebDriverWait(driver, 5).until(EC.presence_of_element_located((By.XPATH, '/html/body/div1/header/div[1]/div[5]/ul/li[1]/ul')))
+    items = interactor.find_elements(By.TAG_NAME,'li')
+    for index, company in enumerate(items):
+        try:
+            item = company.find_element(By.TAG_NAME,'a')
+            item = item.find_elements(By.TAG_NAME,'div')[1]
+            itemtext = item.get_attribute('textContent')
+            if facility in itemtext:
+                item.click()
+                break
+        except:
+            continue
 
-    time.sleep(10)
+    interactor = driver.find_element(By.XPATH, '/html/body/div1/header/div[1]/div[5]/ul/li[1]/span')
 
 
 
