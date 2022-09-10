@@ -2,7 +2,12 @@ import traceback
 import time
 from pandas import read_excel
 from pandas import ExcelWriter
-import BNPauto
+import report_automate.BNPauto as BNPauto
+
+def dataCopy(dataframe, sheetName):
+    dataframe.to_excel(writer, sheet_name = sheetName, index = False)
+
+    writer.save()
 
 # accessorial cancel order per order, ispicked,yes; / cancellation charge
 def cancelledOrder(arPath):
@@ -140,14 +145,14 @@ try:
 
     reportLoc = BNPauto.invoiceToReport(user, accName, facility, billCycle, invoicePath)
 
-    billingItemDict = {'accessorial cancel order per order, ispicked,yes;' : 0, 'cancellation charge' : 0, 
-                    'outbound handling ds : over 750 cartons' : 1, 'routing' : 2, 'receive inbound per carton' : 3,
-                    'receive inbound palletized' : 4, 'handling pick per pallet, ordertype,rg;' : 5, 
-                    'pallet pick (regular order)' : 5, 'storage income initial storage per case' : 6,
-                    'initial storage - per carton' : 6, 'handling order processing per order, ordertype,rg;' : 7,
-                    'case pick (amazon order)' : 8, 'amazon labeling' : 8, 'case pick if 30lbs or less (regular order)' :
-                    9, 'rush order' : 10, 'accessorial noaction per unit, materialtype,stretch wrap;' : 11,
-                    'accessorial noaction per unit, materialtype,grade b pallet (40 x 48);' : 12}
+    billingItemDict = {'accessorial cancel order per order, ispicked,yes;' : [0, 'CANCELLED ORDER'], 'cancellation charge' : [0, 'CANCELLED ORDER'], 
+                    'outbound handling ds : over 750 cartons' : [1, 'OUTBOUND HANDLING DS'], 'routing' : [2, 'ROUTING'], 'receive inbound per carton' : [3, 'INBOUND PER CARTON'],
+                    'receive inbound palletized' : [4, 'INBOUND PALLETIZED'], 'handling pick per pallet, ordertype,rg;' : [5, 'PICK PER PALLET RG'], 
+                    'pallet pick (regular order)' : [5, 'PICK PER PALLET RG'], 'storage income initial storage per case' : [6, 'INITIAL STORAGE PER CASE'],
+                    'initial storage - per carton' : [6, 'INITIAL STORAGE PER CARTON'], 'handling order processing per order, ordertype,rg;' : [7, 'HANDLING ORDER PROCESSING RG'],
+                    'case pick (amazon order)' : [8, 'CASE PICK AMAZON'], 'amazon labeling' : [8, 'CASE PICK AMAZON'], 'case pick if 30lbs or less (regular order)' :
+                    [9, 'CASE PICK 30LBS OR LESS'], 'rush order' : [10, 'RUSH ORDER'], 'accessorial noaction per unit, materialtype,stretch wrap;' : [11, 'STRETCH WRAP'],
+                    'accessorial noaction per unit, materialtype,grade b pallet (40 x 48);' : [12, 'GRADE B PALLET']}
     itemStepsList = [cancelledOrder, outboundHandlingDS, routing, inboundPerCarton, inboundPalletized, pickPerPalletRG, initialStorage, handlingOrderProcessingRG, 
                     casePickAmazon, casePick30lbsOrLess, rushOrder, stretchWrap, gradeBPallet]
 
@@ -161,15 +166,18 @@ try:
     for index, item in enumerate(billingitems):
         
         try:
-            itemStep = itemStepsList[billingItemDict[item]]
+            itemStep = itemStepsList[billingItemDict[item][0]]
         except (KeyError):
             continue
 
-        print(f'Item: {item}')
+        sheetName = billingItemDict[item][1]
+
+        print(f'Item: {item}, Sheet name: {sheetName}')
 
         df, qty = itemStep(activityLoc)
 
         report['WISE Qty'][index] = qty
+        dataCopy(df, sheetName)
 
     report.to_excel(reportLoc, index=False)
     print('DONE!')

@@ -144,15 +144,14 @@ def imageCapture(accName, accFacility, directory):
             itemtext = item.get_attribute('textContent')
             if facility in itemtext:
                 item.click()
+                break
         except:
             continue
 
     interactor = driver.find_element(By.XPATH, '/html/body/div1/header/div[1]/div[5]/ul/li[1]/span')
-    interactor.click()
 
-    imagescreen = screenshot()
-    imagescreen.save(directory + '\\image3.png')
-    print('Third image saved!')
+
+
 
 
 accName = 'E&S International Enterprises Inc'
