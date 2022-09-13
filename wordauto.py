@@ -32,7 +32,10 @@ def replaceString(paragraph, oldText, newText):
         if oldText in inline[i].text:
             text = inline[i].text.replace(oldText, newText)
             inline[i].text = text
-
+        if " (1-15, 16-EOM)" in inline[i].text and billingPeriod != 'bimonthly':
+            text = inline[i].text.replace(' (1-15, 16-EOM)', '')
+            inline[i].text = text
+    
 def imageCapture(accName, accFacility, directory):
     accName = accName[:5]
     facility = facilityMatcher(accFacility)
@@ -166,7 +169,7 @@ def imageCrop(path):
 accName = input('Enter Name of Customer (No commas): ')
 accFacility = input('Enter Facility of Customer: ')
 billerName = input("Enter Biller's Name for Customer: ")
-userPath = input('Username for PC: ')
+userPath ='kenguyen'
 billingPeriod = billPeriodMenu()
 
 directory = f'{accName}-{accFacility}'
@@ -189,10 +192,6 @@ oldText = {"One" : f'{accName} ({accFacility}) SOP', "Biller Name" : billerName,
 oldTextList = oldText.keys()
 
 document = Document("C:\\Users\\kenguyen\\Documents\\SOPS\\SOP Template.docx")
-
-if billingPeriod != 'bimonthly':
-    document.paragraphs[3].text = document.paragraphs[3].text.replace(" (1-15, 16-EOM)", "")
-    document.paragraphs[4].text = document.paragraphs[4].text.replace(" (1-15, 16-EOM)", "")
 
 for index, paragraph in enumerate(document.paragraphs):
     if index == 39:
