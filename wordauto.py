@@ -57,15 +57,15 @@ def imageCapture(accName, accFacility, directory):
     interactor.click()
 
     #Clicking Sales Module from Module Dropdown Menu
-    select = WebDriverWait(driver, 10).until(EC.element_to_be_clickable((By.ID, 'TS_span_menu')))
+    select = WebDriverWait(driver, 20).until(EC.element_to_be_clickable((By.ID, 'TS_span_menu')))
     select.click()
-    select = WebDriverWait(driver, 5).until(EC.presence_of_element_located((By.XPATH, '//*[@id="headmenu_mn_active"]/div/ul/li[1]')))
+    select = WebDriverWait(driver, 20).until(EC.presence_of_element_located((By.XPATH, '//*[@id="headmenu_mn_active"]/div/ul/li[1]')))
     select.click()
 
     #Clicking Invoice Management from Invoice Dropdown Menu
-    select = WebDriverWait(driver, 5).until(EC.presence_of_element_located((By.XPATH, '//*[@id="headmenu"]/li[3]/span')))
+    select = WebDriverWait(driver, 20).until(EC.presence_of_element_located((By.XPATH, '//*[@id="headmenu"]/li[3]/span')))
     select.click()
-    select = WebDriverWait(driver, 5).until(EC.presence_of_element_located((By.XPATH, '/html/body/div/div/header/div[1]/ul/li[3]/div/ul/li[1]/a')))
+    select = WebDriverWait(driver, 20).until(EC.presence_of_element_located((By.XPATH, '/html/body/div/div/header/div[1]/ul/li[3]/div/ul/li[1]/a')))
     select.click()
 
     #Inputting information on the Invoice Management Page and Searching
@@ -124,14 +124,14 @@ def imageCapture(accName, accFacility, directory):
 
     driver.maximize_window()
 
-    interactor = WebDriverWait(driver, 15).until(EC.presence_of_element_located((By.XPATH, '/html/body/div1/div/div[2]/div/div/div/form/input[1]')))
+    interactor = WebDriverWait(driver, 20).until(EC.presence_of_element_located((By.XPATH, '/html/body/div1/div/div[2]/div/div/div/form/input[1]')))
     interactor.send_keys('marionz')
     interactor = driver.find_element(By.NAME,"password")
     interactor.send_keys('qwer1234')
-    interactor = WebDriverWait(driver, 5).until(EC.presence_of_element_located((By.XPATH, '//*[@id="loginBtn"]/button')))
+    interactor = WebDriverWait(driver, 20).until(EC.presence_of_element_located((By.XPATH, '//*[@id="loginBtn"]/button')))
     interactor.click()
 
-    interactor = WebDriverWait(driver, 5).until(EC.presence_of_element_located((By.XPATH, '/html/body/div1/header/div[1]/div[5]/ul/li[1]/ul')))
+    interactor = WebDriverWait(driver, 20).until(EC.presence_of_element_located((By.XPATH, '/html/body/div1/header/div[1]/div[5]/ul/li[1]/ul')))
     items = interactor.find_elements(By.TAG_NAME,'li')
     for index, company in enumerate(items):
         try:
@@ -172,12 +172,12 @@ billerName = input("Enter Biller's Name for Customer: ")
 userPath ='kenguyen'
 billingPeriod = billPeriodMenu()
 
-directory = f'{accName}-{accFacility}'
-parentDir = "C:\\Users\\" + userPath + "\\Desktop\\"
-path = os.path.join(parentDir, directory)
+path = f'{accName}-{accFacility}'
+#parentDir = "C:\\Users\\" + userPath + "\\Desktop\\"
+#path = os.path.join(parentDir, directory)
 try:
     os.mkdir(path)
-    print(f'Directory "{directory}" created')
+    print(f'Directory "{path}" created')
 except (FileExistsError):
     print('Folder already exists. Moving on...')
 
