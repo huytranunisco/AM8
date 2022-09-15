@@ -57,15 +57,15 @@ def imageCapture(accName, accFacility, directory):
     interactor.click()
 
     #Clicking Sales Module from Module Dropdown Menu
-    select = WebDriverWait(driver, 10).until(EC.element_to_be_clickable((By.ID, 'TS_span_menu')))
+    select = WebDriverWait(driver, 20).until(EC.element_to_be_clickable((By.ID, 'TS_span_menu')))
     select.click()
-    select = WebDriverWait(driver, 5).until(EC.presence_of_element_located((By.XPATH, '//*[@id="headmenu_mn_active"]/div/ul/li[1]')))
+    select = WebDriverWait(driver, 20).until(EC.presence_of_element_located((By.XPATH, '//*[@id="headmenu_mn_active"]/div/ul/li[1]')))
     select.click()
 
     #Clicking Invoice Management from Invoice Dropdown Menu
-    select = WebDriverWait(driver, 5).until(EC.presence_of_element_located((By.XPATH, '//*[@id="headmenu"]/li[3]/span')))
+    select = WebDriverWait(driver, 20).until(EC.presence_of_element_located((By.XPATH, '//*[@id="headmenu"]/li[3]/span')))
     select.click()
-    select = WebDriverWait(driver, 5).until(EC.presence_of_element_located((By.XPATH, '/html/body/div/div/header/div[1]/ul/li[3]/div/ul/li[1]/a')))
+    select = WebDriverWait(driver, 20).until(EC.presence_of_element_located((By.XPATH, '/html/body/div/div/header/div[1]/ul/li[3]/div/ul/li[1]/a')))
     select.click()
 
     #Inputting information on the Invoice Management Page and Searching
@@ -124,14 +124,14 @@ def imageCapture(accName, accFacility, directory):
 
     driver.maximize_window()
 
-    interactor = WebDriverWait(driver, 15).until(EC.presence_of_element_located((By.XPATH, '/html/body/div1/div/div[2]/div/div/div/form/input[1]')))
+    interactor = WebDriverWait(driver, 20).until(EC.presence_of_element_located((By.XPATH, '/html/body/div1/div/div[2]/div/div/div/form/input[1]')))
     interactor.send_keys('marionz')
     interactor = driver.find_element(By.NAME,"password")
     interactor.send_keys('qwer1234')
-    interactor = WebDriverWait(driver, 5).until(EC.presence_of_element_located((By.XPATH, '//*[@id="loginBtn"]/button')))
+    interactor = WebDriverWait(driver, 20).until(EC.presence_of_element_located((By.XPATH, '//*[@id="loginBtn"]/button')))
     interactor.click()
 
-    interactor = WebDriverWait(driver, 5).until(EC.presence_of_element_located((By.XPATH, '/html/body/div1/header/div[1]/div[5]/ul/li[1]/ul')))
+    interactor = WebDriverWait(driver, 20).until(EC.presence_of_element_located((By.XPATH, '/html/body/div1/header/div[1]/div[5]/ul/li[1]/ul')))
     items = interactor.find_elements(By.TAG_NAME,'li')
     for index, company in enumerate(items):
         try:
@@ -166,44 +166,64 @@ def imageCrop(path):
     image_three = image_three.crop((1310, 120, 1900, 615))
     image_three.save(path + '\\image3.png')
 
-accName = input('Enter Name of Customer (No commas): ')
-accFacility = input('Enter Facility of Customer: ')
-billerName = input("Enter Biller's Name for Customer: ")
-userPath ='kenguyen'
-billingPeriod = billPeriodMenu()
-
-directory = f'{accName}-{accFacility}'
-parentDir = "C:\\Users\\" + userPath + "\\Desktop\\"
-path = os.path.join(parentDir, directory)
 try:
-    os.mkdir(path)
-    print(f'Directory "{directory}" created')
-except (FileExistsError):
-    print('Folder already exists. Moving on...')
+    accName = input('Enter Name of Customer (No commas): ')
+    accFacility = input('Enter Facility of Customer: ')
+    billerName = input("Enter Biller's Name for Customer: ")
+    userPath ='retan'
+    billingPeriod = billPeriodMenu()
 
-imageCapture(accName, accFacility, path)
-imageCrop(path)
+    directory = f'{accName}-{accFacility}'
+    parentDir = "C:\\Users\\" + userPath + "\\OneDrive - unisco.com\\Desktop\\"
+    path = os.path.join(parentDir, directory)
+    try:
+        os.mkdir(path)
+        print(f'Directory "{directory}" created')
+    except (FileExistsError):
+        print('Folder already exists. Moving on...')
 
-tempFac = accFacility.replace(" ", "")
-tempAcc = accName.replace(" ", "")
+    imageCapture(accName, accFacility, path)
+    imageCrop(path)
 
-oldText = {"One" : f'{accName} ({accFacility}) SOP', "Biller Name" : billerName, "billingPeriodH" : billingPeriod, "Two" : f'{accName} ({accFacility})',
-           "Three" : f'{tempAcc}-{tempFac}-{billingPeriod.capitalize()}', "accName" : accName, "billingfac" : accFacility, "billingperiodh" : billingPeriod}
-oldTextList = oldText.keys()
+    tempFac = accFacility.replace(" ", "")
+    tempAcc = accName.replace(" ", "")
 
-document = Document("C:\\Users\\kenguyen\\Documents\\SOPS\\SOP Template.docx")
+    oldText = {"One" : f'{accName} ({accFacility}) SOP', "Biller Name" : billerName, "billingPeriodH" : billingPeriod, "Two" : f'{accName} ({accFacility})',
+            "Three" : f'{tempAcc}-{tempFac}-{billingPeriod.capitalize()}', "accName" : accName, "billingfac" : accFacility, "billingperiodh" : billingPeriod}
+    oldTextList = oldText.keys()
 
-for index, paragraph in enumerate(document.paragraphs):
-    if index == 39:
-        paragraph.add_run().add_picture(path + '\\image1.png')
-    elif index == 41:
-        paragraph.add_run().add_picture(path + '\\image2.png')
-    elif index == 61:
-        paragraph.add_run().add_picture(path + '\\image3.png')
-    for text in oldTextList:
-        if text in paragraph.text:
-            replaceString(paragraph, text, oldText[text])
+    document = Document("C:\\Users\\retan\\OneDrive - unisco.com\\Desktop\\SOP pre Doc\\SOP Template.docx")
 
-textChange = f'{tempAcc}-{tempFac}-{billingPeriod.capitalize()}-SOP.docx'
-document.save(path + '\\' + textChange)
-print('Saved new document!')
+    for index, paragraph in enumerate(document.paragraphs):
+        if index == 39:
+            paragraph.add_run().add_picture(path + '\\image1.png')
+        elif index == 41:
+            paragraph.add_run().add_picture(path + '\\image2.png')
+        elif index == 61:
+            paragraph.add_run().add_picture(path + '\\image3.png')
+        for text in oldTextList:
+            if text in paragraph.text:
+                replaceString(paragraph, text, oldText[text])
+
+    textChange = f'{tempAcc}-{tempFac}-{billingPeriod.capitalize()}-SOP.docx'
+    document.save(path + '\\' + textChange)
+    print('Saved new document!')
+
+    x = input('Press Enter to Exit')
+    
+    exit()
+
+except Exception as e:
+    if hasattr(e, 'message'):
+        print(e.message)
+
+        x = input('Press Enter to Exit')
+        
+        exit()
+    else:
+        print('An error occured at ',e.args,e.__doc__)
+        print('An error occured at ')
+
+        x = input('Press Enter to Exit')
+
+        exit()
