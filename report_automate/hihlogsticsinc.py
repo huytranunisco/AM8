@@ -34,10 +34,10 @@ def incomeInitialStorage(arPath):
     sum = df['PALLET QTY'].sum()
     return sum
 
-#Order Processing is same
+#Order Processing and Handling Loading per Load is same
 def outboundHandling(arPath):
     df = read_excel(io=arPath, sheet_name='Order & Receipt')
-    df = df[df['Shipment'].isin(['OUTBOUND'])]
+    df = df[df['Type'].isin(['OUTBOUND'])]
     count = df['Shipment'].count() - 1
     return count
 
@@ -68,10 +68,21 @@ def missedAppointment(arPath):
     return count
 
 def orderEntryCharge(arPath):
-    pass
+    df = read_excel(io=arPath, sheet_name='Order & Receipt')
+    df = df[df['Shipment'].isin(['OUTBOUND'])]
+    df = df[df['TYPE'].isin(['Regular Order'])]
+    df = df[df['SOURCE'].isin(['MANUAL'])]
+    count = df['Shipment'].count() - 1
 
-def handlingLoadingperLoad(arPath):
-    pass
+    return count
+
+def canncelledOrder(arPath):
+    df = read_excel(io=arPath, sheet_name='Order & Receipt')
+    df = df[df['Shipment'].isin(['OUTBOUND'])]
+    df = df[df['STATUS'].isin(['CANCELLED'])]
+    count = df['Shipment'].count() - 1
+
+    return count
 
 try:
     start_time = time.time()
@@ -100,8 +111,11 @@ try:
 
     reportLoc = BNPauto.invoiceToReport(user, accName, facility, billCycle, invoicePath)
 
-    billingItemDict = {'Create Dictionary for Comparing Item Name and Description. '}
-    itemStepsList = ['Put int the function Names']
+    billingItemDict = {'UFUFHDOF007OFT001RT001' : 0, 'UFUFSTIS007PS000' : 1, 'UFUFHDLD020' : 2, 'UFUFHDDT006' : 3, 'UFUFHDOP006OT002' : 4,
+                       'PHOTO COPIES (BLACK & WHITE)' : 5, 'UFUFHDMOA006' : 6, 'OUTBOUND HANDLING: LABOR FEE (7 BAGS/LOAD)' : 2,
+                       'MISSED APPOINTMENT' : 6, 'UFUFACCO006IP002' : 8, 'INITIAL STORAGE' : 1}
+    itemStepsList = [handlingOffloadperPallet, incomeInitialStorage, outboundHandling, manualOrderEntry, handlingOrderProcessingRG,
+                     photoCopies, missedAppointment, orderEntryCharge, canncelledOrder]
 
     report = read_excel(reportLoc)
     billingitems = report['Description'].tolist()
@@ -117,9 +131,9 @@ try:
         except (KeyError):
             continue
 
-        print(f'Item: {item}')
+        qty = itemStep(activityLoc)
 
-        df, qty = itemStep(activityLoc)
+        print(f'Item: {item}, Qty: {qty}')
 
         report['WISE Qty'][index] = qty
 

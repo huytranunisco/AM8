@@ -173,12 +173,12 @@ try:
     userPath ='retan'
     billingPeriod = billPeriodMenu()
 
-    directory = f'{accName}-{accFacility}'
-    parentDir = "C:\\Users\\" + userPath + "\\OneDrive - unisco.com\\Desktop\\"
-    path = os.path.join(parentDir, directory)
+    path = f'{accName}-{accFacility}'
+    #parentDir = "C:\\Users\\" + userPath + "\\OneDrive - unisco.com\\Desktop\\"
+    #path = os.path.join(parentDir, directory)
     try:
         os.mkdir(path)
-        print(f'Directory "{directory}" created')
+        print(f'Directory "{path}" created')
     except (FileExistsError):
         print('Folder already exists. Moving on...')
 

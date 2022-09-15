@@ -9,7 +9,7 @@ def cancelledOrder(arPath):
     df = read_excel(io=arPath, sheet_name='Order & Receipt')
     df = df[df['Shipment'].isin(['OUTBOUND'])]
     df = df[df['STATUS'].isin(['CANCELLED'])]
-    count = df['STATUS'].count()
+    count = df['STATUS'].count() - 1
 
     return df, count
 
@@ -69,7 +69,7 @@ def handlingOrderProcessingRG(arPath):
     df = read_excel(io=arPath, sheet_name='Order & Receipt')
     df = df[df['STATUS'].isin(['SHIPPED'])]
     df = df[df['TYPE'].isin(['Regular Order'])]
-    count = df['TYPE'].count()
+    count = df['TYPE'].count() - 1
 
     return df, count
 
@@ -97,7 +97,7 @@ def rushOrder(arPath):
     df = read_excel(io=arPath, sheet_name='Order & Receipt')
     df = df[df['Shipment'].isin(['OUTBOUND'])]
     df = df[df['IS RUSH'].isin(['Y'])]
-    count = df['IS RUSH'].count()
+    count = df['IS RUSH'].count() - 1
 
     return df, count
 
