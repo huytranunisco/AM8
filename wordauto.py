@@ -13,6 +13,7 @@ from PIL import Image
 import os
 import time
 from report_automate.BNPauto import facilityMatcher
+from sys import exit
 
 def billPeriodMenu():
     menu = 'Billing Period for Handling:\n1. Bimonthly\n2. Weekly\n3. Daily\n'
@@ -167,18 +168,19 @@ def imageCrop(path):
     image_three.save(path + '\\image3.png')
 
 try:
-    accName = input('Enter Name of Customer (No commas): ')
-    accFacility = input('Enter Facility of Customer: ')
-    billerName = input("Enter Biller's Name for Customer: ")
-    userPath ='retan'
+    accName = input('Enter exact customer name from BNP: ')
+    accLabel = input('Enter customer name for report name: ')
+    accFacility = input('Enter facility of customer: ')
+    billerName = input("Enter biller's name for customer: ")
+    userPath = input('Enter Path User: ')
     billingPeriod = billPeriodMenu()
 
-    path = f'{accName}-{accFacility}'
+    path = f'{accLabel} {accFacility}'
     #parentDir = "C:\\Users\\" + userPath + "\\OneDrive - unisco.com\\Desktop\\"
     #path = os.path.join(parentDir, directory)
     try:
         os.mkdir(path)
-        print(f'Directory "{path}" created')
+        print(f'Folder for "{path}" created')
     except (FileExistsError):
         print('Folder already exists. Moving on...')
 
@@ -186,13 +188,13 @@ try:
     imageCrop(path)
 
     tempFac = accFacility.replace(" ", "")
-    tempAcc = accName.replace(" ", "")
+    tempAcc = accLabel.replace(" ", "")
 
-    oldText = {"One" : f'{accName} ({accFacility}) SOP', "Biller Name" : billerName, "billingPeriodH" : billingPeriod, "Two" : f'{accName} ({accFacility})',
+    oldText = {"One" : f'{accLabel} ({accFacility}) SOP', "Biller Name" : billerName, "billingPeriodH" : billingPeriod, "Two" : f'{accLabel} ({accFacility})',
             "Three" : f'{tempAcc}-{tempFac}-{billingPeriod.capitalize()}', "accName" : accName, "billingfac" : accFacility, "billingperiodh" : billingPeriod}
     oldTextList = oldText.keys()
 
-    document = Document("C:\\Users\\retan\\OneDrive - unisco.com\\Desktop\\SOP pre Doc\\SOP Template.docx")
+    document = Document("SOP Template.docx")
 
     for index, paragraph in enumerate(document.paragraphs):
         if index == 39:
