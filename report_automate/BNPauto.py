@@ -38,6 +38,9 @@ def exportHandle(acc, fac, start, end, userPath):
     pwbnp = '#rpa#1234'
 
     #Getting BNP
+    #chromeOptions = webdriver.ChromeOptions()
+    #prefs = {'download.default_directory' : path}
+    #chromeOptions.add_experimental_option('prefs', prefs)
     driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()))
     action = ActionChains(driver)
     driver.get("http://bnp.unisco.com/")
