@@ -1,6 +1,5 @@
 import time
 from pandas import read_excel
-from pandas import ExcelWriter
 import BNPauto
 
 '''
@@ -34,22 +33,27 @@ try:
     itemStepsList = ['Put int the function Names']
 
     report = read_excel(reportLoc)
-    billingitems = report['Description'].tolist()
-    for count, name in enumerate(billingitems):
-        billingitems[count] = name.lower()
+    description = report['Description'].tolist()
+    itemName = report['ItemName'].tolist()
+    itemList = []
 
-    writer = ExcelWriter('itemsReport.xlsx', engine='openpyxl')
+    for count, name in enumerate(description):
+        tempList = [itemName[count], name]
+        itemList.append(tempList)
 
-    for index, item in enumerate(billingitems):
+    for index, item in enumerate(itemList):
         
         try:
-            itemStep = itemStepsList[billingItemDict[item]]
+            itemStep = itemStepsList[billingItemDict[item[0]]]
         except (KeyError):
-            continue
+            try:
+                itemStep = itemStepsList[billingItemDict[item[1]]]
+            except (KeyError):
+                continue
 
-        print(f'Item: {item}')
+        qty = itemStep(activityLoc)
 
-        df, qty = itemStep(activityLoc)
+        print(f'Item: {item}, Qty: {qty}')
 
         report['WISE Qty'][index] = qty
 

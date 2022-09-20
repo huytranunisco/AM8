@@ -4,20 +4,6 @@ from pandas import ExcelWriter
 import BNPauto
 from sys import exit
 
-def facilityMenu():
-    print("Choose a facility.")
-    print("1. Houston\n2. Innovation\n3. Seabrook")
-    inputNum = input()
-    while inputNum != '1' or inputNum != '2' or inputNum != '3':
-        inputNum = input("Please select a number in the range (1-3). ")
-    
-    if inputNum == '1':
-        return 'Houston'
-    elif inputNum == '2':
-        return 'Innovation'
-    elif inputNum == '3':
-        return 'Seabrook'
-
 '''
 ---- Billing Items ----
 '''
@@ -80,11 +66,9 @@ try:
 
     reportLoc = BNPauto.invoiceToReport(user, accName, facility, billCycle, invoicePath)
 
-    billingItemDict = {tuple(['UFUFHDOF007OFT001RT001', 'HANDLING OFFLOAD per Pallet, OffloadType,Palletized;ReceiptType,RG; BillingGrade:SOLAR PANEL,']) : 0,
-                       tuple(['UFUFSTIS007PS000','STORAGE INCOME INITIAL STORAGE per Pallet, PalletSize,none; BillingGrade:SOLAR PANEL,AIR BAG,']) : 1,
-                       tuple(['INITIAL STORAGE', 'STORAGE INCOME INITIAL STORAGE per Pallet, PalletSize,none; BillingGrade:SOLAR PANEL,SOLAR PANEL,']) : 1,
-                       tuple(['UFUFHDLD020', 'OUTBOUND HANDLING: LABOR FEE (7 BAGS/LOAD) ']) : 2, tuple(['UFUFHDDT006', 'MANUAL ORDER ENTRY']) : 3,
-                       tuple(['UFUFHDOP006OT002', 'HANDLING ORDER PROCESSING per Order, OrderType,RG;']) : 4}
+    billingItemDict = {'UFUFHDOF007OFT001RT001' : 0, 'UFUFSTIS007PS000' : 1,
+                       'STORAGE INCOME INITIAL STORAGE per Pallet, PalletSize,none; BillingGrade:SOLAR PANEL,SOLAR PANEL,' : 1,
+                       'UFUFHDLD020' : 2, 'UFUFHDDT006' : 3, 'UFUFHDOP006OT002' : 4}
     itemStepsList = [handlingOffloadperPallet, incomeInitialStorage, outboundHandling, manualEntryCharge, handlingOrderProcessingRG]
 
     report = read_excel(reportLoc)
@@ -96,12 +80,14 @@ try:
         itemList.append(tempList)
 
     for index, item in enumerate(itemList):
-        item = tuple(item)
 
         try:
-            itemStep = itemStepsList[billingItemDict[item]]
+            itemStep = itemStepsList[billingItemDict[item[0]]]
         except (KeyError):
-            continue
+            try:
+                itemStep = itemStepsList[billingItemDict[item[1]]]
+            except (KeyError):
+                continue
 
         qty = itemStep(activityLoc)
 

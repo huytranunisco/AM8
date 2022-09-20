@@ -3,26 +3,12 @@ from pandas import read_excel
 from pandas import ExcelWriter
 import BNPauto
 
-def facilityMenu():
-    print("Choose a facility.")
-    print("1. Houston\n2. Innovation\n3. Seabrook")
-    inputNum = input()
-    while inputNum != '1' or inputNum != '2' or inputNum != '3':
-        inputNum = input("Please select a number in the range (1-3). ")
-    
-    if inputNum == '1':
-        return 'Houston'
-    elif inputNum == '2':
-        return 'Innovation'
-    elif inputNum == '3':
-        return 'Seabrook'
-
 '''
 ---- Billing Items ----
 '''
 def orderProcessing(arPath):
     df = read_excel(io=arPath, sheet_name='Order & Receipt')
-    df = df[df['Type'].isin(['OUTBOUND'])]
+    df = df[df['Shipment'].isin(['OUTBOUND'])]
     count = df['Shipment'].count() - 1
     return count
 
@@ -43,7 +29,16 @@ def orderEntryCharge(arPath):
     df = df[df['Shipment'].isin(['OUTBOUND'])]
     df = df[df['SOURCE'].isin(['MANUAL'])]
     count = df['Shipment'].count() - 1
+    return count
 
+def minimumHandlingChargeperContainer(arPath):
+    df = read_excel(io=arPath, sheet_name='Order & Receipt')
+    df = df[df['Shipment'].isin(['INBOUND'])]
+    palletqty = df['PALLET QTY'].tolist()
+    count = 0
+    for qty in palletqty:
+        if qty <= 21:
+            count += 1
     return count
 
 try:
@@ -68,10 +63,9 @@ try:
 
     reportLoc = BNPauto.invoiceToReport(user, accName, facility, billCycle, invoicePath)
 
-    billingItemDict = {['UFUFHDDT006', 'ORDER ENTRY CHARGE'] : 0, ['UFUFHDOP006', 'ORDER PROCESSING'] : 1,
-                       ['ACCESSORIAL CHARGE', 'MISSED APPOINTMENT FEE'] : 2, ['UFUFHDOF007OFT001CB007CS000', 'MINIMUM HANDLING CHARGE PER CONTAINER'] : 4,
-                       ['UFUFHDOF007OFT001', 'PALLET HANDLING IN AND OUT'] : 5, ['PHOTO COPIES (BLACK & WHITE)', 'Photo Copies (black&white) $ / Document']: 3}
-    itemStepsList = [orderEntryCharge, orderProcessing, missedAppointment, photoCopies]
+    billingItemDict = {'UFUFHDDT006' : 0, 'UFUFHDOP006' : 1, 'MISSED APPOINTMENT FEE' : 2,
+                       'UFUFHDOF007OFT001CB007CS000' : 4, 'UFUFHDOF007OFT001' : 5, 'PHOTO COPIES (BLACK & WHITE)' : 3}
+    itemStepsList = [orderEntryCharge, orderProcessing, missedAppointment, photoCopies, minimumHandlingChargeperContainer]
 
     report = read_excel(reportLoc)
     description = report['Description'].tolist()
@@ -81,14 +75,15 @@ try:
         tempList = [itemName[count], name]
         itemList.append(tempList)
 
-    writer = ExcelWriter('itemsReport.xlsx', engine='openpyxl')
-
     for index, item in enumerate(itemList):
         
         try:
-            itemStep = itemStepsList[billingItemDict[item]]
+            itemStep = itemStepsList[billingItemDict[item[0]]]
         except (KeyError):
-            continue
+            try:
+                itemStep = itemStepsList[billingItemDict[item[1]]]
+            except (KeyError):
+                continue
 
         qty = itemStep(activityLoc)
 
