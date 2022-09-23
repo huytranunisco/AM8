@@ -5,7 +5,7 @@ block_cipher = None
 
 
 a = Analysis(
-    ['C:\\Users\\kenguyen\\Documents\\GitHub\\AM8\\report_automate\\hihlogisticsseabrook.py'],
+    ['report_automate\\hihlogisticsseabrook.py'],
     pathex=[],
     binaries=[],
     datas=[],
