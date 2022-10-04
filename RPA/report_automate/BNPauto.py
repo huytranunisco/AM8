@@ -17,8 +17,9 @@ import os.path
 def facilityMatcher(givenF):
     highestratio = 0
     facName = ''
+    facs = facilities.facilityList
     while (True):
-        for f in facilities.facilityList:
+        for f in facs:
             ratio = SequenceMatcher(None, f, givenF).ratio()
             if ratio > highestratio:
                 highestratio = ratio
@@ -102,25 +103,35 @@ def exportHandle(acc, fac, start, end, userPath):
     interactor.click()
     time.sleep(2)
 
-    #Checking first invoice
-    try:
-        interactor = driver.find_element(By.XPATH, '//*[@id=\"invoicegrid\"]/div[3]/table/tbody/tr[1]/td[1]/label')
-        action.move_to_element(interactor).perform()
-        interactor.click()
-    except:
-        print('No invoice found!')
-        return False, False
-    
+    table = driver.find_element(By.XPATH, '//*[@id="invoicegrid"]/div[3]/table')
+    rows = table.find_elements(By.TAG_NAME, 'tr')
+    if len(rows) > 1:
+        for index in range(len(rows)):
+            xpath = '//*[@id=\"invoicegrid\"]/div[3]/table/tbody/tr[' + str(index + 1) + ']/td[1]/label'
+            interactor = driver.find_element(By.XPATH, xpath)
+            action.move_to_element(interactor).perform()
+            interactor.click()
+        
+        invoiceNum = 'Multi'
+    else:
+        row = rows[0]
+        col = row.find_elements(By.TAG_NAME, 'td')[3]
+        invoiceNum = col.text
 
+        #Checking first invoice
+        try:
+            interactor = driver.find_element(By.XPATH, '//*[@id=\"invoicegrid\"]/div[3]/table/tbody/tr[1]/td[1]/label')
+            action.move_to_element(interactor).perform()
+            interactor.click()
+        except:
+            print('No invoice found!')
+            return False, False
+    
     #Exporting Handling Invoice
     time.sleep(2)
     interactor = driver.find_element(By.ID, 'btnExportInvoiceDetail')
+    action.move_to_element(interactor).perform()
     interactor.click()
-
-    table = driver.find_element(By.XPATH, '//*[@id="invoicegrid"]/div[3]/table')
-    row = table.find_elements(By.TAG_NAME, 'tr')[0]
-    col = row.find_elements(By.TAG_NAME, 'td')[3]
-    invoiceNum = col.text
 
     path = 'C:\\Users\\' + userPath + '\\Downloads\\Invoice[' + invoiceNum + '].xlsx'
     while not os.path.exists(path):
@@ -153,3 +164,5 @@ def invoiceToReport(userPath, acc, fac, billingPeriod, invoiceNum):
     print("Discrepancy Report has been made!")
 
     return reportName
+
+exportHandle('PEPSICO(PEPSICO)', 'TACOMA', '09/16/2022', '09/30/2022', 'kenguyen')
