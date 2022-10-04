@@ -1,5 +1,6 @@
 import time
 from selenium import webdriver
+import selenium
 from selenium.webdriver.chrome.service import Service
 from webdriver_manager.chrome import ChromeDriverManager
 from selenium.webdriver.common.keys import Keys
@@ -10,15 +11,14 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver import ActionChains
 from difflib import SequenceMatcher
 from pandas import read_excel
+import facilities
 import os.path
-
-facilityList = ['804- GARDEN CITY', '825-NORTHAMPTON','Alessandro','BolingBrook','Charleston','COPPELL','COR1','Fontana','FOREST','GARDENA','GOODYEAR','GOURGAR','Grand Prairie','GREENWOOD','Hayward','Hazelton','Houston','Indiana','Innovation','Joliet','Kansas','KENT','Lakewood','Marlay','Morgan Lakes','Murphy','NAVIGATION','New Jersey','Ontario','QUA','Quality-4400','Red Bluff','Reverse Service','Reyes','ROANOKE','Sacramento','Savannah','Seabrook','TACOMA','TOLLESON','Tucker','Turnbull','Valley','Valley View','Valley View B','Valley View C','Via Baron','WALB','Walnut','Willow']
 
 def facilityMatcher(givenF):
     highestratio = 0
     facName = ''
     while (True):
-        for f in facilityList:
+        for f in facilities.facilityList:
             ratio = SequenceMatcher(None, f, givenF).ratio()
             if ratio > highestratio:
                 highestratio = ratio
@@ -103,9 +103,14 @@ def exportHandle(acc, fac, start, end, userPath):
     time.sleep(2)
 
     #Checking first invoice
-    interactor = driver.find_element(By.XPATH, '//*[@id=\"invoicegrid\"]/div[3]/table/tbody/tr[1]/td[1]/label')
-    action.move_to_element(interactor).perform()
-    interactor.click()
+    try:
+        interactor = driver.find_element(By.XPATH, '//*[@id=\"invoicegrid\"]/div[3]/table/tbody/tr[1]/td[1]/label')
+        action.move_to_element(interactor).perform()
+        interactor.click()
+    except:
+        print('No invoice found!')
+        return False, False
+    
 
     #Exporting Handling Invoice
     time.sleep(2)
