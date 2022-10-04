@@ -28,10 +28,14 @@ accountdict = {'Jetson': ['Valley View', 'JETSON(JETSON)'],
                'Turtle Beach': ['Joliet', 'TURTLE BEACH(TURTLE BEACH)'],
                'THE FIFTY/FIFTY GROUP': ['Valley View', 'THE FIFTY/FIFTY GROUP, INC DBA LOLA PRODUCTS(THE FIFTY/FIFTY GROUP, INC DBA LOLA PRODUCTS)'],
                'Deer Stags': ['KENT', 'DEER STAGS(DEER STAGS)'],
-               'Safe Catch':'KENT','Safe Catch':'Baron', 'Uline':'Lakewood', 'Delta Electronics': 'Murphy','Radio Flyer':'Kent',
-               'SG company':'Valley View', 'Circuit City Corporation':'Kent','ToughBuilt':'Morgan Lakes','Jsonic':'Redbluff',
-               'Tytus Grill':'Morgan Lakes', 'CoolerMaster':'Valley View','SCHC wilson art':'New Jersey',
-               'TCU Trading':'Greenwood', 'Tytus Grill':'Valley View'}
+               'Safe Catch': ['KENT', 'SAFE CATCH, INC.(SAFE CATCH, INC.)'] , 'Safe Catch': ['Via Baron', 'SAFE CATCH, INC.(SAFE CATCH, INC.)'],
+               'Uline': ['Lakewood', 'ULINE, INC.(ULINE)'], 'Delta Electronics': ['Murphy', 'DELTA ELECTRONICS (AMERICAS) LTD - NEW(DELTA ELECTRONICS (AMERICAS) LTD - NEW)'],
+               'Radio Flyer': ['KENT', 'RADIO FLYER(RADIO FLYER)'], 'SG Companies': ['Valley View', 'THE SG COMPANIES(THE SG COMPANIES)'],
+               'Circuit City Corporation': ['KENT', 'CIRCUIT CITY CORPORATION INC(CIRCUIT CITY CORPORATION INC)'],
+               'ToughBuilt': ['Morgan Lakes', 'TOUGHBUILT INDUSTRIES, INC.(TOUGHBUILT INDUSTRIES, INC.)'], 'Jsonic': ['Redbluff', 'JSONIC SERVICES INC(JSONIC SERVICES INC)'],
+               'Tytus Grill': ['Morgan Lakes', 'TYTUS GRILLS, LLC(TYTUS GRILLS, LLC)'], 'CoolerMaster': ['Valley View', 'COOLER MASTER(COOLER MASTER)'],
+               'SCHC Wilson Art': ['New Jersey', 'SCHC - Wilsonart(SCHC - Wilsonart)'],
+               'TCU Trading': ['GREENWOOD', 'TCU TRADING LTD(TCU TRADING LTD)'], 'Tytus Grill': ['Valley View', 'TYTUS GRILLS, LLC(TYTUS GRILLS, LLC)']}
 
 user = input('Input Username for Computer: ')
 
@@ -50,7 +54,6 @@ for key in accountdict:
         facility, invoicePath = BNPauto.exportHandle(billingAcc, facility, startPeriod, endPeriod, user)
 
         if facility == False or invoicePath == False: 
-            print(f'{accName} has no invoice for {startPeriod} - {endPeriod}')
             continue
 
         facility = facility.lower()
