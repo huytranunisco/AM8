@@ -1,11 +1,13 @@
 import json
 
-with open('RPGGame\test.json', 'r', encoding='utf-8') as file:
-    data = json.loads(file.read())
+path = 'gameconfigs.json'
+
+with open(path, 'r') as f:
+    data = json.loads(f.read())
 
 print(data)
-width = data['width']
-print(width)
+boss = data['boss']
+print(boss)
 
 class bigBoss():
     pass
