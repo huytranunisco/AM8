@@ -1,19 +1,26 @@
+import json
+
 class bossMan():
-    magicHP = 100
-    bluntHP = 100
-    piercingHP = 100
+    pass
+
+path = 'RPGGame\gameconfigs.json'
+
+with open(path, 'r') as f:
+    data = json.loads(f.read())
+
+bossStats = data['boss']
+
+bmhp = bossStats['boss_magic_hp']
+bphp = bossStats['boss_piercing_hp']
+bbhp = bossStats['boss_blunt_hp']
 
 def bossTotalHP():
-    bossTotalHP = magicHP + bluntHP + piercingHP
+    bossTotalHP = bmhp + bbhp + bphp
     return bossTotalHP
 
 def bossHPCheck():
-    return print('Boss HP: \n', 'Magic: ', magicHP, '\n', 'Blunt: ', bluntHP, '\n', 'Piercing: ', piercingHP)
+    return print('Boss HP: \n-----------------\n', 'Magic: ', bmhp, '\n', 'Blunt: ', bbhp, '\n', 'Piercing: ', bphp, '\n-----------------')
 
-def bossAttack():
-    if bossTotalHP() > 0:
-        soldierHours -= 1
-    return bossMan
 
 
 

@@ -1,9 +1,19 @@
 import json
+import bossMan
+import soldierMan
 
-path = 'RPGGame\gameconfigs.json'
+boss = bossMan
+sold = soldierMan
 
-with open(path, 'r') as f:
-    data = json.loads(f.read())
+def main():
 
-bossStats = data['boss']
-print(bossStats)
+
+    boss.bossHPCheck() 
+    print('Total HP: ', boss.bossTotalHP())
+
+    soldierMan.getSoldierCount()
+    soldierMan.getSoldierHours()
+    soldierMan.getAllSoldierWeapons()
+
+
+main()
