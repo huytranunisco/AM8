@@ -2,25 +2,23 @@ class Soldier:
     sTypes = ['Pierce', 'Magic', 'Blunt']
     count = 0
 
-    def __init__(self, turn, dmgMod, type, hasWep = False) -> None:
-        self.turnCount = turn
+    def __init__(self, attackCount, dmgMod, type, soldierCost, weaponDmg, weaponCost) -> None:
+        self.atkCount = attackCount
         self.dmgMod = dmgMod
+        self.cost = soldierCost
 
         while type not in self.sTypes:
             print("Not a valid type.")
             type = input('Set type (Pierce, Magic, Blunt): ')
 
         self.type = type
-
-        if hasWep:
-            self.weapon = Weapon(type, 5, 16)
-        else: None
+        self.weapon = Weapon(type, weaponDmg, weaponCost)
         
         Soldier.count += 1
     
     def __str__(self) -> str:
         soldierString = f"Soldier #{self.count}"
-        attributeString = "\nType: " + self.type + "\nAmount of Turns: " + str(self.turnCount) + "\nDamage Modifier: x" + str(self.dmgMod)
+        attributeString = "\nType: " + self.type + "\nSoldier Cost: " + str(self.cost) + "\nAmount of Turns: " + str(self.atkCount) + "\nDamage Modifier: x" + str(self.dmgMod)
         if self.weapon == None:
             weaponString = "\nNo Weapon"
         else:
@@ -28,7 +26,8 @@ class Soldier:
         
         return soldierString + attributeString + weaponString
     
-
+    def attack(self):
+        return self.weapon.dmg * self.dmgMod * self.atkCount
 
 class Weapon(object):
 
@@ -38,10 +37,4 @@ class Weapon(object):
         self.cost = wCost
 
     def __str__(self) -> str:
-        return "\nDamage: " + str(self.dmg) + "\nCost: " + str(self.cost) + "\n"
-
-s = Soldier(2, 1, 'Pierce', True)
-print(s)
-
-d = Soldier(2, 1, 'Pierce', True)
-print(d)
+        return "\nWeapon Damage: " + str(self.dmg) + "\nWeapon Cost: " + str(self.cost) + "\n"

@@ -1,16 +1,16 @@
 {
     "boss" : {
-        "boss_p_hp" : 1000, 
-        "boss_m_hp" : 1000,
-        "boss_b_hp" : 1000
+        "boss_p_hp" : 5000, 
+        "boss_m_hp" : 10000,
+        "boss_b_hp" : 7500
     },
  
     "weapon" : {
-        "p_dmg" : 100,
+        "p_dmg" : 50,
         "p_cost" : 1,
-        "m_dmg" : 100,
+        "m_dmg" : 30,
         "m_cost" : 3,
-        "b_dmg" : 100,
+        "b_dmg" : 40,
         "b_cost" : 12
     },
 
