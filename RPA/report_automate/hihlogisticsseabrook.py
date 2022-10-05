@@ -1,6 +1,5 @@
 import time
 from pandas import read_excel
-from pandas import ExcelWriter
 import BNPauto
 from sys import exit
 

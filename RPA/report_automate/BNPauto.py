@@ -105,7 +105,10 @@ def exportHandle(acc, fac, start, end, userPath):
 
     table = driver.find_element(By.XPATH, '//*[@id="invoicegrid"]/div[3]/table')
     rows = table.find_elements(By.TAG_NAME, 'tr')
-    if len(rows) > 1:
+    if len(rows) == 0:
+        print('No invoice found!')
+        return False, False
+    elif len(rows) > 1:
         for index in range(len(rows)):
             xpath = '//*[@id=\"invoicegrid\"]/div[3]/table/tbody/tr[' + str(index + 1) + ']/td[1]/label'
             interactor = driver.find_element(By.XPATH, xpath)
@@ -119,14 +122,10 @@ def exportHandle(acc, fac, start, end, userPath):
         invoiceNum = col.text
 
         #Checking first invoice
-        try:
-            interactor = driver.find_element(By.XPATH, '//*[@id=\"invoicegrid\"]/div[3]/table/tbody/tr[1]/td[1]/label')
-            action.move_to_element(interactor).perform()
-            interactor.click()
-        except:
-            print('No invoice found!')
-            return False, False
-    
+        interactor = driver.find_element(By.XPATH, '//*[@id=\"invoicegrid\"]/div[3]/table/tbody/tr[1]/td[1]/label')
+        action.move_to_element(interactor).perform()
+        interactor.click()
+
     #Exporting Handling Invoice
     time.sleep(2)
     interactor = driver.find_element(By.ID, 'btnExportInvoiceDetail')
