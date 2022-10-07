@@ -5,7 +5,7 @@ import soldierMan
 boss = bossMan
 sold = soldierMan
 
-def main():
+if __name__ == '__main__':
 
 
     boss.bossHPCheck() 
@@ -13,7 +13,9 @@ def main():
 
     soldierMan.getSoldierCount()
     soldierMan.getSoldierHours()
+    soldierMan.getWeaponDamage()
     soldierMan.getAllSoldierWeapons()
+    soldierMan.soldierAttack()
 
-
-main()
+    boss.bossHPCheck() 
+    print('Total HP: ', boss.bossTotalHP())

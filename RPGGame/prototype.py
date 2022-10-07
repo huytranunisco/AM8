@@ -95,5 +95,5 @@ def main():
     soldierAttack()
 
     bossHPCheck()
-
+    
 main()

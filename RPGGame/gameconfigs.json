@@ -7,12 +7,14 @@
 
     "weapons": {
         "piercing_dmg": 100,
-        "piercing_cost": 10,
         "magic_dmg": 100,
-        "magic_cost": 10,
-        "blunt_dmg": 100,
-        "blunt_cost": 10
+        "blunt_dmg": 100
+    },
 
+    "cost": {
+        "piercing_cost": 10,
+        "magic_cost": 10,
+        "blunt_cost": 10
     },
 
     "soldiers": {
