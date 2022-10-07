@@ -12,10 +12,18 @@ class BigBoss:
     def takeDamage(self, type, dmg):
         if type == 'Pierce':
             self.pHp -= dmg
+            if self.pHp < 0:
+                self.pHp = 0
+
         if (type == 'Magic' or type == 'Blunt') and self.mHp > 0:
             self.mHp -= dmg
+            if self.mHp < 0:
+                self.mHp = 0
+
         if type == 'Blunt':
             self.bHp -= dmg
+            if self.bHp < 0:
+                self.bHp = 0
         
         self.setTotalHp()
     

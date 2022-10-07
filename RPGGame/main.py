@@ -73,18 +73,27 @@ if __name__ == '__main__':
         print(f'Pierce HP: {bossMan.pHp}')
         print(f'Magic HP: {bossMan.mHp}')
         print(f'Blunt HP: {bossMan.bHp}')
+        print()
 
     totalSoldierCost = len(soldiersList[0]) + len(soldiersList[1]) + len(soldiersList[2])
     totalWeaponCost = (len(soldiersList[0]) * pCost) + (len(soldiersList[1]) * mCost) + (len(soldiersList[2]) * bCost)
 
-    menuInput = 1
+    menuInput = -1
     while menuInput != 0:
         menu()
-        menuInput = input("Enter an option (1-6): ")
+        try:
+            menuInput = int(input("Enter an option (1-6): "))
+        except:
+            print("Not a valid option.")
+            menuInput = input("Enter an option (1-6): ")
+
         while menuInput < 0 or menuInput > 6:
             print("Not a valid option.")
             menuInput = input("Enter an option (1-6): ")
         
-        if menuInput == '1':
-            sArray = np.array(soldiersList).T
-            print(sArray)
+        if menuInput == 1:
+            sArray = np.array(soldiersList)
+            df = pd.DataFrame(sArray).T
+            df.columns = ['Pierce', 'Magic', 'Blunt']
+            df.explode('Pierce')
+            print(df.head(10))
