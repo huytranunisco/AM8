@@ -89,7 +89,7 @@ if __name__ == '__main__':
 
         while menuInput < 0 or menuInput > 6:
             print("Not a valid option.")
-            menuInput = input("Enter an option (1-6): ")
+            menuInput = int(input("Enter an option (1-6): "))
         
         if menuInput == 1:
             sArray = np.array(soldiersList)
@@ -97,3 +97,70 @@ if __name__ == '__main__':
             df.columns = ['Pierce', 'Magic', 'Blunt']
             df.explode('Pierce')
             print(df.head(10))
+
+        elif menuInput == 2:
+            typeMenu()
+            submenuInput = int(input("Enter an option (1-3): "))
+            while submenuInput < 0 or submenuInput > 3:
+                print("Not a valid option.")
+                submenuInput = int(input("Enter an option (1-3): "))
+            if submenuInput == 1:
+                for x in soldiersList[0]:
+                    print(x)
+
+            elif submenuInput == 2:
+                for y in soldiersList[1]:
+                    print(y)
+            
+            elif submenuInput == 3:
+                for z in soldiersList[2]:
+                    print(z)
+            
+            elif submenuInput == 0:
+                menuInput = 1
+
+        elif menuInput == 3:
+            print("\nTotal cost for all soldiers: ", totalSoldierCost , "\n")
+
+        elif menuInput == 4:
+            typeMenu()
+            submenu2Input = int(input("Enter an option (1-3): "))
+            while submenu2Input < 0 or submenu2Input > 3:
+                print("Not a valid option.")
+                submenu2Input = input("Enter an option (1-3): ")
+            if submenu2Input == 1:
+                for x in soldiersList[0]:
+                    print("Pierce soldier", soldier.Soldier.count, "cost:", soldierCost)
+
+            elif submenu2Input == 2:
+                for x in soldiersList[1]:
+                    print("Magic soldier", soldier.Soldier.count, "cost:", soldierCost)
+            
+            elif submenu2Input == 3:
+                for x in soldiersList[1]:
+                    print("Blunt soldier", soldier.Soldier.count, "cost:", soldierCost)
+
+            elif submenu2Input == 4:
+                menuInput = 1
+
+        elif menuInput == 5:
+            print("\n Total weapon cost for all soldiers: ", totalWeaponCost, "\n")
+
+        elif menuInput == 6:
+            typeMenu()
+            submenu3Input = int(input("Enter an option (1-3): "))
+            while submenu3Input < 0 or submenu3Input > 3:
+                print("Not a valid option.")
+                submenu3Input = input("Enter an option (1-3): ")
+            if submenu3Input == 1:
+                for x in soldiersList[0]:
+                    print("Pierce soldier", soldier.Soldier.count, "weapon cost:", 'placeholder')
+
+            elif submenu3Input == 2:
+                pass
+            
+            elif submenu3Input == 3:
+                pass
+
+            elif submenu3Input == 4:
+                menuInput = 1
