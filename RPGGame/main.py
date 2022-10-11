@@ -82,6 +82,8 @@ if __name__ == '__main__':
     totalSoldierCost = len(soldiersList[0]) + len(soldiersList[1]) + len(soldiersList[2])
     totalWeaponCost = (len(soldiersList[0]) * pCost) + (len(soldiersList[1]) * mCost) + (len(soldiersList[2]) * bCost)
 
+    soldierdf = pd.DataFrame(soldiersList, columns=['ID', 'Attack Count', 'Damage Modifier', 'Type', 'Soldier Cost', 'Weapon Damage', 'Weapon Cost'])
+
     menuInput = -1
     while menuInput != 0:
         menu()
@@ -96,8 +98,7 @@ if __name__ == '__main__':
             menuInput = int(input("Enter an option (0-6): "))
         
         if menuInput == 1:
-            df = pd.DataFrame(soldiersList, columns=['ID', 'Attack Count', 'Damage Modifier', 'Type', 'Soldier Cost', 'Weapon Damage', 'Weapon Cost'])
-            print(df.head(10))
+            print(soldierdf)
 
         elif menuInput == 2:
             typeMenu()
