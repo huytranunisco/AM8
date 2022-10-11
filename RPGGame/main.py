@@ -26,7 +26,7 @@ def typeMenu():
 if __name__ == '__main__':
 
     #Opens the game's configs file where certain resources are changed.
-    with open('RPGGame2\gameconfigs.json', 'r') as f:
+    with open('RPGGame\gameconfigs.json', 'r') as f:
         data = json.loads(f.read())
 
     #Retrieves boss's data from the configs file.
