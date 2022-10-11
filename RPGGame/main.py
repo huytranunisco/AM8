@@ -83,6 +83,7 @@ if __name__ == '__main__':
     totalWeaponCost = (len(soldiersList[0]) * pCost) + (len(soldiersList[1]) * mCost) + (len(soldiersList[2]) * bCost)
 
     soldierdf = pd.DataFrame(soldiersList, columns=['ID', 'Attack Count', 'Damage Modifier', 'Type', 'Soldier Cost', 'Weapon Damage', 'Weapon Cost'])
+    soldierdf = soldierdf.sort_values(by=['Type'])
 
     menuInput = -1
     while menuInput != 0:
@@ -99,6 +100,15 @@ if __name__ == '__main__':
         
         if menuInput == 1:
             print(soldierdf)
+
+            print('\nExport dataframe to excel? (Y/N)')
+            userInput = input()
+            while userInput.lower() not in ['y', 'n']:
+                print("Not a valid option.")
+                userInput = input("Export dataframe to excel? (Y/N) ")
+            
+            if userInput.lower() == 'y':
+                soldierdf.to_excel('soldiers.xlsx', index=False)
 
         elif menuInput == 2:
             typeMenu()
