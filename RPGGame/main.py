@@ -112,13 +112,14 @@ if __name__ == '__main__':
 
         elif menuInput == 2:
             typeMenu()
-            submenuInput = int(input("Enter an option (1-3): "))
+            submenuInput = int(input("Enter an option (0-3): "))
             while submenuInput < 0 or submenuInput > 3:
                 print("Not a valid option.")
-                submenuInput = int(input("Enter an option (1-3): "))
+                submenuInput = int(input("Enter an option (0-3): "))
+
             if submenuInput == 1:
-                for x in soldiersList[0]:
-                    print(x)
+                piercedf = soldierdf[soldierdf['Type'] == 'Pierce']
+                print(piercedf)
 
             elif submenuInput == 2:
                 for y in soldiersList[1]:
@@ -162,8 +163,8 @@ if __name__ == '__main__':
                 print("Not a valid option.")
                 submenu3Input = input("Enter an option (1-3): ")
             if submenu3Input == 1:
-                for x in soldiersList[0]:
-                    print("Pierce soldier", soldier.Soldier.count, "weapon cost:", 'placeholder')
+                sum = soldierdf[soldierdf['Type'] == 'Pierce']['Weapon Cost'].sum()
+                print(sum)
 
             elif submenu3Input == 2:
                 pass
