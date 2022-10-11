@@ -1,3 +1,5 @@
+import random
+
 class Soldier:
     sTypes = ['Pierce', 'Magic', 'Blunt']
     count = 0
@@ -27,7 +29,7 @@ class Soldier:
         return soldierString + attributeString + weaponString
     
     def attack(self):
-        return self.weapon.dmg * self.dmgMod * self.atkCount
+        return self.weapon.dmg * (self.dmgMod + random.randint(-4, 4)) * self.atkCount
 
 class Weapon(object):
 

@@ -49,54 +49,56 @@ if __name__ == '__main__':
     bossMan = bigBoss.BigBoss(bossPHp, bossMHp, bossBHp)
 
     #Creates an empty 2D array for any created soldiers that will be categorized into types.
-    soldiersList = [[],[],[]]
+    soldiersList = []
 
     #Calculates how many soldiers are needed to take down each of the boss's health.
     #For each turn, a soldier is created to attack the boss.
     #If the boss's total health is depleted to 0 or less, the loop exits.
     print("Attacking boss with soldiers...")
+
+    #
+    soldierID = 0
+
     while bossMan.totalHp > 0:
         if bossMan.pHp > 0:
             s = soldier.Soldier(1, 1, 'Pierce', soldierCost, pDmg, pCost)
             bossMan.takeDamage(s.type, s.attack())
-            soldiersList[0].append(s)
+            sValues = [soldierID, s.atkCount, s.dmgMod, s.type, s.cost, s.weapon.dmg, s.weapon.cost]
+            soldiersList.append(sValues)
+            soldierID += 1
         if bossMan.mHp > 0:
             s = soldier.Soldier(1, 1, 'Magic', soldierCost, mDmg, mCost)
             bossMan.takeDamage(s.type, s.attack())
-            soldiersList[1].append(s)
+            sValues = [soldierID, s.atkCount, s.dmgMod, s.type, s.cost, s.weapon.dmg, s.weapon.cost]
+            soldiersList.append(sValues)
+            soldierID += 1
         if bossMan.bHp > 0:
             s = soldier.Soldier(1, 1, 'Blunt', soldierCost, bDmg, bCost)
             bossMan.takeDamage(s.type, s.attack())
-            soldiersList[2].append(s)
+            sValues = [soldierID, s.atkCount, s.dmgMod, s.type, s.cost, s.weapon.dmg, s.weapon.cost]
+            soldiersList.append(sValues)
+            soldierID += 1
         
-        print(f'Total HP: {bossMan.totalHp}')
-        print(f'Pierce HP: {bossMan.pHp}')
-        print(f'Magic HP: {bossMan.mHp}')
-        print(f'Blunt HP: {bossMan.bHp}')
-        print()
-
     totalSoldierCost = len(soldiersList[0]) + len(soldiersList[1]) + len(soldiersList[2])
     totalWeaponCost = (len(soldiersList[0]) * pCost) + (len(soldiersList[1]) * mCost) + (len(soldiersList[2]) * bCost)
+
+    soldierdf = pd.DataFrame(soldiersList, columns=['ID', 'Attack Count', 'Damage Modifier', 'Type', 'Soldier Cost', 'Weapon Damage', 'Weapon Cost'])
 
     menuInput = -1
     while menuInput != 0:
         menu()
         try:
-            menuInput = int(input("Enter an option (1-6): "))
+            menuInput = int(input("Enter an option (0-6): "))
         except:
             print("Not a valid option.")
-            menuInput = input("Enter an option (1-6): ")
+            menuInput = input("Enter an option (0-6): ")
 
         while menuInput < 0 or menuInput > 6:
             print("Not a valid option.")
-            menuInput = int(input("Enter an option (1-6): "))
+            menuInput = int(input("Enter an option (0-6): "))
         
         if menuInput == 1:
-            sArray = np.array(soldiersList)
-            df = pd.DataFrame(sArray).T
-            df.columns = ['Pierce', 'Magic', 'Blunt']
-            df.explode('Pierce')
-            print(df.head(10))
+            print(soldierdf)
 
         elif menuInput == 2:
             typeMenu()
@@ -115,9 +117,6 @@ if __name__ == '__main__':
             elif submenuInput == 3:
                 for z in soldiersList[2]:
                     print(z)
-            
-            elif submenuInput == 0:
-                menuInput = 1
 
         elif menuInput == 3:
             print("\nTotal cost for all soldiers: ", totalSoldierCost , "\n")
