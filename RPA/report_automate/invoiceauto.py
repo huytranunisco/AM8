@@ -1,6 +1,10 @@
 import BNPauto
+from datetime import date
+import os.path
+from os import mkdir
+from pandas import read_excel
 
-
+'''
 accountdict = {'Jetson': ['Valley View', 'JETSON(JETSON)'], 
                'International Textile & Apparel': ['Savannah', 'INTERNATIONAL TEXTILE & APPAREL, INC.(INTERNATIONAL TEXTILE & APPAREL)'], 
                'TPV': ['Valley View', 'TPV USA(TPV USA)'], 'EPI': ['Valley View', 'ENVISION PERIPHERALS INC.(EPI Non-Bonded)'],
@@ -36,31 +40,40 @@ accountdict = {'Jetson': ['Valley View', 'JETSON(JETSON)'],
                'Tytus Grill': ['Morgan Lakes', 'TYTUS GRILLS, LLC(TYTUS GRILLS, LLC)'], 'CoolerMaster': ['Valley View', 'COOLER MASTER(COOLER MASTER)'],
                'SCHC Wilson Art': ['New Jersey', 'SCHC - Wilsonart(SCHC - Wilsonart)'],
                'TCU Trading': ['GREENWOOD', 'TCU TRADING LTD(TCU TRADING LTD)'], 'Tytus Grill': ['Valley View', 'TYTUS GRILLS, LLC(TYTUS GRILLS, LLC)']}
+'''
 
-user = input('Input Username for Computer: ')
+today = date.today()
+dateFormat = today.strftime("%m-%d-%y")
+folderName = "Invoices " + dateFormat
+try:
+    mkdir(folderName)
+except (FileExistsError):
+    print('File already exists. Continuing...')
 
-for key in accountdict:
-    fac = accountdict[key][0]
-    bnpName = accountdict[key][1]
+invoiceAccs = read_excel('RPA\\report_automate\\BNP Excel Sheet.xlsx', sheet_name='Account_Fac_Freq')
+
+bimonthlyAccs = invoiceAccs[invoiceAccs['BillingFreq'] == 'Bimonthly']
+
+for index in bimonthlyAccs.index:
+    fac = bimonthlyAccs['Facility Name'][index]
+    bnpName = bimonthlyAccs['AccountName'][index]
 
     try:
         billingAcc = bnpName
-        accName = key
+        accName = bimonthlyAccs['AccountName'][index]
         facility = fac
         startPeriod = '09/16/22'
         endPeriod = '09/30/22'
         billCycle = 'Bimonthly'
 
-        facility, invoicePath = BNPauto.exportHandle(billingAcc, facility, startPeriod, endPeriod, user)
+        facility, invoiceName = BNPauto.exportHandle(billingAcc, facility, startPeriod, endPeriod, accName)
 
-        if facility == False or invoicePath == False: 
+        if facility == False or invoiceName == False: 
             continue
 
-        facility = facility.lower()
-        facility = facility.replace(' ', '')
-        facility = facility.capitalize()
-
-        reportLoc = BNPauto.invoiceToReport(user, accName, facility, billCycle, invoicePath)
+        oldPath = 'Invoice[' + invoiceName + '].xlsx'
+        newPath = folderName + '//' + invoiceName + '.xlsx'
+        os.rename(oldPath, newPath)
 
     except Exception as e:
         if hasattr(e, 'message'):

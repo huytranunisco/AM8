@@ -1,6 +1,5 @@
 import time
 from selenium import webdriver
-import selenium
 from selenium.webdriver.chrome.service import Service
 from webdriver_manager.chrome import ChromeDriverManager
 from selenium.webdriver.common.keys import Keys
@@ -29,7 +28,7 @@ def facilityMatcher(givenF):
         else:
             return facName
 
-def exportHandle(acc, fac, start, end, userPath):
+def exportHandle(acc, fac, start, end, accName):
     billTo = acc
     facility = fac
     facility = facilityMatcher(facility)
@@ -115,11 +114,11 @@ def exportHandle(acc, fac, start, end, userPath):
             action.move_to_element(interactor).perform()
             interactor.click()
         
-        invoiceNum = 'Multi'
+        invoiceName = 'Multi'
     else:
         row = rows[0]
         col = row.find_elements(By.TAG_NAME, 'td')[3]
-        invoiceNum = col.text
+        invoiceName = col.text
 
         #Checking first invoice
         interactor = driver.find_element(By.XPATH, '//*[@id=\"invoicegrid\"]/div[3]/table/tbody/tr[1]/td[1]/label')
@@ -132,18 +131,21 @@ def exportHandle(acc, fac, start, end, userPath):
     action.move_to_element(interactor).perform()
     interactor.click()
 
-    path = 'C:\\Users\\' + userPath + '\\Downloads\\Invoice[' + invoiceNum + '].xlsx'
+    path = 'Invoice[' + invoiceName + '].xlsx'
+
     while not os.path.exists(path):
         time.sleep(1)
         if os.path.isfile(path):
-            break
+            newName = accName + invoiceName
+            newPath = 'Invoice[' + newName + '].xlsx'
 
-    return facility, invoiceNum
+            os.rename(path, newPath)
+            return facility, newName
 
-def invoiceToReport(userPath, acc, fac, billingPeriod, invoiceNum):
+def invoiceToReport(acc, fac, billingPeriod, invoiceNum):
     reportName = acc + '-' + fac + '-' + billingPeriod + '.xlsx'
 
-    path = 'C:\\Users\\' + userPath + '\\Downloads\\Invoice[' + invoiceNum + '].xlsx'
+    path = 'Invoice[' + invoiceNum + '].xlsx'
     report = read_excel(path, sheet_name='Item Summary')
     
     new_cols = ['Category', 'InvoiceNumber', 'Header Billing Period Start', 'Header Billing Period End', 'ItemName', 'Description', 'UnitPrice', 'Qty']
@@ -163,5 +165,3 @@ def invoiceToReport(userPath, acc, fac, billingPeriod, invoiceNum):
     print("Discrepancy Report has been made!")
 
     return reportName
-
-exportHandle('PEPSICO(PEPSICO)', 'TACOMA', '09/16/2022', '09/30/2022', 'kenguyen')
