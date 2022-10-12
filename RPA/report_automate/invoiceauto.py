@@ -48,7 +48,7 @@ folderName = "Invoices " + dateFormat
 try:
     mkdir(folderName)
 except (FileExistsError):
-    print('File already exists. Continuing...')
+    print('Invoice folder already exists. Continuing...')
 
 invoiceAccs = read_excel('RPA\\report_automate\\BNP Excel Sheet.xlsx', sheet_name='Account_Fac_Freq')
 
@@ -72,7 +72,7 @@ for index in bimonthlyAccs.index:
             continue
 
         oldPath = 'Invoice[' + invoiceName + '].xlsx'
-        newPath = folderName + '//' + invoiceName + '.xlsx'
+        newPath = folderName + '//' + fac + '_' +invoiceName +'.xlsx'
         os.rename(oldPath, newPath)
 
     except Exception as e:
@@ -81,4 +81,3 @@ for index in bimonthlyAccs.index:
 
         else:
             print('An error occured at ', e.args, e.__doc__)
-            print('An error occured at ')

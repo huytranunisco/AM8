@@ -19,14 +19,13 @@ def facilityMatcher(givenF):
     facs = facilities.facilityList
     while (True):
         for f in facs:
-            ratio = SequenceMatcher(None, f, givenF).ratio()
+            ratio = SequenceMatcher(None, f.lower(), givenF.lower()).ratio()
             if ratio > highestratio:
                 highestratio = ratio
                 facName = f
-        if highestratio < 0.5:
-            givenF = input("Input new Facility name:")
-        else:
-            return facName
+            if ratio == 1:
+                return facName
+        return facName
 
 def exportHandle(acc, fac, start, end, accName):
     billTo = acc
@@ -105,7 +104,7 @@ def exportHandle(acc, fac, start, end, accName):
     table = driver.find_element(By.XPATH, '//*[@id="invoicegrid"]/div[3]/table')
     rows = table.find_elements(By.TAG_NAME, 'tr')
     if len(rows) == 0:
-        print('No invoice found!')
+        print(f'No invoice found for {accName}_{facility}!')
         return False, False
     elif len(rows) > 1:
         for index in range(len(rows)):
@@ -131,16 +130,21 @@ def exportHandle(acc, fac, start, end, accName):
     action.move_to_element(interactor).perform()
     interactor.click()
 
-    path = 'Invoice[' + invoiceName + '].xlsx'
+    user = os.getlogin()
+
+    path = 'C:\\Users\\' + user + '\\Downloads\\Invoice[' + invoiceName + '].xlsx'
 
     while not os.path.exists(path):
         time.sleep(1)
         if os.path.isfile(path):
-            newName = accName + invoiceName
-            newPath = 'Invoice[' + newName + '].xlsx'
+            break
+    
+    newName = accName + '_' + invoiceName
+    newPath = 'Invoice[' + newName + '].xlsx'
 
-            os.rename(path, newPath)
-            return facility, newName
+    os.rename(path, newPath)
+        
+    return facility, newName
 
 def invoiceToReport(acc, fac, billingPeriod, invoiceNum):
     reportName = acc + '-' + fac + '-' + billingPeriod + '.xlsx'

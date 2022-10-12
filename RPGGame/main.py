@@ -83,7 +83,13 @@ if __name__ == '__main__':
     totalWeaponCost = (len(soldiersList[0]) * pCost) + (len(soldiersList[1]) * mCost) + (len(soldiersList[2]) * bCost)
 
     soldierdf = pd.DataFrame(soldiersList, columns=['ID', 'Attack Count', 'Damage Modifier', 'Type', 'Soldier Cost', 'Weapon Damage', 'Weapon Cost'])
+    
+    newHeader = soldierdf.iloc[0]
+    soldierdf = soldierdf[1:]
+    soldierdf.columns = newHeader
+
     soldierdf = soldierdf.sort_values(by=['Type'])
+
 
     menuInput = -1
     while menuInput != 0:
