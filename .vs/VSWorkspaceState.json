@@ -3,8 +3,9 @@
     "",
     "\\RMA",
     "\\RPA",
-    "\\RPA\\report_automate"
+    "\\RPA\\report_automate",
+    "\\RPGGame"
   ],
-  "SelectedNode": "\\RMA\\returnly_auto.py",
+  "SelectedNode": "\\RPGGame\\main.py",
   "PreviewInSolutionExplorer": false
 }

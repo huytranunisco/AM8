@@ -126,27 +126,26 @@ if __name__ == '__main__':
         elif menuInput == 4:
             typeMenu()
             submenu2Input = int(input("Enter an option (1-3): "))
-            while submenu2Input < 0 or submenu2Input > 3:t
+            while submenu2Input < 0 or submenu2Input > 3:
                 print("Not a valid option.")
                 submenu2Input = int(input("Enter an option (1-3): "))
 
             if submenu2Input == 1:
                 sum = soldierdf[soldierdf['Type'] == 'Pierce']['Soldier Cost'].sum()
-                print(sum)
+                print('Total cost for pierce soldier: ', sum)
 
             elif submenu2Input == 2:
-                for x in soldiersList[1]:
-                    print("Magic soldier", soldier.Soldier.count, "cost:", soldierCost)
-            
+                sum = soldierdf[soldierdf['Type'] == 'Magic']['Soldier Cost'].sum()
+                print('Total cost for magic soldier: ', sum)            
             elif submenu2Input == 3:
-                for x in soldiersList[1]:
-                    print("Blunt soldier", soldier.Soldier.count, "cost:", soldierCost)
+                sum = soldierdf[soldierdf['Type'] == 'Blunt']['Soldier Cost'].sum()
+                print('Total cost for blunt soldier: ', sum)
 
             elif submenu2Input == 4:
                 menuInput = 1
 
         elif menuInput == 5:
-            print("\n Total weapon cost for all soldiers: ", totalWeaponCost, "\n")
+            print("\nTotal weapon cost for all soldiers: ", soldierdf['Weapon Cost'].sum(), "\n")
 
         elif menuInput == 6:
             typeMenu()
@@ -155,14 +154,16 @@ if __name__ == '__main__':
                 print("Not a valid option.")
                 submenu3Input = int(input("Enter an option (1-3): "))
             if submenu3Input == 1:
-                for x in soldiersList[0]:
-                    print("Pierce soldier", soldier.Soldier.count, "weapon cost:", 'placeholder')
+                sum = soldierdf[soldierdf['Type'] == 'Pierce']['Weapon Cost'].sum()
+                print('Total weapon cost for pierce soldier: ', sum)
 
             elif submenu3Input == 2:
-                pass
+                sum = soldierdf[soldierdf['Type'] == 'Magic']['Weapon Cost'].sum()
+                print('Total weapon cost for magic soldier: ', sum)
             
             elif submenu3Input == 3:
-                pass
+                sum = soldierdf[soldierdf['Type'] == 'Blunt']['Weapon Cost'].sum()
+                print('Total weapon cost for blunt soldier: ', sum)
 
             elif submenu3Input == 4:
                 menuInput = 1
