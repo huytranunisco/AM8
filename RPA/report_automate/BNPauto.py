@@ -138,13 +138,8 @@ def exportHandle(acc, fac, start, end, accName):
         time.sleep(1)
         if os.path.isfile(path):
             break
-    
-    newName = accName + '_' + invoiceName
-    newPath = 'Invoice[' + newName + '].xlsx'
-
-    os.rename(path, newPath)
         
-    return facility, newName
+    return facility, path
 
 def invoiceToReport(acc, fac, billingPeriod, invoiceNum):
     reportName = acc + '-' + fac + '-' + billingPeriod + '.xlsx'

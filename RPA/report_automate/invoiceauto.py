@@ -70,10 +70,11 @@ for index in bimonthlyAccs.index:
 
         if facility == False or invoiceName == False: 
             continue
+        
+        newName = accName + '_' + fac
+        newPath = folderName + '//' + 'Invoice[' + newName + '].xlsx'
 
-        oldPath = 'Invoice[' + invoiceName + '].xlsx'
-        newPath = folderName + '//' + fac + '_' +invoiceName +'.xlsx'
-        os.rename(oldPath, newPath)
+        os.rename(invoiceName, newPath)
 
     except Exception as e:
         if hasattr(e, 'message'):
