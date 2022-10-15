@@ -40,7 +40,7 @@ def exportHandle(acc, fac, start, end, accName):
     #chromeOptions = webdriver.ChromeOptions()
     #prefs = {'download.default_directory' : path}
     #chromeOptions.add_experimental_option('prefs', prefs)
-    driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()))
+    driver = webdriver.Chrome(ChromeDriverManager().install())
     action = ActionChains(driver)
     driver.get("http://bnp.unisco.com/")
 
@@ -107,6 +107,7 @@ def exportHandle(acc, fac, start, end, accName):
         print(f'No invoice found for {accName}_{facility}!')
         return False, False
     elif len(rows) > 1:
+        '''
         for index in range(len(rows)):
             xpath = '//*[@id=\"invoicegrid\"]/div[3]/table/tbody/tr[' + str(index + 1) + ']/td[1]/label'
             interactor = driver.find_element(By.XPATH, xpath)
@@ -114,6 +115,8 @@ def exportHandle(acc, fac, start, end, accName):
             interactor.click()
         
         invoiceName = 'Multi'
+        '''
+        return False, False
     else:
         row = rows[0]
         col = row.find_elements(By.TAG_NAME, 'td')[3]
