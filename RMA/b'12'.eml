@@ -1,0 +1,437 @@
+Return-path: <bounce-md_30484861.634d93c9.v1-f00b2a41794d4865ae68a11cfc28cd84@mandrillapp.com>
+Authentication-Results: mail.dospartner.com;
+	iprev=pass reason="white listed" policy.iprev=104.47.74.41 (MAIL bounce-md_30484861.634d93c9.v1-f00b2a41794d4865ae68a11cfc28cd84@mandrillapp.com)
+Received: from NAM04-BN8-obe.outbound.protection.outlook.com by mail.dospartner.com 
+	with ESMTPS id md5001055128089.msg; Mon, 17 Oct 2022 10:42:41 -0700
+X-Spam-Processed: mail.dospartner.com, Mon, 17 Oct 2022 10:42:41 -0700
+	(not processed: message from trusted or authenticated source)
+X-MDRemoteIP: 104.47.74.41
+X-MDHelo: NAM04-BN8-obe.outbound.protection.outlook.com
+X-MDArrival-Date: Mon, 17 Oct 2022 10:42:41 -0700
+X-Rcpt-To: flaant0001.rms@unisco.com
+X-MDRcpt-To: flaant0001.rms@unisco.com
+X-Return-Path: bounce-md_30484861.634d93c9.v1-f00b2a41794d4865ae68a11cfc28cd84@mandrillapp.com
+X-Envelope-From: bounce-md_30484861.634d93c9.v1-f00b2a41794d4865ae68a11cfc28cd84@mandrillapp.com
+X-MDaemon-Deliver-To: flaant0001.rms@unisco.com
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=c48kAYwqmTxa0VFTasLzdzMZNMnZbHZNKE3RLpUOpPklr/Wn4ZotXzvw2HC6omPrYHm47hmyQKfBQZXReqtew5LIpaK2KfIME1BPZh4HmV3ZFQqw1HQkqiYI4K1jg9TT++54ivUYL1pZIwmkFeal/CWpdEAwlXPBucAq+4gHOeWkALgBMUbc1pqffAw7wkzFeBaUdU8NfVN3krelT/wAXgYRmQR6we6VDROKQKR5Dj1F7GBIc11+D20noaLKYp8ZozWKccjYeqqKLqpZvqcQ3/SkAho/+qdK2cF5t2+4MX/gWJAAw852Uhzdy27peI1GEXR0cnOfH+akyC177gP8Nw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=Tlo1Ei4TZGyh10YPAPHA7wfg/yjxpUmqiUPNWasZOGw=;
+ b=IqL+f8u5T596y1MfXU0nGcMkw4i45l6qo047yO1Km/uZP4l3Wp2fvFKdJU3VNTWVR1qqmTJUW9pbdFiKCDNOQl7Hm0WJBGEi7CBEbZjdLI3bNEgutnPWxpidrtSajhkNignCybrLHUY2hDQX5XKcIBpQdiDZOquxMSrdHfLsPLQIZV3OEUGZyAZuK5jkIhcXepNWtnvb7xLiScHUbEOLywAt12T0Qm3ufLloEgkwiKdQIJFmjqnx7g/NnzqrhDITQWPEaOhhPeLssbBExJ5rZKvcS5hH5+Zn81VpUQsgFLB0+NSMJMJfo8vTYTQY8a3Gx0/ciWY0yrIVYVXJB6hh6Q==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 198.2.180.148) smtp.rcpttodomain=unisco.com smtp.mailfrom=mandrillapp.com;
+ dmarc=bestguesspass action=none header.from=returnly.com; dkim=pass
+ (signature was verified) header.d=returnly.com; dkim=pass (signature was
+ verified) header.d=mandrillapp.com; arc=none (0)
+Received: from DM6PR10CA0004.namprd10.prod.outlook.com (2603:10b6:5:60::17) by
+ SJ0PR13MB5271.namprd13.prod.outlook.com (2603:10b6:a03:3d5::20) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5723.14; Mon, 17 Oct
+ 2022 17:41:31 +0000
+Received: from DM6NAM04FT010.eop-NAM04.prod.protection.outlook.com
+ (2603:10b6:5:60:cafe::cb) by DM6PR10CA0004.outlook.office365.com
+ (2603:10b6:5:60::17) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5723.30 via Frontend
+ Transport; Mon, 17 Oct 2022 17:41:31 +0000
+Authentication-Results: spf=pass (sender IP is 198.2.180.148)
+ smtp.mailfrom=mandrillapp.com; dkim=pass (signature was verified)
+ header.d=returnly.com;dmarc=bestguesspass action=none
+ header.from=returnly.com;compauth=pass reason=109
+Received-SPF: Pass (protection.outlook.com: domain of mandrillapp.com
+ designates 198.2.180.148 as permitted sender)
+ receiver=protection.outlook.com; client-ip=198.2.180.148;
+ helo=mail180-148.suw31.mandrillapp.com; pr=C
+Received: from mail180-148.suw31.mandrillapp.com (198.2.180.148) by
+ DM6NAM04FT010.mail.protection.outlook.com (10.13.159.82) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.5723.20 via Frontend Transport; Mon, 17 Oct 2022 17:41:30 +0000
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=returnly.com;
+	s=mandrill; t=1666028489; x=1666330889; i=help@returnly.com;
+	bh=Tlo1Ei4TZGyh10YPAPHA7wfg/yjxpUmqiUPNWasZOGw=;
+	h=From:Subject:Reply-To:Message-Id:To:Feedback-ID:Date:MIME-Version:
+	 Content-Type:CC:Date:Subject:From;
+	b=QKhlLYg+xl/zO3t54i5SMTrXwJ6qmab24UjQMtaCiqClUaIIbca82VcxEnlkjBGEV
+	 meJpFNWKFYPReCKSrinRDiAeSknIO+gjbLPdA8G3XyR32MSkOoiHSiBTdj5qD65445
+	 FepO+YkgbwS3tzfiCfw2au1DImxffInfQiEkhFmQ=
+Received: from pmta11.mandrill.prod.suw01.rsglab.com (localhost [127.0.0.1])
+	by mail180-148.suw31.mandrillapp.com (Mailchimp) with ESMTP id 4MrknP5WyjzFCWZ3G
+	for <flaant0001.rms@unisco.com>; Mon, 17 Oct 2022 17:41:29 +0000 (GMT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=mandrillapp.com; 
+ i=@mandrillapp.com; q=dns/txt; s=mandrill; t=1666028489; h=From : 
+ Subject : Reply-To : Message-Id : To : Date : MIME-Version : 
+ Content-Type : From : Subject : Date : X-Mandrill-User : 
+ List-Unsubscribe; bh=Tlo1Ei4TZGyh10YPAPHA7wfg/yjxpUmqiUPNWasZOGw=; 
+ b=eEH3uGK9OOrYNN/pE1zyGHgVMRZLZvx44ClvNXtCWJjm5GWezBy1qgpDCA/EuKSWnWCTIV
+ hxjZu9k2cTfar9rYJIU3ibCxL+TJw07Y2GvaB0C12p5KbMsOp0mw/jT8Xzi3Ec3hOdmHwGrP
+ Aelgm+CF/4nmNFa5UWTzPPPzmPOe8=
+From: "Flag & Anthem (help@returnly.com)" <help@returnly.com>
+Subject: Your Returnly report is ready
+Received: from [13.57.125.174] by mandrillapp.com id f00b2a41794d4865ae68a11cfc28cd84; Mon, 17 Oct 2022 17:41:29 +0000
+Reply-To: help@returnly.com
+Message-Id: <634d93c96abf_1bcb1007104ee@0e20344e8199.mail>
+To: flaant0001.rms@unisco.com
+X-Report-Abuse: Please forward a copy of this message, including all headers, to abuse@mandrill.com
+X-Report-Abuse: You can also report abuse here: http://mandrillapp.com/contact/abuse?id=30484861.f00b2a41794d4865ae68a11cfc28cd84
+X-Mandrill-User: md_30484861
+Feedback-ID: 30484861:30484861.20221017:md
+Date: Mon, 17 Oct 2022 17:41:29 +0000
+MIME-Version: 1.0
+Content-Type: multipart/alternative; boundary="_av-bzKBMfXbxApqgZd2VMRpEA"
+X-EOPAttributedMessage: 0
+X-EOPTenantAttributedMessage: d37e4693-ddde-4845-ab56-0ce4253029d1:0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: DM6NAM04FT010:EE_|SJ0PR13MB5271:EE_
+X-MS-Office365-Filtering-Correlation-Id: 08bee12a-8e18-4722-db1e-08dab066d364
+X-MS-Exchange-AtpMessageProperties: SA|SL
+X-Microsoft-Antispam: BCL:1;
+X-Microsoft-Antispam-Message-Info:
+	=?utf-8?B?UDFXdHljQW96eFNSQmFQODBkSjF3Z09hWkRDcGNlaVAyTTRaVVkvL21DTHJM?=
+ =?utf-8?B?OXNXb0VZREpSZnRKV1NUY2lBcjJiUi84TFFUdHRjYmRMQjVMTm1ySEVNWU90?=
+ =?utf-8?B?WlVWa3hCQUpjVk1BZGV4MjJzd2dkTnplWFVzOTVMTk53WFNpUjM2NkJJZjlF?=
+ =?utf-8?B?TXk2QzBQTG5Bb2RkaU85OEtvcTUxeVYxYzFXMGJndmlZM1RIQWp5eFlKM2t2?=
+ =?utf-8?B?TW9iUG1FWFduNVVzUml6d2FCY3V3R3BkQlRzblBUTlhCVStoS2VwR1d1aUkw?=
+ =?utf-8?B?KytiVGwyQjZaSCtOUW5uTEY5cDBJNWFwdUVKVTJCZEZxZUhZbHRTRXZZSU5D?=
+ =?utf-8?B?VUZYVHJ2Z1l5NVNpY2VQMktzdHZtb1BxNUY4OFYyTEkwSGM1U0p3UFd6S0Yr?=
+ =?utf-8?B?WXhnWW50bm44NUZsdjBmN3hKWTRDVkZDZ2FmcFhDeWNaQi9hTGR1L0lFNUkx?=
+ =?utf-8?B?N0tYRjNkNTlMcHQ2bUF2MjdvcEdZTXVoODNYeDdVRU5Lc2czdkNhQWs0U0ZQ?=
+ =?utf-8?B?cHpHM2RabGQ3NzdSamlRa3pDZGtCNmVETlBQbndUdFBDN0VWbDV4eXIzV1Qz?=
+ =?utf-8?B?blNVa0tpRUhJampCekF1Y1BMSU5UQlFZOWp1Tjcva1ozZTJMWW5RSHZ0U05r?=
+ =?utf-8?B?Uktyb3pUQmF4bzVtTlRmYzlTWDFOV1R2K1RsVHlXSi8rakdBejl1Y0hkL2R0?=
+ =?utf-8?B?S0o3RWpCK0xMek05VWZxdWhFYmVFTkZXL250NGZ4blZ4ZExzNWtxNHF6bnJv?=
+ =?utf-8?B?R0RrQzY2YUxHRTJIK0N0MFdNT1dMNm51cU5haHN4QStrcVgyL3NnUEJUT2JH?=
+ =?utf-8?B?WFhWMXZkS3FPczhZSTdzRzBqWDk2cEgzWkxFSXA0cHU3OTlCeUh0K3JWNW5Q?=
+ =?utf-8?B?bHZDcGN6UFp5MEJpZXp3YjhMQW51UzlxZi9hOVRvS2ZpNWV5QW9hdGY2Yk54?=
+ =?utf-8?B?QWhycVhTbE9FMzc4a2NpZC9NZnFvTjZtZXUvd0Z2T0pCMGxxZjc0Q09LMm5O?=
+ =?utf-8?B?VE9xYWRVSk5YUUVGU2tjUXhxSlNuWUJITzZubSt3dFNGUGVmdS9Zbjd1eTlj?=
+ =?utf-8?B?K2I4TXdUOWo3T1hqcldERmxrSi91c1JpTlZQR2xBOW9JVWdKdlRWaDc5TklE?=
+ =?utf-8?B?dE1lZklaaW8zQ2lhcEdBSE13OFRLc0I3bldoTlc1dTJ3QW5EN0FMaDQxc3pC?=
+ =?utf-8?B?VDU3Z1BOaCtnQWUxa3hhWUY3ZDRIUkJPNktmc3N6NU56d2lINitGRmZSVDgz?=
+ =?utf-8?B?S1ZsNE90NjgzdmpEUENSem1RZW04bEs1Q0U5aEhjcDNORUh5NDdITGs5WWdW?=
+ =?utf-8?B?NWhGMHM4OUxsM1MrKzJna0tRN0lqYllTOFNzWWlXN1hxTHZuajRmbklYZFVC?=
+ =?utf-8?B?R2N1RVB1Z3QwVGcyWE9hZkxBaWlObmxDaVczVkVJQXFwN09MZWpnOW1wTi8x?=
+ =?utf-8?B?Y3NZNUtmbS9ZNnpvOWUxYlRxZ25nWlNISG02YTBKSEdXOGxneVdGT2gvWmJZ?=
+ =?utf-8?B?cTNTdERqWGxHNHI1Yk0xYlcwbnVJTVM4ckhUbzFlZisxYyt3dDkvNXNIVHhy?=
+ =?utf-8?B?YzNZWVBJSUtzeUFFQ3RYWDJkZXlqa05nQmJqYnA2dE1MSkJtMlhOR1JrM2M1?=
+ =?utf-8?B?c0RVQW9hd3JiRlkwU2lzUHZrVmxhSXlDb2R0dUFFMmd1Q3RzUkRKcnJRVkJ4?=
+ =?utf-8?B?N3BmMGNlZXpMTFhhcmMzMWEyNWpoSWRJZHdJbE93QXNWNEtHeTF1QmYrU1hy?=
+ =?utf-8?B?eHI1akdCUUI0czNCN1lSbUg0NWxzTmlRQjlnWjRNNC8vODhQVkNrUHlkVWxE?=
+ =?utf-8?B?TFBVV1FCclhoRkRsb3JOdGdtTTlURURRQ1NWaEo0K2NTU0hVTmVJUHVkOUx4?=
+ =?utf-8?B?aE1ibHFQZm5VTUFMQVVkUFY3VzE2V3VyWVRaZFpiZHFuMkpYYSttVDU3cVRV?=
+ =?utf-8?B?R00xVmx2TXg1Y0NtMHQxd2lKbUozODJ0eWpkTTRieUs0eXFQUzgzaURVOFJ0?=
+ =?utf-8?B?NVhGL05YdFZ0WlBON25HV2liVlNrOFJCUk9QaG95VXFDcmpjNVhJNVVJSmJz?=
+ =?utf-8?B?NTFrY0lwVStjdW1vUG9ZTllFaHVyeks5a0pkdDlyMlpkSElnWHFUbTRwa3Yz?=
+ =?utf-8?B?aW9wbGtJaWJ0MWhvUVFpbXNFQ2ZIRWVoRlJFZEUwRUdwN3hudW1UbzczVzFJ?=
+ =?utf-8?B?K29CTHF4RFFhcHl6Tm9pUjNhZUFzTzhDT2lMa2JaTDlOUG41Tzk5cnBjUUpW?=
+ =?utf-8?B?KzExbWlyRGNwOHRDRlYwVWd4L3diKy9HR0s4VWNVV0VVR0prOXlpVjNsM1ha?=
+ =?utf-8?B?WEJZUVlTVUdtcGE5UW5yeHdYL05LcHBJanZSSUkvaDJYWVFGeit3aHlJbjhT?=
+ =?utf-8?B?L002cXRvTVpzQWVPYXlRcUdnUVlvUXdVM1AvQzBnMzhNdFE0R2NwNGpRZlBY?=
+ =?utf-8?Q?Fmb5N95+oI/gxYfMPsmDFLDjTi0WkiJv5Zk=3D?=
+X-Forefront-Antispam-Report:
+	CIP:198.2.180.148;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail180-148.suw31.mandrillapp.com;PTR:mail180-148.suw31.mandrillapp.com;CAT:NONE;SFS:(13230022)(4636009)(286005)(451199015)(1690799008)(36756003)(76236004)(1096003)(83170400001)(166002)(3450700001)(8676002)(7636003)(356005)(336012)(7596003)(26005)(956004)(42882007)(83380400001)(33964004)(6916009)(16799955002)(9686003);DIR:INB;
+X-OriginatorOrg: unisco.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 17 Oct 2022 17:41:30.4382
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: 08bee12a-8e18-4722-db1e-08dab066d364
+X-MS-Exchange-CrossTenant-Id: d37e4693-ddde-4845-ab56-0ce4253029d1
+X-MS-Exchange-CrossTenant-AuthSource:
+	DM6NAM04FT010.eop-NAM04.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: Internet
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SJ0PR13MB5271
+X-MS-Exchange-CrossPremises-OriginalClientIPAddress: 198.2.180.148
+X-MS-Exchange-CrossPremises-TransportTrafficType: Email
+X-MS-Exchange-CrossPremises-AuthSource:
+	DM6NAM04FT010.eop-NAM04.prod.protection.outlook.com
+X-MS-Exchange-CrossPremises-AuthAs: Anonymous
+X-MS-Exchange-CrossPremises-Antispam-ScanContext:
+	DIR:Incoming;SFV:NSPM;SKIP:0;
+X-MS-Exchange-CrossPremises-SCL: 1
+X-MS-Exchange-CrossPremises-Processed-By-Journaling: Journal Agent
+X-OrganizationHeadersPreserved: SJ0PR13MB5271.namprd13.prod.outlook.com
+X-Antivirus: Avast (VPS 221017-2, 10/17/2022), Inbound message
+X-Antivirus-Status: Clean
+
+--_av-bzKBMfXbxApqgZd2VMRpEA
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
+
+    Returnly - Your report                                          Hi Flag
+& Anthem,
+
+ 
+
+ Your report is ready, you can download it here
+
+  Download Report
+<https://dashboard.returnly.com/dashboard/reports/download/54455/20221017/U=
+NIS-RMA-Report_2022-10-01_2022-10-17_PDT.csv>
+=C2=A0(report data could be delayed up to 24 hours) Team Returnly
+
+ 
+                     Returnly.com <https://returnly.com>  =EF=BD=9C 
+support@returnly.com <mailto:support@returnly.com>      =C2=A9 2022 Returnl=
+y
+Technologies, Inc. San Francisco, California
+
+--_av-bzKBMfXbxApqgZd2VMRpEA
+Content-Type: text/html; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.=
+w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns=3D"http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv=3D"Content-Type" content=3D"text/html; charset=3DUTF-8">
+  <title>Returnly - Your report</title>
+  <link href=3D"https://fonts.googleapis.com/css2?family=3DPoppins:wght@400=
+;500&amp;display=3Dswap" rel=3D"stylesheet">
+
+  
+<style>.headerContent a:link{font-family:'Poppins', "Helvetica Neue", Helve=
+tica, sans-serif;font-weight:400;color:#234ba2;line-height:normal;text-deco=
+ration:none}
+.headerContent a:visited{font-family:'Poppins', "Helvetica Neue", Helvetica=
+, sans-serif;font-weight:400;color:#234ba2;line-height:normal;text-decorati=
+on:none}
+#body a:link{font-family:'Poppins', "Helvetica Neue", Helvetica, sans-serif=
+;font-weight:400;display:inline;font-size:14px;color:#234ba2;text-decoratio=
+n:underline;margin-top:15px;margin-bottom:15px;width:100%}
+#body a:visited{font-family:'Poppins', "Helvetica Neue", Helvetica, sans-se=
+rif;font-weight:400;display:inline;font-size:14px;color:#234ba2;text-decora=
+tion:underline;margin-top:15px;margin-bottom:15px;width:100%}
+.bodyContent a:link{font-family:'Poppins', "Helvetica Neue", Helvetica, san=
+s-serif;font-weight:400;display:inline;font-size:14px;color:#234ba2;text-de=
+coration:underline;margin-top:15px;margin-bottom:15px;width:100%}
+.bodyContent a:visited{font-family:'Poppins', "Helvetica Neue", Helvetica, =
+sans-serif;font-weight:400;display:inline;font-size:14px;color:#234ba2;text=
+-decoration:underline;margin-top:15px;margin-bottom:15px;width:100%}
+@media only screen and (max-width: 480px) {
+body{-webkit-text-size-adjust:none;color:#ffffff}
+table{-webkit-text-size-adjust:none;color:#ffffff}
+td{-webkit-text-size-adjust:none;color:#ffffff}
+p{-webkit-text-size-adjust:none;color:#ffffff}
+a{-webkit-text-size-adjust:none;color:#ffffff}
+li{-webkit-text-size-adjust:none;color:#ffffff}
+blockquote{-webkit-text-size-adjust:none;color:#ffffff}
+body{width:100%;min-width:100%}
+#backgroundTable{margin-top:0}
+#bodyCell{padding:10px}
+#templateContainer{max-width:550px;width:100%}
+#templateModule{max-width:550px;width:100%}
+h2{font-size:20px;line-height:100%}
+p{font-size:18px;line-height:25px}
+#headerImage{height:auto;max-width:550px;width:100%}
+.headerContent{font-size:20px;line-height:125%}
+#templateBody{max-width:550px;width:100%}
+.bodyContent{font-size:18px;line-height:125%;padding:10px}
+.bodyFooter{width:100%;max-width:550px;font-size:18px;line-height:125%;padd=
+ing:10px}
+}</style></head>
+<body leftmargin=3D"0" marginwidth=3D"0" topmargin=3D"0" marginheight=3D"0"=
+ offset=3D"0" id=3D"body" style=3D"height:100%;margin:0;padding:0;width:100=
+%;background-color:#f1f1f1;-webkit-text-size-adjust:100%;-ms-text-size-adju=
+st:100%">
+<center>
+  <table border=3D"0" cellpadding=3D"0" cellspacing=3D"0" height=3D"100%" w=
+idth=3D"100%" id=3D"backgroundTable" style=3D"-webkit-text-size-adjust:100%=
+;-ms-text-size-adjust:100%;mso-table-lspace:0pt;mso-table-rspace:0pt;border=
+-collapse:collapse;margin-top:30px;margin-bottom:30px">
+    <tr>
+      <td align=3D"center" valign=3D"top" style=3D"-webkit-text-size-adjust=
+:100%;-ms-text-size-adjust:100%;mso-table-lspace:0pt;mso-table-rspace:0pt">
+        <table border=3D"0" cellpadding=3D"0" cellspacing=3D"0" width=3D"10=
+0%" id=3D"templateContainer" style=3D"-webkit-text-size-adjust:100%;-ms-tex=
+t-size-adjust:100%;mso-table-lspace:0pt;mso-table-rspace:0pt;border-collaps=
+e:collapse;width:550px;margin-top:30px;margin-bottom:30px">
+          <tr>
+            <td align=3D"center" valign=3D"top" style=3D"-webkit-text-size-=
+adjust:100%;-ms-text-size-adjust:100%;mso-table-lspace:0pt;mso-table-rspace=
+:0pt">
+              <table border=3D"0" cellpadding=3D"0" cellspacing=3D"0" width=
+=3D"100%" id=3D"templateModule" style=3D"-webkit-text-size-adjust:100%;-ms-=
+text-size-adjust:100%;mso-table-lspace:0pt;mso-table-rspace:0pt;border-coll=
+apse:collapse;width:550px;background-color:#ffffff;border-radius:3px;margin=
+-bottom:40px;margin-top:40px">
+                <tr>
+                  <td style=3D"-webkit-text-size-adjust:100%;-ms-text-size-=
+adjust:100%;mso-table-lspace:0pt;mso-table-rspace:0pt">
+                    <!-- // Begin Template Header \\ -->
+                    <table border=3D"0" cellpadding=3D"0" cellspacing=3D"0"=
+ width=3D"100%" id=3D"templateHeader" style=3D"-webkit-text-size-adjust:100=
+%;-ms-text-size-adjust:100%;mso-table-lspace:0pt;mso-table-rspace:0pt;borde=
+r-collapse:collapse">
+                      <tr>
+                        <td class=3D"headerContent" style=3D"-webkit-text-s=
+ize-adjust:100%;-ms-text-size-adjust:100%;mso-table-lspace:0pt;mso-table-rs=
+pace:0pt;color:#234ba2;font-family:'Poppins', &quot;Helvetica Neue&quot;, H=
+elvetica, sans-serif;font-size:20px;font-weight:bold;line-height:100%;paddi=
+ng-top:0;padding-right:0;padding-bottom:0;padding-left:0;text-align:left;ve=
+rtical-align:middle">
+                          <table border=3D"0" cellpadding=3D"30" cellspacin=
+g=3D"0" width=3D"100%" id=3D"templateLogo" style=3D"-webkit-text-size-adjus=
+t:100%;-ms-text-size-adjust:100%;mso-table-lspace:0pt;mso-table-rspace:0pt;=
+border-collapse:collapse;height:110px">
+                            <tr>
+                              <td width=3D"100%" align=3D"center" valign=3D=
+"middle" style=3D"-webkit-text-size-adjust:100%;-ms-text-size-adjust:100%;m=
+so-table-lspace:0pt;mso-table-rspace:0pt">
+                                <img src=3D"https://returnly-img.s3-us-west=
+-1.amazonaws.com/email-images/Returnly_Logo_Indigo_RGB.png" alt=3D"" border=
+=3D"0" style=3D"border:0;height:auto;line-height:100%;outline:none;text-dec=
+oration:none;-ms-interpolation-mode:bicubic;max-width:140px;">
+                              </td>
+                            </tr>
+                          </table>
+                        </td>
+                      </tr>
+                    </table>
+                    <!-- // End Template Header \\ -->
+                  </td>
+                </tr>
+                <tr>
+                  <td align=3D"center" valign=3D"top" style=3D"-webkit-text=
+-size-adjust:100%;-ms-text-size-adjust:100%;mso-table-lspace:0pt;mso-table-=
+rspace:0pt">
+                    <!-- // Begin Template Body \\ -->
+                    <table border=3D"0" cellpadding=3D"10" cellspacing=3D"0=
+" width=3D"100%" id=3D"templateBody" style=3D"-webkit-text-size-adjust:100%=
+;-ms-text-size-adjust:100%;mso-table-lspace:0pt;mso-table-rspace:0pt;border=
+-collapse:collapse;border-top:1px solid #ffffff">
+                      <tr>
+                        <td valign=3D"top" class=3D"bodyContent" style=3D"-=
+webkit-text-size-adjust:100%;-ms-text-size-adjust:100%;mso-table-lspace:0pt=
+;mso-table-rspace:0pt;color:#172f57;font-family:'Poppins', &quot;Helvetica =
+Neue&quot;, Helvetica, sans-serif;font-size:17px;line-height:150%;font-weig=
+ht:300;padding-top:30px;padding-right:30px;padding-bottom:30px;padding-left=
+:30px;text-align:left">
+
+                          <!-- // Begin Module: Standard Content \\ -->
+                          <table border=3D"0" cellpadding=3D"10" cellspacin=
+g=3D"0" width=3D"100%" style=3D"-webkit-text-size-adjust:100%;-ms-text-size=
+-adjust:100%;mso-table-lspace:0pt;mso-table-rspace:0pt;border-collapse:coll=
+apse">
+                            <tr>
+                              <td valign=3D"top" style=3D"-webkit-text-size=
+-adjust:100%;-ms-text-size-adjust:100%;mso-table-lspace:0pt;mso-table-rspac=
+e:0pt">
+                                <div>
+                                  <p style=3D"-webkit-text-size-adjust:100%=
+;-ms-text-size-adjust:100%;font-family:'Poppins', 'Helvetica Neue', Helveti=
+ca, sans-serif;font-weight:400;font-size:14px;line-height:24px;padding-left=
+:0;padding-right:0;margin-top:0;margin-bottom:10px;color:#172f57;text-align=
+:justify;">Hi Flag &amp; Anthem,</p>
+                                  <p style=3D"-webkit-text-size-adjust:100%=
+;-ms-text-size-adjust:100%;font-family:'Poppins', 'Helvetica Neue', Helveti=
+ca, sans-serif;font-weight:400;font-size:14px;line-height:24px;padding-left=
+:0;padding-right:0;margin-top:0;margin-bottom:10px;color:#172f57;text-align=
+:justify;margin-top:15px;"></p>
+                                  <p style=3D"-webkit-text-size-adjust:100%=
+;-ms-text-size-adjust:100%;font-family:'Poppins', 'Helvetica Neue', Helveti=
+ca, sans-serif;font-weight:400;font-size:14px;line-height:24px;padding-left=
+:0;padding-right:0;margin-top:0;margin-bottom:10px;color:#172f57;text-align=
+:justify;margin-top:15px;">Your report is ready, you can download it here</=
+p>
+                                  <a style=3D"-webkit-text-size-adjust:100%=
+;-ms-text-size-adjust:100%;font-family:'Poppins', &quot;Helvetica Neue&quot=
+;, Helvetica, sans-serif;font-weight:400;display:inline;font-size:14px;colo=
+r:#234ba2;text-decoration:underline;margin-top:15px;margin-bottom:15px;widt=
+h:100%;font-family: 'Poppins','Helvetica Neue',Helvetica,sans-serif;color:#=
+234ba2;font-size:14px;font-weight:400;margin-top:30px;" href=3D"https://man=
+drillapp.com/track/click/30484861/dashboard.returnly.com?p=3DeyJzIjoiMC1nLV=
+U3RGpocDBHNFBSOEZGaTdaWnY3OVNBIiwidiI6MSwicCI6IntcInVcIjozMDQ4NDg2MSxcInZcI=
+joxLFwidXJsXCI6XCJodHRwczpcXFwvXFxcL2Rhc2hib2FyZC5yZXR1cm5seS5jb21cXFwvZGFz=
+aGJvYXJkXFxcL3JlcG9ydHNcXFwvZG93bmxvYWRcXFwvNTQ0NTVcXFwvMjAyMjEwMTdcXFwvVU5=
+JUy1STUEtUmVwb3J0XzIwMjItMTAtMDFfMjAyMi0xMC0xN19QRFQuY3N2XCIsXCJpZFwiOlwiZj=
+AwYjJhNDE3OTRkNDg2NWFlNjhhMTFjZmMyOGNkODRcIixcInVybF9pZHNcIjpbXCI0Njc4Y2IzN=
+WE0NTYzZGEwYjQ5OTUxMThhYzgzMmRiMjkxNzkxMmJjXCJdfSJ9" download>
+                                    <span style=3D"font-family: 'Poppins','=
+Helvetica Neue',Helvetica,sans-serif;color:#234ba2;font-size:14px;font-weig=
+ht:400;">Download Report</span>
+                                  </a>
+                                  <span style=3D"font-family: 'Poppins','He=
+lvetica Neue',Helvetica,sans-serif;color:#172f57;font-size:14px;font-weight=
+:400;line-height:24px;">=C2=A0(report data could be delayed up to 24 hours)=
+</span>
+                                  <p style=3D"-webkit-text-size-adjust:100%=
+;-ms-text-size-adjust:100%;font-family:'Poppins', 'Helvetica Neue', Helveti=
+ca, sans-serif;font-weight:400;font-size:14px;line-height:24px;padding-left=
+:0;padding-right:0;margin-top:0;margin-bottom:10px;color:#172f57;text-align=
+:justify;margin-top:15px;">Team Returnly</p>
+                                </div>
+                              </td>
+                            </tr>
+                          </table>
+                          <!-- // End Module: Standard Content \\ -->
+
+                        </td>
+                      </tr>
+                    </table>
+                    <!-- // End Template Body \\ -->
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+          <tr>
+            <td valign=3D"middle" align=3D"center" height=3D"40" style=3D"-=
+webkit-text-size-adjust:100%;-ms-text-size-adjust:100%;mso-table-lspace:0pt=
+;mso-table-rspace:0pt">
+              <img src=3D"https://returnly-img.s3-us-west-1.amazonaws.com/e=
+mail-images/returnly-logo-email.png" border=3D"0" alt=3D"" style=3D"border:=
+0;height:auto;line-height:100%;outline:none;text-decoration:none;-ms-interp=
+olation-mode:bicubic;max-width:100px;">
+            </td>
+          </tr>
+          <tr>
+            <td align=3D"center" valign=3D"top" style=3D"-webkit-text-size-=
+adjust:100%;-ms-text-size-adjust:100%;mso-table-lspace:0pt;mso-table-rspace=
+:0pt;padding-top:35px;padding-bottom:5px;">
+                <a href=3D"https://mandrillapp.com/track/click/30484861/ret=
+urnly.com?p=3DeyJzIjoiczY5YW5BSktMUkE0eDZOUHBFMlI0eWo2VGVVIiwidiI6MSwicCI6I=
+ntcInVcIjozMDQ4NDg2MSxcInZcIjoxLFwidXJsXCI6XCJodHRwczpcXFwvXFxcL3JldHVybmx5=
+LmNvbVwiLFwiaWRcIjpcImYwMGIyYTQxNzk0ZDQ4NjVhZTY4YTExY2ZjMjhjZDg0XCIsXCJ1cmx=
+faWRzXCI6W1wiZWYxMTAzN2Y5OTEwMTJlMjU4YzFjMDM2NjIxNDdhY2FjOTY0NzMxYlwiXX0ifQ=
+" style=3D"-webkit-text-size-adjust:100%;-ms-text-size-adjust:100%;font-fam=
+ily:'Poppins', &quot;Helvetica Neue&quot;, Helvetica, sans-serif;font-weigh=
+t:400;display:inline;font-size:14px;color:#234ba2;text-decoration:underline=
+;margin-top:15px;margin-bottom:15px;width:100%;color:#234ba2;"><span style=
+=3D"font-family: 'Poppins','Helvetica Neue',Helvetica,sans-serif;color:#234=
+ba;font-size:14px;font-weight:400;">Returnly.com</span></a>
+                <span style=3D"color:#234ba2;font-size:18px;"> =EF=BD=9C </=
+span>
+                <a href=3D"mailto:support@returnly.com" style=3D"-webkit-te=
+xt-size-adjust:100%;-ms-text-size-adjust:100%;font-family:'Poppins', &quot;=
+Helvetica Neue&quot;, Helvetica, sans-serif;font-weight:400;display:inline;=
+font-size:14px;color:#234ba2;text-decoration:underline;margin-top:15px;marg=
+in-bottom:15px;width:100%;color:#234ba2;"><span style=3D"font-family: 'Popp=
+ins','Helvetica Neue',Helvetica,sans-serif;color:#234ba;font-size:14px;font=
+-weight:400;">support@returnly.com</span></a>
+            </td>
+          </tr>
+          <tr>
+            <td align=3D"center" valign=3D"top" style=3D"-webkit-text-size-=
+adjust:100%;-ms-text-size-adjust:100%;mso-table-lspace:0pt;mso-table-rspace=
+:0pt">
+              <span style=3D"font-family:'Poppins','Helvetica Neue',Helveti=
+ca,sans-serif;font-weight:300;color:#777777;font-size:14px;width:100%;displ=
+ay:block;"></span>
+              <span style=3D"font-family:'Poppins','Helvetica Neue',Helveti=
+ca,sans-serif;font-weight:300;font-size:12px;color:#777777;width: 100%;disp=
+lay: block;margin-bottom: 50px;">=C2=A9 2022 Returnly Technologies, Inc. Sa=
+n Francisco, California</span>
+            </td>
+          </tr>
+        </table>
+        <br>
+      </td>
+    </tr>
+  </table>
+</center>
+<img src=3D"https://mandrillapp.com/track/open.php?u=3D30484861&id=3Df00b2a=
+41794d4865ae68a11cfc28cd84" height=3D"1" width=3D"1"></body>
+</html>
+
+
+--_av-bzKBMfXbxApqgZd2VMRpEA--
