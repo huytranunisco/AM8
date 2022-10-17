@@ -45,9 +45,9 @@ def exportHandle(acc, fac, start, end, accName):
     driver.get("http://bnp.unisco.com/")
 
     #Logging into BNP
-    interactor = driver.find_element(By.ID,"inputUserName")
+    interactor = WebDriverWait(driver, 5).until(EC.presence_of_element_located((By.ID, 'inputUserName')))
     interactor.send_keys(userbnp)
-    interactor = driver.find_element(By.ID,"inputPassword")
+    interactor = WebDriverWait(driver, 5).until(EC.presence_of_element_located((By.ID, 'inputPassword')))
     interactor.send_keys(pwbnp)
     interactor = driver.find_element(By.XPATH,"/html/body/div/footer/div/button")
     interactor.click()
