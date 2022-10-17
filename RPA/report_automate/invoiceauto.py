@@ -75,11 +75,6 @@ def find_sundays_between(start: date, end: date):
 
 today = date.today()
 dateFormat = today.strftime("%m-%d-%y")
-folderName = "Invoices " + dateFormat
-try:
-    mkdir(folderName)
-except (FileExistsError):
-    print('Invoice folder already exists. Continuing...')
 
 invoiceAccs = read_excel('BNP Excel Sheet.xlsx', sheet_name='Account_Fac_Freq')
 
