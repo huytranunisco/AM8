@@ -1,20 +1,27 @@
 import BNPauto
+import WISEauto
 from datetime import date, timedelta
 import os.path
 from pandas import read_excel
 from calendar import monthrange
 from shutil import copy
 
-def getInvoice(accBNP, facility, startP, endP, accName, dateName, cycle):
-    try:  
-        facility, invoiceName = BNPauto.exportHandle(accBNP, facility, startP, endP, accName)
+def getInvoice(acc, facility, startP, endP, accName, cycle, wise = False):
+    try: 
+        if wise:
+            invoiceName = (WISEauto.exportReport(accName, facility, startP, endP))
+            newName = accName + '-' + fac + '-' + cycle + '-Activity_Report'
+            newPath = 'C:\\Users\\' + os.getlogin() +'\\Desktop\\Discrepancy Reports\\Accounts\\00 - Historical Activity reports\\' + newName + '.xlsx'
+            copyPath = 'C:\\Users\\' + os.getlogin() + '\\Desktop\\Discrepancy Reports\\Accounts\\02 - Current Activity reports\\' + newName + '.xlsx'
 
-        if facility == False or invoiceName == False: 
-            return False
-        
-        newName = accName + '-' + fac + '-' + cycle + '-Invoice'
-        newPath = 'C:\\Users\\' + os.getlogin() +'\\Desktop\\Discrepancy Reports\\Accounts\\00 - Historical Invoices\\' + newName + '-' + dateName + '.xlsx'
-        copyPath = 'C:\\Users\\' + os.getlogin() + '\\Desktop\\Discrepancy Reports\\Accounts\\02 - Current Invoices\\' + newName + '-' + dateName + '.xlsx'
+        else:
+            facility, invoiceName = BNPauto.exportHandle(acc, facility, startP, endP, accName)
+            if facility == False or invoiceName == False: 
+                return False
+
+            newName = accName + '-' + fac + '-' + cycle + '-Invoice'
+            newPath = 'C:\\Users\\' + os.getlogin() +'\\Desktop\\Discrepancy Reports\\Accounts\\00 - Historical Invoices\\' + newName + '.xlsx'
+            copyPath = 'C:\\Users\\' + os.getlogin() + '\\Desktop\\Discrepancy Reports\\Accounts\\02 - Current Invoices\\' + newName + '.xlsx'
 
         os.rename(invoiceName, newPath)
 
@@ -63,9 +70,12 @@ for index in invoiceAccs.index:
         ''' 
         startPeriod = startBimonthly.strftime("%m/%d/%y")
         endPeriod = endBimonthly.strftime("%m/%d/%y")
-        dateName = startBimonthly.strftime("%m-%d-%y")
+    
+        wiseStart = startBimonthly.strftime("%y-%m-%d")
+        wiseEnd = endBimonthly.strftime("%y-%m-%d")
 
-        getInvoice(bnpName, fac, startPeriod, endPeriod, accName, dateName, 'Bimonthly')
+        #getInvoice(bnpName, fac, startPeriod, endPeriod, accName, 'Bimonthly')
+        getInvoice('', fac, wiseStart, wiseEnd, accName, 'Bimonthly', True)
 
     elif invoiceAccs['BillingFreq'][index] == 'Weekly':
         if today.day < 16:
@@ -81,12 +91,14 @@ for index in invoiceAccs.index:
             endWeekly = d + timedelta(days=+6)
             startPeriod = d.strftime("%m/%d/%y")
             endPeriod = endWeekly.strftime("%m/%d/%y")
-            dateName = d.strftime("%m-%d-%y")
+            wiseStart = d.strftime("%y-%m-%d")
+            wiseEnd = endWeekly.strftime("%y-%m-%d")
 
-            print(f'Start: {startPeriod}, End: {endPeriod}')
+            #getInvoice(bnpName, fac, startPeriod, endPeriod, accName, 'Weekly')
+            getInvoice('', fac, wiseStart, wiseEnd, accName, 'Bimonthly', True)
 
-            getInvoice(bnpName, fac, startPeriod, endPeriod, accName, dateName, 'Weekly')
 
     else: continue
 
 print("Invoices Downloaded!")
+x = input("Press Enter to finish.")

@@ -137,10 +137,16 @@ def exportHandle(acc, fac, start, end, accName):
 
     path = 'C:\\Users\\' + user + '\\Downloads\\Invoice[' + invoiceName + '].xlsx'
 
+    timer = 0
     while not os.path.exists(path):
         time.sleep(1)
         if os.path.isfile(path):
             break
+        if timer == 15:
+            print("Error")
+            return False, False
+        timer += 1
+
         
     return facility, path
 
