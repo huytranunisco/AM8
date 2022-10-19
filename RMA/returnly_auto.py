@@ -33,6 +33,7 @@ def exportReport():
         select =  WebDriverWait(driver, 5).until(
             EC.presence_of_element_located((By.XPATH, '//*[@id="new_user"]/div[3]/div/input')))
         select.click()
+        print('Login succesful... continuing')
     except Exception as e:        
         print('Error: ', e)
         driver.quit()
@@ -66,27 +67,22 @@ def downloadReport():
     try:
         M = imaplib.IMAP4_SSL(domain)
         M.login(userEmail, userPass)
-        
-        while True:
-            M.SELECT('INBOX')
-            rv, data = M.search(None, 'Unseen')
-            print(rv, data)
-            if rv != 'OK':
-                print("No report found yet... please wait...")
-                time.sleep(10)
-                rv, data = M.search(None, 'Unseen')
-                if rv == 'OK':
-                    print('Report has been found... continuing...')
-                    break
-            else:
+        M.select('Inbox')
+
+        status, data = M.search(None, '(UNSEEN FROM help@returnly.com)')
+        print(status)
+        if status != 'OK':
+            print("No report found yet... please wait...")
+            time.sleep(10)
+            status, data = M.search(None, 'UNSEEN')
+            if status == 'OK':
                 print('Report has been found... continuing...')
-                break       
 
         for num in data[0].split():
             while True:
-                rv, data = M.fetch(num, '(RFC822)')
-                if rv != 'OK':
-                    print("Error downloading the email... Please make sure that the email is 'unread' and it is in the inbox!"), num
+                status, data = M.fetch(num, '(RFC822)')
+                if status != 'OK':
+                    print("Error downloading the email... Please make sure that the report email is at the top and 'unread'!"), num
                     quit()
                 else:
                     break
@@ -94,8 +90,10 @@ def downloadReport():
             f = open('%s/%s.eml' %(folder, num), 'wb')
             f.write(data[0][1])
             f.close()
-
-        file = input('Please enter report location with file name at end (remove "", filepath/b"12".eml): ')
+        
+        file = input('Please enter file path of report (remove ""): ')
+        while os.path.exists(file) != True:
+            file = input('Please enter a valid report location...: ')
 
         messageList = []
         with open(file) as email_file:
@@ -134,6 +132,7 @@ def downloadReport():
         select.click()
         print('Succesfully logged in!')
         driver.get(linksList[0])
+        print('File downloading...')
         time.sleep(5)
         driver.quit()
 
@@ -142,12 +141,14 @@ def downloadReport():
 
 def formatReport():
 
-    file = input('Please enter location of the downloaded report (remove ""): ')
+    file = input('Please enter file path of the downloaded report (remove ""): ')
+    while os.path.exists(file) != True:
+        file = input('Please enter a valid file...: ')
     
     df = pd.read_csv(file)
 
-    df = df[['RMA', 'Original Order', 'Tracking Number', 'Shopper Email', 'Shipped From Name', 'Shipped From Address 1', 'Shipped From City', 'Shipped From State',
-             'Shipped From Zip', 'Shipped From Country Code', 'Barcode', 'Return Created Date', 'Return Delivered Date']]
+    df = df[['RMA Number', 'Original Order ID', 'Return Tracking Number', 'Customer Email', 'Shipped From Name', 'Shipped From Address 1', 'Shipped From City', 'Shipped From State',
+             'Shipped From ZIP', 'Shipped From Country Code', 'Barcode', 'Return Initiated Date', 'Return Delivered Date']]
 
     newColDict = {'ClientID':'FLAANT0001', 'Reverse Type':'Consumer Return', 'Phone':'', 'RMA Expiration Date':'', 'Ship Method':'Small Parcel', 'Shipment Carrier':'USPS',
                   'BOL':'', 'ETA':'', 'Note':'', 'UPC':'', 'Buyer ID':'', 'Return Qty':1, 'UOM':'EA', 'Serial Number':''}
@@ -157,19 +158,23 @@ def formatReport():
     for index, colName in enumerate(newColKeys):
         df[colName] = newColDict[colName]
 
-    df = df.rename(columns={'Original Order' : 'Reference', 'Shipped From Name' : 'Return Party', 'Shipped From Address 1' : 'Return From Address 1',
-                            'Shipped From City' : 'Return From City', 'Shipped From State' : 'Return From State', 'Shipped From Zip' : 'Return From Postal Code', 
-                            'Shipped From Country Code' : 'Return From Country', 'Shopper Email' : 'Email', 'Tracking Number' : 'Pro / Tracking Number',
-                            'Barcode' : 'Item Name'})
-                    
-    df['Reference'] = df['Reference'].str.replace('#', '')
+    df = df.rename(columns={'RMA Number' : 'RMA', 'Original Order ID' : 'Reference', 'Shipped From Name' : 'Return Party', 'Shipped From Address 1' : 'Return From Address 1',
+                            'Shipped From City' : 'Return From City', 'Shipped From State' : 'Return From State', 'Shipped From ZIP' : 'Return From Postal Code', 
+                            'Shipped From Country Code' : 'Return From Country', 'Customer Email' : 'Email', 'Return Tracking Number' : 'Pro / Tracking Number',
+                            'Barcode' : 'Item Name', 'Return Initiated Date' : 'Return Created Date'})
 
     df = df[['ClientID', 'RMA', 'Reference', 'Reverse Type', 'Return Party', 'Return From Address 1', 'Return From City', 'Return From State', 'Return From Postal Code', 'Return From Country',
                 'Phone', 'Email', 'RMA Expiration Date', 'Ship Method', 'Shipment Carrier', 'Pro / Tracking Number', 'BOL', 'ETA', 'Note', 'Item Name', 'UPC', 'Buyer ID', 'Return Qty', 'UOM', 'Serial Number', 'Return Created Date',
                 'Return Delivered Date']]
 
+    df['UPC'] = df['Item Name']
+
     df.to_excel('./RMA/Transformed.xlsx', index=False)
+    print('Transformation complete!')
 
 if __name__ == '__main__':
+    #exportReport()
     downloadReport()
+    #formatReport()
 
+    #print('Process complete!')
