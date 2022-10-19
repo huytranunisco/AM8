@@ -4,30 +4,35 @@ from datetime import date, timedelta
 import os.path
 from pandas import read_excel
 from calendar import monthrange
-from shutil import copy
-from glob import glob
+from shutil import copy, move
 
 def getInvoice(acc, facility, startP, endP, accName, cycle, wise = False):
     try:
-        
+        downloaddir = 'C:\\Users\\' + os.getlogin() + '\\Downloads'
+        accsdir = 'C:\\Users\\' + os.getlogin() +'\\Desktop\\Discrepancy Reports\\Accounts'
 
         if wise:
             invoiceName = WISEauto.exportReport(accName, facility, startP, endP)
-            newName = accName + '-' + fac + '-' + cycle + '-Activity_Report'
-            newPath = 'C:\\Users\\' + os.getlogin() +'\\Desktop\\Discrepancy Reports\\Accounts\\00 - Historical Activity reports\\' + newName + '.xlsx'
-            copyPath = 'C:\\Users\\' + os.getlogin() + '\\Desktop\\Discrepancy Reports\\Accounts\\02 - Current Activity reports\\' + newName + '.xlsx'
+            newName = accName + '-' + fac + '-' + cycle + '-Activity_Report.xlsx'
+            newPath = 'C:\\Users\\' + os.getlogin() +'\\Desktop\\Discrepancy Reports\\Accounts\\00 - Historical Activity reports\\' + newName
+            copyPath = 'C:\\Users\\' + os.getlogin() + '\\Desktop\\Discrepancy Reports\\Accounts\\02 - Current Activity reports\\' + newName
 
         else:
             facility, invoiceName = BNPauto.exportHandle(acc, facility, startP, endP, accName)
             if facility == False or invoiceName == False: 
                 return False
 
-            newName = accName + '-' + fac + '-' + cycle + '-Invoice'
+            newName = accName + '-' + fac + '-' + cycle + '-Invoice.xlsx'
             newPath = 'C:\\Users\\' + os.getlogin() +'\\Desktop\\Discrepancy Reports\\Accounts\\00 - Historical Invoices\\' + newName + '.xlsx'
             copyPath = 'C:\\Users\\' + os.getlogin() + '\\Desktop\\Discrepancy Reports\\Accounts\\02 - Current Invoices\\' + newName + '.xlsx'
+        
+        folder = os.listdir(downloaddir)
+        for file in folder:
+            if 'activityReoport' in file:
+                fileEnd = file
 
-        print(f'Invoice Path: {invoiceName}')
-        os.renames(invoiceName, newPath)
+        print(f'Invoice Path: {invoiceName}, FileEnd: {fileEnd}')
+        os.rename(os.path.join(downloaddir, fileEnd), os.path.join(accsdir, '00 - Historical Activity reports', newName))
 
         copy(newPath, copyPath)
 
