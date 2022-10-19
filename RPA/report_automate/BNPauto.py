@@ -146,7 +146,6 @@ def exportHandle(acc, fac, start, end, accName):
             print("Error")
             return False, False
         timer += 1
-
         
     return facility, path
 

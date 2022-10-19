@@ -5,11 +5,14 @@ import os.path
 from pandas import read_excel
 from calendar import monthrange
 from shutil import copy
+from glob import glob
 
 def getInvoice(acc, facility, startP, endP, accName, cycle, wise = False):
-    try: 
+    try:
+        
+
         if wise:
-            invoiceName = (WISEauto.exportReport(accName, facility, startP, endP))
+            invoiceName = WISEauto.exportReport(accName, facility, startP, endP)
             newName = accName + '-' + fac + '-' + cycle + '-Activity_Report'
             newPath = 'C:\\Users\\' + os.getlogin() +'\\Desktop\\Discrepancy Reports\\Accounts\\00 - Historical Activity reports\\' + newName + '.xlsx'
             copyPath = 'C:\\Users\\' + os.getlogin() + '\\Desktop\\Discrepancy Reports\\Accounts\\02 - Current Activity reports\\' + newName + '.xlsx'
@@ -23,7 +26,8 @@ def getInvoice(acc, facility, startP, endP, accName, cycle, wise = False):
             newPath = 'C:\\Users\\' + os.getlogin() +'\\Desktop\\Discrepancy Reports\\Accounts\\00 - Historical Invoices\\' + newName + '.xlsx'
             copyPath = 'C:\\Users\\' + os.getlogin() + '\\Desktop\\Discrepancy Reports\\Accounts\\02 - Current Invoices\\' + newName + '.xlsx'
 
-        os.rename(invoiceName, newPath)
+        print(f'Invoice Path: {invoiceName}')
+        os.renames(invoiceName, newPath)
 
         copy(newPath, copyPath)
 
@@ -77,7 +81,11 @@ for index in invoiceAccs.index:
         #getInvoice(bnpName, fac, startPeriod, endPeriod, accName, 'Bimonthly')
         getInvoice('', fac, wiseStart, wiseEnd, accName, 'Bimonthly', True)
 
+        break
+
     elif invoiceAccs['BillingFreq'][index] == 'Weekly':
+        continue
+
         if today.day < 16:
             previousMonth = today.month - 1 if today.month != 1 else 12
             previousYear = today.year - 1 if today.month == 12 else today.year
@@ -94,7 +102,7 @@ for index in invoiceAccs.index:
             wiseStart = d.strftime("%y-%m-%d")
             wiseEnd = endWeekly.strftime("%y-%m-%d")
 
-            #getInvoice(bnpName, fac, startPeriod, endPeriod, accName, 'Weekly')
+            getInvoice(bnpName, fac, startPeriod, endPeriod, accName, 'Weekly')
             getInvoice('', fac, wiseStart, wiseEnd, accName, 'Bimonthly', True)
 
 
