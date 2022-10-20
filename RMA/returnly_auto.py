@@ -67,21 +67,19 @@ def downloadReport():
     domain = 'webmail.unisco.com'
     userEmail = 'FLAANT0001.rms@unisco.com'
     userPass = 'Syst0001' #getpass.getpass()
-    folder = input('Please enter the folder location you want to download the report to (remove ""): ')
-
-    while os.path.exists(folder) != True:
-        folder = input('Please enter a valid folder location...: ')
 
     try:
         M = imaplib.IMAP4_SSL(domain)
+
         M.login(userEmail, userPass)
+
         M.select('Inbox')
 
-        status, data = M.search(None, '(UNSEEN FROM "help@returnly.com" SUBJECT "Your Returnly report is ready")')
-        while True:
-            if data != [s for s in data if s.isdigit()]:
-                print("No report found yet... please wait...")
-                time.sleep(10)
+        status, data = M.search(None, '(UNSEEN FROM "help@returnly.com")')
+
+        if data != [s for s in data if s.isdigit()]:
+            print("No report found yet... please wait...")
+            while True:
                 status, data = M.search(None, '(UNSEEN FROM "help@returnly.com" SUBJECT "Your Returnly report is ready")')
                 if data == [s for s in data if s.isdigit()]:
                     print('Report has been found... continuing...')
@@ -96,9 +94,11 @@ def downloadReport():
                 else:
                     break
             print('Downloading the email...'), num
-            f = open('%s/%s.eml' %(folder, num), 'wb')
+            numy = str(num) + '.eml'
+            x = os.path.join(r"C:\Users\gcastellanos\Downloads", numy)
+            f = open(numy, "x")
+            f = open(x)
             f.write(data[0][1])
-            print('good')
             f.close()
         
         file = input('Please enter file path of report (remove ""): ')
