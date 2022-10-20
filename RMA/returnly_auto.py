@@ -1,6 +1,8 @@
+from asyncio.windows_events import NULL
 import email
 from email import policy
 from email.parser import BytesParser
+from pickle import EMPTY_LIST
 import pandas as pd
 import imaplib
 import getpass
@@ -12,6 +14,8 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
+
+
 
 def exportReport():
     global userReturnly
@@ -55,6 +59,10 @@ def exportReport():
         print('Failed to export report\n','Error: ', e)
         driver.quit()
 
+    a = exportReport.has_been_called = True
+    return a
+a = exportReport.has_been_called = False
+
 def downloadReport():
     domain = 'webmail.unisco.com'
     userEmail = 'FLAANT0001.rms@unisco.com'
@@ -69,14 +77,15 @@ def downloadReport():
         M.login(userEmail, userPass)
         M.select('Inbox')
 
-        status, data = M.search(None, '(UNSEEN FROM help@returnly.com)')
-        print(status)
-        if status != 'OK':
-            print("No report found yet... please wait...")
-            time.sleep(10)
-            status, data = M.search(None, 'UNSEEN')
-            if status == 'OK':
-                print('Report has been found... continuing...')
+        status, data = M.search(None, '(UNSEEN FROM "help@returnly.com" SUBJECT "Your Returnly report is ready")')
+        while True:
+            if data != [s for s in data if s.isdigit()]:
+                print("No report found yet... please wait...")
+                time.sleep(10)
+                status, data = M.search(None, '(UNSEEN FROM "help@returnly.com" SUBJECT "Your Returnly report is ready")')
+                if data == [s for s in data if s.isdigit()]:
+                    print('Report has been found... continuing...')
+                    break
 
         for num in data[0].split():
             while True:
@@ -89,6 +98,7 @@ def downloadReport():
             print('Downloading the email...'), num
             f = open('%s/%s.eml' %(folder, num), 'wb')
             f.write(data[0][1])
+            print('good')
             f.close()
         
         file = input('Please enter file path of report (remove ""): ')
@@ -139,8 +149,12 @@ def downloadReport():
     except Exception as e:
         print('Error: ', e)
 
-def formatReport():
+    b = downloadReport.has_been_called = True
+    return b
 
+b = downloadReport.has_been_called = False
+
+def formatReport():
     file = input('Please enter file path of the downloaded report (remove ""): ')
     while os.path.exists(file) != True:
         file = input('Please enter a valid file...: ')
@@ -172,9 +186,20 @@ def formatReport():
     df.to_excel('./RMA/Transformed.xlsx', index=False)
     print('Transformation complete!')
 
+    c = formatReport.has_been_called = True
+    return c
+c = formatReport.has_been_called = False
+
 if __name__ == '__main__':
     #exportReport()
     downloadReport()
     #formatReport()
 
-    #print('Process complete!')
+    if a and b and c:
+        print('Process fully completed with no issues!')
+    elif a == False:
+        print('Something went wrong when attempting to export report...')
+    elif b == False:
+        print('Something went wrong when attempting to download report...')
+    elif c == False:
+        print('Somethingw went wrong when attempting to format report...')
