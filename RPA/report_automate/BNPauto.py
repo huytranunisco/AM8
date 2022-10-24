@@ -107,7 +107,6 @@ def exportHandle(acc, fac, start, end, accName):
         print(f'No invoice found for {accName}_{facility}!')
         return False, False
     elif len(rows) > 1:
-        '''
         for index in range(len(rows)):
             xpath = '//*[@id=\"invoicegrid\"]/div[3]/table/tbody/tr[' + str(index + 1) + ']/td[1]/label'
             interactor = driver.find_element(By.XPATH, xpath)
@@ -115,8 +114,6 @@ def exportHandle(acc, fac, start, end, accName):
             interactor.click()
         
         invoiceName = 'Multi'
-        '''
-        return False, False
     else:
         row = rows[0]
         col = row.find_elements(By.TAG_NAME, 'td')[3]
@@ -137,15 +134,10 @@ def exportHandle(acc, fac, start, end, accName):
 
     path = 'C:\\Users\\' + user + '\\Downloads\\Invoice[' + invoiceName + '].xlsx'
 
-    timer = 0
     while not os.path.exists(path):
         time.sleep(1)
         if os.path.isfile(path):
             break
-        if timer == 15:
-            print("Error")
-            return False, False
-        timer += 1
         
     return facility, path
 

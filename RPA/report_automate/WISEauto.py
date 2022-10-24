@@ -77,17 +77,14 @@ def exportReport(acc, fac, start, end):
     interactor = driver.find_element(By.XPATH, '//*[@id="sitecontent"]/div/div/div/div[2]/form/div[2]/div[2]/unis-waitting-btn/button')
     action.move_to_element(interactor).click().perform()
 
+    timer = 0
+
     downloadWait = True
     while downloadWait:
+        if timer == 20:
+            raise Exception("Timer reached (No account found)!")
         downloadFolderAfter = glob(userDownloadPath)
         if len(downloadFolderBefore) < len(downloadFolderAfter):
             downloadWait = False
         time.sleep(1)
-
-    downloadFolderAfter.sort(key=os.path.getmtime)
-
-    newfile = downloadFolderAfter[len(downloadFolderAfter) - 1]
-    print(newfile)
-
-    return newfile
-
+        timer += 1

@@ -5,38 +5,42 @@ import os.path
 from pandas import read_excel
 from calendar import monthrange
 from shutil import copy, move
+from glob import glob
 
-def getInvoice(acc, facility, startP, endP, accName, cycle, wise = False):
+def getInvoice(acc, facility, startP, endP, accName, cycle, wise = False, weekNum = ''):
     try:
         downloaddir = 'C:\\Users\\' + os.getlogin() + '\\Downloads'
         accsdir = 'C:\\Users\\' + os.getlogin() +'\\Desktop\\Discrepancy Reports\\Accounts'
 
         if wise:
-            invoiceName = WISEauto.exportReport(accName, facility, startP, endP)
-            newName = accName + '-' + fac + '-' + cycle + '-Activity_Report.xlsx'
-            newPath = 'C:\\Users\\' + os.getlogin() +'\\Desktop\\Discrepancy Reports\\Accounts\\00 - Historical Activity reports\\' + newName
-            copyPath = 'C:\\Users\\' + os.getlogin() + '\\Desktop\\Discrepancy Reports\\Accounts\\02 - Current Activity reports\\' + newName
-
+            WISEauto.exportReport(accName, facility, startP, endP)
+            newName = accName + '-' + facility + '-' + cycle + '-Activity_Report' + weekNum + '.xlsx'
+            newPath = os.path.join(accsdir, '01 - Historical Activity reports', newName)
+            copyPath = 'C:\\Users\\' + os.getlogin() + '\\Desktop\\Discrepancy Reports\\Accounts\\03 - Current Activity reports\\' + newName
         else:
             facility, invoiceName = BNPauto.exportHandle(acc, facility, startP, endP, accName)
             if facility == False or invoiceName == False: 
                 return False
 
-            newName = accName + '-' + fac + '-' + cycle + '-Invoice.xlsx'
-            newPath = 'C:\\Users\\' + os.getlogin() +'\\Desktop\\Discrepancy Reports\\Accounts\\00 - Historical Invoices\\' + newName + '.xlsx'
+            newName = accName + '-' + facility + '-' + cycle + '-Invoice' + weekNum + '.xlsx'
+            newPath = os.path.join(accsdir, '00 - Historical Invoices', newName)
             copyPath = 'C:\\Users\\' + os.getlogin() + '\\Desktop\\Discrepancy Reports\\Accounts\\02 - Current Invoices\\' + newName + '.xlsx'
         
-        folder = os.listdir(downloaddir)
-        for file in folder:
-            if 'activityReoport' in file:
-                fileEnd = file
-
-        print(f'Invoice Path: {invoiceName}, FileEnd: {fileEnd}')
-        os.rename(os.path.join(downloaddir, fileEnd), os.path.join(accsdir, '00 - Historical Activity reports', newName))
+        fileList = list(filter(os.path.isfile, glob(downloaddir + '\\*.xlsx')))
+        fileList.sort(key=lambda x: os.path.getmtime(x))
+        file = fileList[len(fileList) - 1]
+        fileEnd = os.path.basename(file)
+        
+        if wise:
+            move(os.path.join(downloaddir, fileEnd), os.path.join(accsdir, '01 - Historical Activity reports', newName))
+        else:
+            move(os.path.join(downloaddir, fileEnd), os.path.join(accsdir, '00 - Historical Invoices', newName))
 
         copy(newPath, copyPath)
 
-        print('Done!')
+        print(f'Downloaded and Copied {newName} \n')
+
+        return True
 
     except Exception as e:
         if hasattr(e, 'message'):
@@ -82,14 +86,17 @@ for index in invoiceAccs.index:
     
         wiseStart = startBimonthly.strftime("%y-%m-%d")
         wiseEnd = endBimonthly.strftime("%y-%m-%d")
-
-        #getInvoice(bnpName, fac, startPeriod, endPeriod, accName, 'Bimonthly')
-        getInvoice('', fac, wiseStart, wiseEnd, accName, 'Bimonthly', True)
-
-        break
+        
+        if (getInvoice(bnpName, fac, startPeriod, endPeriod, accName, 'Bimonthly')):
+            if (getInvoice('', fac, wiseStart, wiseEnd, accName, 'Bimonthly', True)):
+                invoiceAccs['Downloaded'][index] = True
+                invoiceAccs.to_excel('AccountsDone.xlsx', sheet_name='Account_Fac_Freq', index=False)
+        else:
+            invoiceAccs['Downloaded'][index] = False
+            invoiceAccs.to_excel('AccountsDone.xlsx', sheet_name='Account_Fac_Freq', index=False)
+            continue
 
     elif invoiceAccs['BillingFreq'][index] == 'Weekly':
-        continue
 
         if today.day < 16:
             previousMonth = today.month - 1 if today.month != 1 else 12
@@ -100,18 +107,23 @@ for index in invoiceAccs.index:
             previousBillDate = date(today.year, today.month, 1)
             weeklyStartPeriods = find_sundays_between(previousBillDate, date(today.year, today.month, 15))
 
-        for d in weeklyStartPeriods:
+        for count, d in enumerate(weeklyStartPeriods):
             endWeekly = d + timedelta(days=+6)
             startPeriod = d.strftime("%m/%d/%y")
             endPeriod = endWeekly.strftime("%m/%d/%y")
             wiseStart = d.strftime("%y-%m-%d")
             wiseEnd = endWeekly.strftime("%y-%m-%d")
 
-            getInvoice(bnpName, fac, startPeriod, endPeriod, accName, 'Weekly')
-            getInvoice('', fac, wiseStart, wiseEnd, accName, 'Bimonthly', True)
-
+            if (getInvoice(bnpName, fac, startPeriod, endPeriod, accName, 'Weekly', False, '-' + str(count))):
+                if(getInvoice('', fac, wiseStart, wiseEnd, accName, 'Weekly', True, '-' + str(count))):
+                    invoiceAccs['Downloaded'][index] = True
+                    invoiceAccs.to_excel('AccountsDone.xlsx', sheet_name='Account_Fac_Freq', index=False)
+            else:
+                invoiceAccs['Downloaded'][index] = False
+                invoiceAccs.to_excel('AccountsDone.xlsx', sheet_name='Account_Fac_Freq', index=False)
+                continue
 
     else: continue
 
 print("Invoices Downloaded!")
-x = input("Press Enter to finish.")
+x = input("Press Enter to finish. ")
