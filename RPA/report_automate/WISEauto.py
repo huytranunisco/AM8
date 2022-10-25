@@ -60,8 +60,10 @@ def exportReport(acc, fac, start, end):
     #Inputting Customer, Time From, Time To
     interactor = WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.XPATH, '/html/body/div[1]/div[2]/div[2]/div/div/div/div/div/div/div/div/div/div[2]/form/div[1]/div[1]/organization-auto-complete/div/div')))
     action.click(interactor).perform()
-    for letter in acc:
-        time.sleep(0.01)
+    wiseacc = acc[:10]
+    time.sleep(2)
+    for letter in wiseacc:
+        time.sleep(0.05)
         action.send_keys(letter).perform()
 
     time.sleep(2)
@@ -77,14 +79,15 @@ def exportReport(acc, fac, start, end):
     interactor = driver.find_element(By.XPATH, '//*[@id="sitecontent"]/div/div/div/div[2]/form/div[2]/div[2]/unis-waitting-btn/button')
     action.move_to_element(interactor).click().perform()
 
-    timer = 0
-
     downloadWait = True
     while downloadWait:
-        if timer == 20:
-            raise Exception("Timer reached (No account found)!")
         downloadFolderAfter = glob(userDownloadPath)
         if len(downloadFolderBefore) < len(downloadFolderAfter):
             downloadWait = False
-        time.sleep(1)
-        timer += 1
+
+        try:
+            interactor = driver.find_element(By.XPATH, '/html/body/div[7]/md-dialog/md-dialog-actions/button')
+            interactor.click()
+            return Exception("No Data Found!")
+        except:
+            pass

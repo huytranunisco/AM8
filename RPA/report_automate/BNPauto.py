@@ -104,8 +104,7 @@ def exportHandle(acc, fac, start, end, accName):
     table = driver.find_element(By.XPATH, '//*[@id="invoicegrid"]/div[3]/table')
     rows = table.find_elements(By.TAG_NAME, 'tr')
     if len(rows) == 0:
-        print(f'No invoice found for {accName}_{facility}!')
-        return False, False
+        raise Exception(f'No invoice found for {accName}_{facility}!')
     elif len(rows) > 1:
         for index in range(len(rows)):
             xpath = '//*[@id=\"invoicegrid\"]/div[3]/table/tbody/tr[' + str(index + 1) + ']/td[1]/label'

@@ -6,6 +6,9 @@ from pandas import read_excel
 from calendar import monthrange
 from shutil import copy, move
 from glob import glob
+from time import time
+
+start_time = time()
 
 def getInvoice(acc, facility, startP, endP, accName, cycle, wise = False, weekNum = ''):
     try:
@@ -13,7 +16,7 @@ def getInvoice(acc, facility, startP, endP, accName, cycle, wise = False, weekNu
         accsdir = 'C:\\Users\\' + os.getlogin() +'\\Desktop\\Discrepancy Reports\\Accounts'
 
         if wise:
-            WISEauto.exportReport(accName, facility, startP, endP)
+            WISEauto.exportReport(acc, facility, startP, endP)
             newName = accName + '-' + facility + '-' + cycle + '-Activity_Report' + weekNum + '.xlsx'
             newPath = os.path.join(accsdir, '01 - Historical Activity reports', newName)
             copyPath = 'C:\\Users\\' + os.getlogin() + '\\Desktop\\Discrepancy Reports\\Accounts\\03 - Current Activity reports\\' + newName
@@ -45,9 +48,12 @@ def getInvoice(acc, facility, startP, endP, accName, cycle, wise = False, weekNu
     except Exception as e:
         if hasattr(e, 'message'):
             print(e.message)
-
+            invoiceAccs['Downloaded'][index] = e.message
+            invoiceAccs.to_excel('AccountsDone.xlsx', sheet_name='Account_Fac_Freq', index=False)
         else:
             print('An error occured at ', e.args, e.__doc__)
+            invoiceAccs['Downloaded'][index] = e.args, e.__doc__
+            invoiceAccs.to_excel('AccountsDone.xlsx', sheet_name='Account_Fac_Freq', index=False)
 
 def find_sundays_between(start: date, end: date):
     total_days = (end - start).days + 1
@@ -56,13 +62,14 @@ def find_sundays_between(start: date, end: date):
     return [day for day in all_days if day.weekday() is sunday]
 
 today = date.today()
-dateFormat = today.strftime("%m-%d-%y")
+
 
 invoiceAccs = read_excel('BNP Excel Sheet.xlsx', sheet_name='Account_Fac_Freq')
 
 for index in invoiceAccs.index:
     fac = invoiceAccs['Facility Name'][index]
     bnpName = invoiceAccs['BNP Account Name'][index]
+    wiseName = invoiceAccs['Wise Account Name'][index]
     accName = invoiceAccs['AccountName'][index]
 
     print(f'Getting Invoice for {accName} ({fac})...')
@@ -86,13 +93,21 @@ for index in invoiceAccs.index:
     
         wiseStart = startBimonthly.strftime("%y-%m-%d")
         wiseEnd = endBimonthly.strftime("%y-%m-%d")
-        
-        if (getInvoice(bnpName, fac, startPeriod, endPeriod, accName, 'Bimonthly')):
-            if (getInvoice('', fac, wiseStart, wiseEnd, accName, 'Bimonthly', True)):
+
+        bnpInvoice = getInvoice(bnpName, fac, startPeriod, endPeriod, accName, 'Bimonthly')
+        wiseInvoice = False
+
+        if (bnpInvoice):
+            wiseInvoice = getInvoice(wiseName, fac, wiseStart, wiseEnd, accName, 'Bimonthly', True)
+            if (wiseInvoice):
                 invoiceAccs['Downloaded'][index] = True
                 invoiceAccs.to_excel('AccountsDone.xlsx', sheet_name='Account_Fac_Freq', index=False)
+            else:
+                invoiceAccs['Downloaded'][index] = 'No Wise Invoice'
+                invoiceAccs.to_excel('AccountsDone.xlsx', sheet_name='Account_Fac_Freq', index=False)
+                continue
         else:
-            invoiceAccs['Downloaded'][index] = False
+            invoiceAccs['Downloaded'][index] = 'No BNP Invoice'
             invoiceAccs.to_excel('AccountsDone.xlsx', sheet_name='Account_Fac_Freq', index=False)
             continue
 
@@ -114,16 +129,26 @@ for index in invoiceAccs.index:
             wiseStart = d.strftime("%y-%m-%d")
             wiseEnd = endWeekly.strftime("%y-%m-%d")
 
-            if (getInvoice(bnpName, fac, startPeriod, endPeriod, accName, 'Weekly', False, '-' + str(count))):
-                if(getInvoice('', fac, wiseStart, wiseEnd, accName, 'Weekly', True, '-' + str(count))):
+            bnpInvoice = getInvoice(bnpName, fac, startPeriod, endPeriod, accName, 'Weekly', False, '-' + str(count))
+            wiseInvoice = False
+
+            if (bnpInvoice):
+                wiseInvoice = getInvoice(wiseName, fac, wiseStart, wiseEnd, accName, 'Weekly', True, '-' + str(count))
+                if(wiseInvoice):
                     invoiceAccs['Downloaded'][index] = True
                     invoiceAccs.to_excel('AccountsDone.xlsx', sheet_name='Account_Fac_Freq', index=False)
+                else:
+                    invoiceAccs['Downloaded'][index] = 'No Wise Invoice'
+                    invoiceAccs.to_excel('AccountsDone.xlsx', sheet_name='Account_Fac_Freq', index=False)
+                    continue
             else:
-                invoiceAccs['Downloaded'][index] = False
+                invoiceAccs['Downloaded'][index] = 'No BNP Invoice'
                 invoiceAccs.to_excel('AccountsDone.xlsx', sheet_name='Account_Fac_Freq', index=False)
                 continue
+
 
     else: continue
 
 print("Invoices Downloaded!")
+print("--- %s seconds ---" % (time() - start_time))
 x = input("Press Enter to finish. ")
