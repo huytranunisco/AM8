@@ -25,9 +25,7 @@ def exportReport():
     select.click()
 
     #Navigating to reports tab and exporting
-    select = WebDriverWait(driver, 5).until(
-        EC.presence_of_element_located((By.XPATH, '//*[@id="sidebar"]/nav/ul/li[3]/a/span')))
-    select.click()
+    driver.get('https://dashboard.returnly.com/dashboard/reports')
     select = WebDriverWait(driver, 5).until(
         EC.presence_of_element_located((By.NAME, 'UNIS RMA Report')))
     select.click()
@@ -36,28 +34,72 @@ def exportReport():
     select.click()
     driver.quit()
 
-def downloadReport():
+#Connecting to email domain through iMAP
+def loginEmail():
     domain = 'webmail.unisco.com'
-
-    #Connecting to email domain through iMAP
     M = imaplib.IMAP4_SSL(domain)
     M.login(userEmail, passEmail)
+        
+    return M
+
+#Searching for specific email
+def searchEmail():
     M.select('Inbox')
-    time.sleep(45) #Sleeping to wait for email so there isn't complications
     status, data = M.search(None, '(UNSEEN FROM "help@returnly.com" SUBJECT "Your Returnly report is ready")')
-              
+    newest_data = getNewestEmail(data)
+
+    #If no new email is found it searches repetitively
+    try:
+        if newest_data[0].isdigit() == False:
+            pass
+        while newest_data[0].isdigit() == False:
+            newest_data = searchEmail()
+            if newest_data[0].isdigit():
+                break
+    except IndexError:
+        pass
+
+    if status != 'OK':
+        print('Error occured while searching... ', e)
+
+    return newest_data
+
+#Retrieving the newest email
+def getNewestEmail(newest_data):
+    try:
+        ids = newest_data[0]
+        id_list = ids.split()
+        latest_emails = id_list
+        keys = map(int, latest_emails)
+        news_keys = sorted(keys, reverse=True)
+        str_keys = [str(e) for e in news_keys]
+        return str_keys
+    except IndexError:
+        pass
+
+#Downloading the email which was retrieved
+def downloadReport():
+    #Searching for an unread email from returnly if not found an error arrises and it goes back into searching
+    search = False
+    while (search == False):
+        try:
+            time.sleep(1)
+            data = searchEmail()
+            search = bool(searchEmail())
+        except IndexError:
+            continue
+
     #Writing the data retrieved from the email to the eml file
     for num in data[0].split():
         status2, data2 = M.fetch(num, '(RFC822)')
         if status2 != 'OK':
-            print("Error downloading the email... Please make sure that the report email 'unread'!")
+            print("Error downloading the email...")
             return
         numy = str(num) + '.eml'
         x = os.path.join(f"C:\\Users\\{user}\\Downloads\\", numy)
         f = open(x, 'wb')
         f.write(data2[0][1])
         f.close()
-
     numy = str(data[0]) + '.eml'
     y = os.path.join(f"C:\\Users\\{user}\\Downloads\\", numy)
 
@@ -70,11 +112,11 @@ def downloadReport():
             message = str(part.get_payload(decode=True))
             messageList.append(message)
 
+    #Eliminating all other text besides the first link (the download link)
     a = messageList[1]
     newText = ""
     urlFlag = 0
     linksList = []
-
     for i in range(len(a)):
         if(a[i]=='<'):
             urlFlag = 1
@@ -98,12 +140,27 @@ def downloadReport():
         EC.presence_of_element_located((By.XPATH, '//*[@id="new_user"]/div[3]/div/input')))
     select.click()
     driver.get(linksList[0])
-    time.sleep(5)
+    download_wait(30)
     driver.quit()
 
+#Checks download folder for file and waits a certain amount of time, if time is exceeded it times out
+def download_wait(timeout):
+    seconds = 0
+    dl_wait = True
+    while dl_wait and seconds < timeout:
+        time.sleep(1)
+        dl_wait = False
+        files = os.listdir(f"C:\\Users\\{user}\\Downloads\\")
+        for fname in files:
+            if fname.endswith('.crdownload'):
+                dl_wait = True
+        seconds += 1
+    return seconds
+
+#Formatting the report to liking
 def formatReport():
     files = [os.path.join(f'C:\\Users\\{user}\\Downloads\\', x) for x in os.listdir(f'C:\\Users\\{user}\\Downloads\\') if x.endswith(".csv")]
-    newest = max(files , key = os.path.getctime)
+    newest = max(files , key = os.path.getctime) #Retrieves the latest .csv file in downloads folder
 
     file = newest
     
@@ -138,21 +195,21 @@ def formatReport():
     df.to_excel(f"C:\\Users\\{user}\\Downloads\\Transformed_{filename}_PDT.xlsx", index = False)
 
 if __name__ == '__main__':
+    user = os.getlogin()
     userReturnly = 'FLAANT0001.rms@unisco.com'
     passReturnly = 'Syst0002'
     userEmail = 'FLAANT0001.rms@unisco.com'
     passEmail = 'Syst0001'
 
-    user = input('Please enter pc user: ')
-
     try:
-        print('\nExporting report...')
+        print('Exporting report...')
         exportReport()
         print('\nDownloading report...')
+        M = loginEmail()
         downloadReport()
         print('\nFormatting report...')
         formatReport()
-        print('Process completed!\n')
+        print('\nProcess completed!\n')
 
     except Exception as e:
         print('Erorr: ', e)
