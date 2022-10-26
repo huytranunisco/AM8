@@ -23,7 +23,7 @@ def exportReport():
     WebDriverWait(driver, 20).until(EC.element_to_be_clickable((By.XPATH, '//*[@id="new_user"]/div[3]/div/input'))).click()
 
     """
-    interactor = driver.find_element(By.XPATH, '//*[@id="user_email"]') 
+    interactor = driver.find_element(By.XPATH, '//*[@id="user_email"]')
     interactor.send_keys(userReturnly)
     interactor = driver.find_element(By.XPATH, '//*[@id="user_password"]')
     interactor.send_keys(passReturnly)
