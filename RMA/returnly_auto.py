@@ -16,16 +16,30 @@ def exportReport():
     #Logging in to returnly
     driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()))
     driver.get('https://dashboard.returnly.com/dashboard/users/login')
+    driver.maximize_window()
+
+    WebDriverWait(driver, 20).until(EC.element_to_be_clickable((By.XPATH, '//*[@id="user_email"]'))).send_keys(userReturnly)
+    WebDriverWait(driver, 20).until(EC.element_to_be_clickable((By.XPATH, '//*[@id="user_password"]'))).send_keys(passReturnly)
+    WebDriverWait(driver, 20).until(EC.element_to_be_clickable((By.XPATH, '//*[@id="new_user"]/div[3]/div/input'))).click()
+
+    """
     interactor = driver.find_element(By.XPATH, '//*[@id="user_email"]') 
     interactor.send_keys(userReturnly)
     interactor = driver.find_element(By.XPATH, '//*[@id="user_password"]')
     interactor.send_keys(passReturnly)
     select =  WebDriverWait(driver, 5).until(
-        EC.presence_of_element_located((By.XPATH, '//*[@id="new_user"]/div[3]/div/input')))
-    select.click()
+        EC.element_to_be_clickable((By.XPATH, '//*[@id="new_user"]/div[3]/div/input')))
+    EC.click()
+    """
 
     #Navigating to reports tab and exporting
     driver.get('https://dashboard.returnly.com/dashboard/reports')
+    driver.maximize_window()
+
+    WebDriverWait(driver, 20).until(EC.element_to_be_clickable((By.XPATH, '//*[@id="reconciliation-cards-container"]/article[4]/div/nav/ul/li[2]/span'))).click()
+    WebDriverWait(driver, 20).until(EC.element_to_be_clickable((By.XPATH, '//*[@id="js-reporting-modal-submit"]'))).click()
+
+    """
     select = WebDriverWait(driver, 5).until(
         EC.presence_of_element_located((By.XPATH, '//*[@id="reconciliation-cards-container"]/article[4]/div/nav/ul/li[2]/span')))
     select.click()
@@ -33,6 +47,8 @@ def exportReport():
         EC.presence_of_element_located((By.XPATH, '//*[@id="js-reporting-modal-submit"]')))
     select.click()
     driver.quit()
+    """
+
 
 #Connecting to email domain through iMAP
 def loginEmail():
@@ -132,6 +148,13 @@ def downloadReport():
     #Logging into returnly again to retrieve report from the link
     driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()))
     driver.get('https://dashboard.returnly.com/dashboard/users/login')
+    driver.maximize_window()
+
+    WebDriverWait(driver, 20).until(EC.element_to_be_clickable((By.XPATH, '//*[@id="user_email"]'))).send_keys(userReturnly)
+    WebDriverWait(driver, 20).until(EC.element_to_be_clickable((By.XPATH, '//*[@id="user_password"]'))).send_keys(passReturnly)
+    WebDriverWait(driver, 20).until(EC.element_to_be_clickable((By.XPATH, '//*[@id="new_user"]/div[3]/div/input'))).click()
+
+    """
     interactor = driver.find_element(By.XPATH, '//*[@id="user_email"]') 
     interactor.send_keys(userReturnly)
     interactor = driver.find_element(By.XPATH, '//*[@id="user_password"]')
@@ -139,6 +162,8 @@ def downloadReport():
     select =  WebDriverWait(driver, 5).until(
         EC.presence_of_element_located((By.XPATH, '//*[@id="new_user"]/div[3]/div/input')))
     select.click()
+    """
+
     driver.get(linksList[0])
     download_wait(30)
     driver.quit()
