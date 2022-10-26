@@ -8,6 +8,7 @@ from datetime import datetime
 from selenium import webdriver
 from webdriver_manager.chrome import ChromeDriverManager
 from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.common.action_chains import ActionChains
 from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
@@ -16,19 +17,35 @@ def exportReport():
 
     #Logging in to returnly
     driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()))
+    actions = ActionChains(driver)
     driver.get('https://dashboard.returnly.com/dashboard/users/login')
     driver.maximize_window()
 
-    WebDriverWait(driver, 20).until(EC.element_to_be_clickable((By.XPATH, '//*[@id="user_email"]'))).send_keys(userReturnly)
-    WebDriverWait(driver, 20).until(EC.element_to_be_clickable((By.XPATH, '//*[@id="user_password"]'))).send_keys(passReturnly)
-    WebDriverWait(driver, 20).until(EC.element_to_be_clickable((By.XPATH, '//*[@id="new_user"]/div[3]/div/input'))).click()
+    element = WebDriverWait(driver, 20).until(EC.element_to_be_clickable((By.XPATH, '//*[@id="user_email"]')))
+    actions.move_to_element(element).perform()
+    element.send_keys(userReturnly)
+
+    element = WebDriverWait(driver, 20).until(EC.element_to_be_clickable((By.XPATH, '//*[@id="user_password"]')))
+    actions.move_to_element(element).perform()
+    element.send_keys(passReturnly)
+
+    
+    element = WebDriverWait(driver, 20).until(EC.element_to_be_clickable((By.XPATH, '//*[@id="new_user"]/div[3]/div/input')))
+    actions.move_to_element(element).perform()
+    element.click()
 
     #Navigating to reports tab and exporting
     driver.get('https://dashboard.returnly.com/dashboard/reports')
     driver.maximize_window()
 
-    WebDriverWait(driver, 20).until(EC.element_to_be_clickable((By.XPATH, '//*[@id="reconciliation-cards-container"]/article[4]/div/nav/ul/li[2]/span'))).click()
-    WebDriverWait(driver, 20).until(EC.element_to_be_clickable((By.XPATH, '//*[@id="js-reporting-modal-submit"]'))).click()
+    element = WebDriverWait(driver, 20).until(EC.element_to_be_clickable((By.XPATH, '//*[@id="reconciliation-cards-container"]/article[4]/div/nav/ul/li[2]/span')))
+    actions.move_to_element(element).perform()
+    element.click()
+
+    element = WebDriverWait(driver, 20).until(EC.element_to_be_clickable((By.XPATH, '//*[@id="js-reporting-modal-submit"]')))
+    actions.move_to_element(element).perform()
+    element.click()
+
     driver.quit()
 
 #Connecting to email domain through iMAP
@@ -128,12 +145,22 @@ def downloadReport():
         
     #Logging into returnly again to retrieve report from the link
     driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()))
+    actions = ActionChains(driver)
     driver.get('https://dashboard.returnly.com/dashboard/users/login')
     driver.maximize_window()
 
-    WebDriverWait(driver, 20).until(EC.element_to_be_clickable((By.XPATH, '//*[@id="user_email"]'))).send_keys(userReturnly)
-    WebDriverWait(driver, 20).until(EC.element_to_be_clickable((By.XPATH, '//*[@id="user_password"]'))).send_keys(passReturnly)
-    WebDriverWait(driver, 20).until(EC.element_to_be_clickable((By.XPATH, '//*[@id="new_user"]/div[3]/div/input'))).click()
+    element = WebDriverWait(driver, 20).until(EC.element_to_be_clickable((By.XPATH, '//*[@id="user_email"]')))
+    actions.move_to_element(element).perform()
+    element.send_keys(userReturnly)
+
+    element = WebDriverWait(driver, 20).until(EC.element_to_be_clickable((By.XPATH, '//*[@id="user_password"]')))
+    actions.move_to_element(element).perform()
+    element.send_keys(passReturnly)
+
+    
+    element = WebDriverWait(driver, 20).until(EC.element_to_be_clickable((By.XPATH, '//*[@id="new_user"]/div[3]/div/input')))
+    actions.move_to_element(element).perform()
+    element.click()
 
     driver.get(linksList[0])
     download_wait(30)
@@ -210,4 +237,3 @@ if __name__ == '__main__':
     except Exception as e:
         print('Erorr: ', e)
         os.system('pause')
-
