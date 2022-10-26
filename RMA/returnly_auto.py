@@ -39,7 +39,7 @@ def loginEmail():
     domain = 'webmail.unisco.com'
     M = imaplib.IMAP4_SSL(domain)
     M.login(userEmail, passEmail)
-        
+
     return M
 
 #Searching for specific email
@@ -77,9 +77,9 @@ def getNewestEmail(newest_data):
     except IndexError:
         pass
 
-#Downloading the email which was retrieved
+#Downloading the email that was retrieved
 def downloadReport():
-    #Searching for an unread email from returnly if not found an error arrises and it goes back into searching
+    #Searching for an unread email from returnly if not found an index error arrises and it goes back into searching
     search = False
     while (search == False):
         try:
