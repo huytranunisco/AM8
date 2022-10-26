@@ -16,9 +16,9 @@ def exportReport():
     #Logging in to returnly
     driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()))
     driver.get('https://dashboard.returnly.com/dashboard/users/login')
-    interactor = driver.find_element(By.ID, 'user_email') 
+    interactor = driver.find_element(By.XPATH, '//*[@id="user_email"]') 
     interactor.send_keys(userReturnly)
-    interactor = driver.find_element(By.ID, 'user_password')
+    interactor = driver.find_element(By.XPATH, '//*[@id="user_password"]')
     interactor.send_keys(passReturnly)
     select =  WebDriverWait(driver, 5).until(
         EC.presence_of_element_located((By.XPATH, '//*[@id="new_user"]/div[3]/div/input')))
@@ -27,10 +27,10 @@ def exportReport():
     #Navigating to reports tab and exporting
     driver.get('https://dashboard.returnly.com/dashboard/reports')
     select = WebDriverWait(driver, 5).until(
-        EC.presence_of_element_located((By.NAME, 'UNIS RMA Report')))
+        EC.presence_of_element_located((By.XPATH, '//*[@id="reconciliation-cards-container"]/article[4]/div/nav/ul/li[2]/span')))
     select.click()
     select = WebDriverWait(driver, 5).until(
-        EC.presence_of_element_located((By.ID, 'js-reporting-modal-submit')))
+        EC.presence_of_element_located((By.XPATH, '//*[@id="js-reporting-modal-submit"]')))
     select.click()
     driver.quit()
 
@@ -83,7 +83,7 @@ def downloadReport():
     search = False
     while (search == False):
         try:
-            time.sleep(1)
+            time.sleep(5)
             data = searchEmail()
             search = bool(searchEmail())
         except IndexError:
@@ -132,10 +132,10 @@ def downloadReport():
     #Logging into returnly again to retrieve report from the link
     driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()))
     driver.get('https://dashboard.returnly.com/dashboard/users/login')
-    interactor = driver.find_element(By.ID, 'user_email') 
-    interactor.send_keys('FLAANT0001.rms@unisco.com')
-    interactor = driver.find_element(By.ID, 'user_password')
-    interactor.send_keys('Syst0002')
+    interactor = driver.find_element(By.XPATH, '//*[@id="user_email"]') 
+    interactor.send_keys(userReturnly)
+    interactor = driver.find_element(By.XPATH, '//*[@id="user_password"]')
+    interactor.send_keys(passReturnly)
     select =  WebDriverWait(driver, 5).until(
         EC.presence_of_element_located((By.XPATH, '//*[@id="new_user"]/div[3]/div/input')))
     select.click()
