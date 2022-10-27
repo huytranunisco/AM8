@@ -131,7 +131,7 @@ for index in invoiceAccs.index:
 
             bnpInvoice = getInvoice(bnpName, fac, startPeriod, endPeriod, accName, 'Weekly', False, '-' + str(count))
             wiseInvoice = False
-
+            
             if (bnpInvoice):
                 wiseInvoice = getInvoice(wiseName, fac, wiseStart, wiseEnd, accName, 'Weekly', True, '-' + str(count))
                 if(wiseInvoice):
