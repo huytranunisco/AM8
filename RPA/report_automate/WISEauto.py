@@ -29,7 +29,7 @@ def exportReport(acc, fac, start, end):
     chromeOptions.add_experimental_option("prefs", prefs)
 
     #Opening Wise website through chrome
-    driver = webdriver.Chrome(ChromeDriverManager().install(), chrome_options=chromeOptions)
+    driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), chrome_options=chromeOptions)
     action = ActionChains(driver)
     driver.get("https://wise.logisticsteam.com/v2/#/login")
 
@@ -37,28 +37,28 @@ def exportReport(acc, fac, start, end):
     driver.maximize_window()
 
     #Inputting username and password
-    interactor = WebDriverWait(driver, 60).until(EC.presence_of_element_located((By.XPATH, '/html/body/div1/div/div[2]/div/div/div/form/input[1]')))
+    interactor = WebDriverWait(driver, 20).until(EC.presence_of_element_located((By.NAME, 'username')))
     interactor.send_keys(wisebots['Account'][index])
     interactor = driver.find_element(By.NAME,"password")
     interactor.send_keys(wisebots['Password'][index])
-    interactor = WebDriverWait(driver, 60).until(EC.presence_of_element_located((By.XPATH, '//*[@id="loginBtn"]/button')))
+    interactor = WebDriverWait(driver, 20).until(EC.presence_of_element_located((By.XPATH, '//*[@id="loginBtn"]/button')))
     interactor.click()
 
     #Selecting Report Center from Home Menu
     time.sleep(2)
-    interactor = WebDriverWait(driver, 60).until(EC.presence_of_element_located((By.XPATH, '/html/body/div1/header/div[1]/div[3]/ul/li/a')))
+    interactor = WebDriverWait(driver, 20).until(EC.presence_of_element_located((By.XPATH, '/html/body/div1/header/div[1]/div[3]/ul/li/a')))
     action.move_to_element(interactor).click().perform()
-    interactor = WebDriverWait(driver, 60).until(EC.element_to_be_clickable((By.XPATH, '/html/body/div1/header/div[1]/div[3]/ul/li/ul/li/div/div/div/ul/li[7]')))
+    interactor = WebDriverWait(driver, 20).until(EC.element_to_be_clickable((By.XPATH, '/html/body/div1/header/div[1]/div[3]/ul/li/ul/li/div/div/div/ul/li[7]')))
     action.move_to_element(interactor).click().perform()
 
     #Seleccting Activity Report V2 from Billing
-    interactor = WebDriverWait(driver, 60).until(EC.element_to_be_clickable((By.XPATH, '/html/body/div1/div[2]/div[1]/ul/li[2]/a')))
+    interactor = WebDriverWait(driver, 20).until(EC.element_to_be_clickable((By.CLASS_NAME, 'nav-link nav-toggle ')))
     action.move_to_element(interactor).click().perform()
-    interactor = WebDriverWait(driver, 60).until(EC.element_to_be_clickable((By.XPATH, '/html/body/div1/div[2]/div[1]/ul/li[2]/ul/li[2]/a')))
+    interactor = WebDriverWait(driver, 20).until(EC.element_to_be_clickable((By.CLASS_NAME, 'title ng-binding')))
     action.move_to_element(interactor).click().perform()
 
     #Inputting Customer, Time From, Time To
-    interactor = WebDriverWait(driver, 60).until(EC.presence_of_element_located((By.XPATH, '/html/body/div[1]/div[2]/div[2]/div/div/div/div/div/div/div/div/div/div[2]/form/div[1]/div[1]/organization-auto-complete/div/div')))
+    interactor = WebDriverWait(driver, 20).until(EC.presence_of_element_located((By.XPATH, '/html/body/div[1]/div[2]/div[2]/div/div/div/div/div/div/div/div/div/div[2]/form/div[1]/div[1]/organization-auto-complete/div/div')))
     action.click(interactor).perform()
     wiseacc = acc[:10]
     time.sleep(2)
@@ -68,9 +68,9 @@ def exportReport(acc, fac, start, end):
 
     time.sleep(2)
     action.send_keys(Keys.ENTER).perform()
-    interactor = WebDriverWait(driver, 60).until(EC.presence_of_element_located((By.XPATH, '/html/body/div[1]/div[2]/div[2]/div/div/div/div/div/div/div/div/div/div[2]/form/div[1]/div[3]/lt-date-time/div/input')))
+    interactor = WebDriverWait(driver, 20).until(EC.presence_of_element_located((By.XPATH, '/html/body/div[1]/div[2]/div[2]/div/div/div/div/div/div/div/div/div/div[2]/form/div[1]/div[3]/lt-date-time/div/input')))
     action.click(interactor).send_keys(start).perform()
-    interactor = WebDriverWait(driver, 60).until(EC.presence_of_element_located((By.XPATH, '/html/body/div[1]/div[2]/div[2]/div/div/div/div/div/div/div/div/div/div[2]/form/div[1]/div[4]/lt-date-time/div/input')))
+    interactor = WebDriverWait(driver, 20).until(EC.presence_of_element_located((By.XPATH, '/html/body/div[1]/div[2]/div[2]/div/div/div/div/div/div/div/div/div/div[2]/form/div[1]/div[4]/lt-date-time/div/input')))
     action.click(interactor).send_keys(end).perform()
 
     #Exporting
