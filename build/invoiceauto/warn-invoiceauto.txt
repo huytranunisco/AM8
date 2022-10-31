@@ -14,8 +14,8 @@ Types if import:
 IMPORTANT: Do NOT post this list to the issue-tracker. Use it as a basis for
             tracking down the missing module yourself. Thanks!
 
-missing module named 'org.python' - imported by pickle (optional), xml.sax (delayed, conditional), setuptools.sandbox (conditional)
-missing module named org - imported by copy (optional)
+missing module named org - imported by pickle (optional)
+missing module named 'org.python' - imported by copy (optional), xml.sax (delayed, conditional), setuptools.sandbox (conditional)
 missing module named importlib.metadata - imported by importlib (delayed, conditional, optional), jsonschema (delayed, conditional, optional)
 missing module named _frozen_importlib_external - imported by importlib._bootstrap (delayed), importlib (optional), importlib.abc (optional)
 excluded module named _frozen_importlib - imported by importlib (optional), importlib.abc (optional), PyInstaller.loader.pyimod01_archive (delayed)
@@ -28,7 +28,7 @@ missing module named multiprocessing.get_start_method - imported by multiprocess
 missing module named multiprocessing.get_context - imported by multiprocessing (top-level), multiprocessing.pool (top-level), multiprocessing.managers (top-level), multiprocessing.sharedctypes (top-level)
 missing module named multiprocessing.TimeoutError - imported by multiprocessing (top-level), multiprocessing.pool (top-level)
 missing module named fcntl - imported by xmlrpc.server (optional), psutil._compat (delayed, optional), zmq.eventloop.minitornado.platform.posix (top-level), tqdm.utils (delayed, optional)
-missing module named pwd - imported by posixpath (delayed, conditional), shutil (optional), tarfile (optional), http.server (delayed, optional), webbrowser (delayed), netrc (delayed, conditional), getpass (delayed), pathlib (delayed, conditional, optional), distutils.util (delayed, conditional, optional), distutils.archive_util (optional), psutil (optional)
+missing module named pwd - imported by posixpath (delayed, conditional), shutil (optional), tarfile (optional), http.server (delayed, optional), webbrowser (delayed), pathlib (delayed, conditional, optional), netrc (delayed, conditional), getpass (delayed), distutils.util (delayed, conditional, optional), distutils.archive_util (optional), psutil (optional)
 missing module named termios - imported by tty (top-level), getpass (optional), psutil._compat (delayed, optional), prompt_toolkit.input.vt100 (top-level), IPython.core.page (delayed, optional), tqdm.utils (delayed, optional)
 missing module named 'java.lang' - imported by platform (delayed, optional), xml.sax._exceptions (conditional)
 missing module named multiprocessing.BufferTooShort - imported by multiprocessing (top-level), multiprocessing.connection (top-level)
@@ -54,10 +54,10 @@ missing module named 'pkg_resources.extern.six.moves' - imported by pkg_resource
 missing module named pkg_resources.extern.six - imported by pkg_resources.extern (top-level), pkg_resources (top-level), pkg_resources.py31compat (top-level)
 missing module named vms_lib - imported by platform (delayed, conditional, optional)
 missing module named java - imported by platform (delayed), unittest.mock (conditional)
+missing module named _scproxy - imported by urllib.request (conditional)
 missing module named posix - imported by os (conditional, optional)
 missing module named resource - imported by posix (top-level), test.support (optional), psutil._pslinux (optional), IPython.utils.timing (optional), notebook.notebookapp (optional), prometheus_client.process_collector (optional)
 missing module named grp - imported by shutil (optional), tarfile (optional), pathlib (delayed), distutils.archive_util (optional)
-missing module named _scproxy - imported by urllib.request (conditional)
 missing module named pandas.Panel - imported by pandas (delayed, optional), tqdm.std (delayed, optional)
 missing module named numpy.power - imported by numpy (top-level), scipy.stats.kde (top-level)
 missing module named numpy.hypot - imported by numpy (top-level), scipy.stats.morestats (top-level)

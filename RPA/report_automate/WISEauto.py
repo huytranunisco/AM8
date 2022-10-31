@@ -47,7 +47,12 @@ def exportReport(acc, fac, start, end):
     #Selecting Report Center from Home Menu
     interactor = WebDriverWait(driver, 120).until(EC.presence_of_element_located((By.XPATH, '/html/body/div1/header/div[1]/div[3]/ul/li/a')))
     action.move_to_element(interactor).click().perform()
-    interactor = WebDriverWait(driver, 20).until(EC.element_to_be_clickable((By.XPATH, '/html/body/div1/header/div[1]/div[3]/ul/li/ul/li/div/div/div/ul/li[7]')))
+    try:
+        interactor = WebDriverWait(driver, 10).until(EC.element_to_be_clickable((By.XPATH, '/html/body/div1/header/div[1]/div[3]/ul/li/ul/li/div/div/div/ul/li[7]')))
+    except:
+        interactor = WebDriverWait(driver, 120).until(EC.presence_of_element_located((By.XPATH, '/html/body/div1/header/div[1]/div[3]/ul/li/a')))
+        action.move_to_element(interactor).click().perform()
+        interactor = WebDriverWait(driver, 10).until(EC.element_to_be_clickable((By.XPATH, '/html/body/div1/header/div[1]/div[3]/ul/li/ul/li/div/div/div/ul/li[7]')))
     action.move_to_element(interactor).click().perform()
 
     #Seleccting Activity Report V2 from Billing
