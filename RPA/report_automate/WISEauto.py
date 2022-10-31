@@ -45,16 +45,15 @@ def exportReport(acc, fac, start, end):
     interactor.click()
 
     #Selecting Report Center from Home Menu
-    time.sleep(2)
-    interactor = WebDriverWait(driver, 20).until(EC.presence_of_element_located((By.XPATH, '/html/body/div1/header/div[1]/div[3]/ul/li/a')))
+    interactor = WebDriverWait(driver, 120).until(EC.presence_of_element_located((By.XPATH, '/html/body/div1/header/div[1]/div[3]/ul/li/a')))
     action.move_to_element(interactor).click().perform()
     interactor = WebDriverWait(driver, 20).until(EC.element_to_be_clickable((By.XPATH, '/html/body/div1/header/div[1]/div[3]/ul/li/ul/li/div/div/div/ul/li[7]')))
     action.move_to_element(interactor).click().perform()
 
     #Seleccting Activity Report V2 from Billing
-    interactor = WebDriverWait(driver, 20).until(EC.element_to_be_clickable((By.CLASS_NAME, 'nav-link nav-toggle ')))
+    interactor = WebDriverWait(driver, 20).until(EC.element_to_be_clickable((By.XPATH, '/html/body/div1/div[2]/div[1]/ul/li[2]/a/span[1]')))
     action.move_to_element(interactor).click().perform()
-    interactor = WebDriverWait(driver, 20).until(EC.element_to_be_clickable((By.CLASS_NAME, 'title ng-binding')))
+    interactor = WebDriverWait(driver, 20).until(EC.element_to_be_clickable((By.XPATH, '/html/body/div1/div[2]/div[1]/ul/li[2]/ul/li[2]/a/span')))
     action.move_to_element(interactor).click().perform()
 
     #Inputting Customer, Time From, Time To
