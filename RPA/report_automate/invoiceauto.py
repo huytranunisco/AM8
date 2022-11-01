@@ -2,6 +2,7 @@ import BNPauto
 import WISEauto
 from datetime import date, timedelta
 import os.path
+from os import rename
 from pandas import read_excel
 from calendar import monthrange
 from shutil import copy, move
@@ -18,7 +19,6 @@ def getInvoice(acc, facility, startP, endP, accName, cycle, wise = False, weekNu
         if wise:
             WISEauto.exportReport(acc, facility, startP, endP)
             newName = accName + '-' + facility + '-' + cycle + '-Activity_Report' + weekNum + '.xlsx'
-            newPath = os.path.join(accsdir, '01 - Historical Activity reports', newName)
             copyPath = 'C:\\Users\\' + os.getlogin() + '\\Desktop\\Discrepancy Reports\\Accounts\\03 - Current Activity reports\\' + newName
         else:
             facility, invoiceName = BNPauto.exportHandle(acc, facility, startP, endP, accName)
@@ -26,7 +26,6 @@ def getInvoice(acc, facility, startP, endP, accName, cycle, wise = False, weekNu
                 return False
 
             newName = accName + '-' + facility + '-' + cycle + '-Invoice' + weekNum + '.xlsx'
-            newPath = os.path.join(accsdir, '00 - Historical Invoices', newName)
             copyPath = 'C:\\Users\\' + os.getlogin() + '\\Desktop\\Discrepancy Reports\\Accounts\\02 - Current Invoices\\' + newName + '.xlsx'
         
         fileList = list(filter(os.path.isfile, glob(downloaddir + '\\*.xlsx')))
@@ -35,11 +34,16 @@ def getInvoice(acc, facility, startP, endP, accName, cycle, wise = False, weekNu
         fileEnd = os.path.basename(file)
         
         if wise:
-            move(os.path.join(downloaddir, fileEnd), os.path.join(accsdir, '01 - Historical Activity reports', newName))
+            move(os.path.join(downloaddir, fileEnd), os.path.join(accsdir, '01 - Historical Activity reports', fileEnd))
+            copy(os.path.join(accsdir, '01 - Historical Activity reports', fileEnd), copyPath)
         else:
-            move(os.path.join(downloaddir, fileEnd), os.path.join(accsdir, '00 - Historical Invoices', newName))
+            move(os.path.join(downloaddir, fileEnd), os.path.join(accsdir, '00 - Historical Invoices', fileEnd))
+            copy(os.path.join(accsdir, '00 - Historical Invoices', fileEnd), copyPath)
 
-        copy(newPath, copyPath)
+            if fileEnd == 'Invoice[Multi].xlsx':
+                rename(os.path.join(accsdir, '00 - Historical Invoices', fileEnd), os.path.join(accsdir, '00 - Historical Invoices', accName + "-" + fileEnd))
+
+        
 
         print(f'Downloaded and Copied {newName} \n')
 
@@ -62,6 +66,7 @@ def find_sundays_between(start: date, end: date):
     return [day for day in all_days if day.weekday() is sunday]
 
 today = date.today()
+today = date(today.year, today.month + 1, 1)
 
 
 invoiceAccs = read_excel('BNP Excel Sheet.xlsx', sheet_name='Account_Fac_Freq')
