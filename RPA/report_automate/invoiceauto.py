@@ -41,7 +41,7 @@ def getInvoice(acc, facility, startP, endP, accName, cycle, wise = False, weekNu
             copy(os.path.join(accsdir, '00 - Historical Invoices', fileEnd), copyPath)
 
             if fileEnd == 'Invoice[Multi].xlsx':
-                rename(os.path.join(accsdir, '00 - Historical Invoices', fileEnd), os.path.join(accsdir, '00 - Historical Invoices', accName + "-" + fileEnd))
+                rename(os.path.join(accsdir, '00 - Historical Invoices', fileEnd), os.path.join(accsdir, '00 - Historical Invoices', accName + "-" + facility + "-" + fileEnd))
 
         
 
@@ -66,8 +66,6 @@ def find_sundays_between(start: date, end: date):
     return [day for day in all_days if day.weekday() is sunday]
 
 today = date.today()
-today = date(today.year, today.month + 1, 1)
-
 
 invoiceAccs = read_excel('BNP Excel Sheet.xlsx', sheet_name='Account_Fac_Freq')
 
