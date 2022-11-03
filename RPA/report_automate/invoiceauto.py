@@ -11,7 +11,7 @@ from time import time
 
 start_time = time()
 
-def getInvoice(acc, facility, startP, endP, accName, cycle, wise = False, weekNum = ''):
+def getInvoice(acc, facility, startP, endP, accName, cycle, wise = False):
     try:
         downloaddir = 'C:\\Users\\' + os.getlogin() + '\\Downloads'
         accsdir = 'C:\\Users\\' + os.getlogin() +'\\Desktop\\Discrepancy Reports\\Accounts'
@@ -43,8 +43,6 @@ def getInvoice(acc, facility, startP, endP, accName, cycle, wise = False, weekNu
             if fileEnd == 'Invoice[Multi].xlsx':
                 rename(os.path.join(accsdir, '00 - Historical Invoices', fileEnd), os.path.join(accsdir, '00 - Historical Invoices', accName + "-" + facility + "-" + fileEnd))
 
-        
-
         print(f'Downloaded and Copied {newName} \n')
 
         return True
@@ -59,15 +57,45 @@ def getInvoice(acc, facility, startP, endP, accName, cycle, wise = False, weekNu
             invoiceAccs['Downloaded'][index] = e.args, e.__doc__
             invoiceAccs.to_excel('AccountsDone.xlsx', sheet_name='Account_Fac_Freq', index=False)
 
-def find_sundays_between(start: date, end: date):
-    total_days = (end - start).days + 1
-    sunday = 6
-    all_days = [start + timedelta(days=day) for day in range(total_days)]
-    return [day for day in all_days if day.weekday() is sunday]
+def getBimonthlyDate(todayDate):
+    if todayDate.day < 16:
+        previousMonth = todayDate.month - 1 if todayDate.month != 1 else 12
+        previousYear = todayDate.year - 1 if todayDate.month == 12 else todayDate.year
+        start = date(previousYear, previousMonth, 16)
+        end = date(previousYear, previousMonth, monthrange(previousYear, previousMonth)[1])
+    elif today.day >= 16:
+        start = date(todayDate.year, todayDate.month, 1)
+        end = date(todayDate.year, todayDate.month, 15)
+    
+    return start, end
 
-today = date.today()
+def getWeeklyDate(todayDate):
+    idx = (todayDate.weekday() + 1) % 7 # MON = 0, SUN = 6 -> SUN = 0 .. SAT = 6
+
+    sun = today - timedelta(7+idx)
+    sat = today - timedelta(7+idx-6)
+    
+    return sun, sat
 
 invoiceAccs = read_excel('BNP Excel Sheet.xlsx', sheet_name='Account_Fac_Freq')
+bimonthly = False
+weekly = False
+
+today = date.today()
+dayName = today.strftime("%A")
+
+if dayName == 'Sunday' and (today.day == 16 or today.day == 1):
+    bimonthly = True
+    weekly = True
+elif dayName == 'Sunday':
+    invoiceAccs = invoiceAccs[invoiceAccs['BillingFreq'] == 'Weekly']
+    weekly = True
+elif today.day == 16 or today.day == 1:
+    invoiceAccs = invoiceAccs[invoiceAccs['BillingFreq'] == 'Bimonthly']
+    bimonthly = True
+else:
+    raise Exception("Not a valid day to run program!")
+
 
 for index in invoiceAccs.index:
     fac = invoiceAccs['Facility Name'][index]
@@ -76,68 +104,25 @@ for index in invoiceAccs.index:
     accName = invoiceAccs['AccountName'][index]
 
     print(f'Getting Invoice for {accName} ({fac})...')
+    if bimonthly:
+        pass
+    elif bimonthly and weekly:
+        if invoiceAccs['BillingFreq'][index] == 'Bimonthly':
+            #Assuming is ran on 1st and 16th
+            startBimonthly, endBimonthly = getBimonthlyDate(today)
 
-    if invoiceAccs['BillingFreq'][index] == 'Bimonthly':
-        #Assuming is ran on 1st and 16th
-        if today.day < 16:
-            previousMonth = today.month - 1 if today.month != 1 else 12
-            previousYear = today.year - 1 if today.month == 12 else today.year
-            startBimonthly = date(previousYear, previousMonth, 16)
-            endBimonthly = date(previousYear, previousMonth, monthrange(previousYear, previousMonth)[1])
-        elif today.day >= 16:
-            startBimonthly = date(today.year, today.month, 1)
-            endBimonthly = date(today.year, today.month, 15)
-        '''
-        startBimonthly = today + timedelta(weeks=-2, days=-1)
-        endBimonthly = startBimonthly + timedelta(weeks=+2)
-        ''' 
-        startPeriod = startBimonthly.strftime("%m/%d/%y")
-        endPeriod = endBimonthly.strftime("%m/%d/%y")
-    
-        wiseStart = startBimonthly.strftime("%y-%m-%d")
-        wiseEnd = endBimonthly.strftime("%y-%m-%d")
+            bnpStart = startBimonthly.strftime("%m/%d/%y")
+            bnpEnd = endBimonthly.strftime("%m/%d/%y")
+        
+            wiseStart = startBimonthly.strftime("%y-%m-%d")
+            wiseEnd = endBimonthly.strftime("%y-%m-%d")
 
-        bnpInvoice = getInvoice(bnpName, fac, startPeriod, endPeriod, accName, 'Bimonthly')
-        wiseInvoice = False
-
-        if (bnpInvoice):
-            wiseInvoice = getInvoice(wiseName, fac, wiseStart, wiseEnd, accName, 'Bimonthly', True)
-            if (wiseInvoice):
-                invoiceAccs['Downloaded'][index] = True
-                invoiceAccs.to_excel('AccountsDone.xlsx', sheet_name='Account_Fac_Freq', index=False)
-            else:
-                invoiceAccs['Downloaded'][index] = 'No Wise Invoice'
-                invoiceAccs.to_excel('AccountsDone.xlsx', sheet_name='Account_Fac_Freq', index=False)
-                continue
-        else:
-            invoiceAccs['Downloaded'][index] = 'No BNP Invoice'
-            invoiceAccs.to_excel('AccountsDone.xlsx', sheet_name='Account_Fac_Freq', index=False)
-            continue
-
-    elif invoiceAccs['BillingFreq'][index] == 'Weekly':
-
-        if today.day < 16:
-            previousMonth = today.month - 1 if today.month != 1 else 12
-            previousYear = today.year - 1 if today.month == 12 else today.year
-            previousBillDate = date(previousYear, previousMonth, 16)
-            weeklyStartPeriods = find_sundays_between(previousBillDate, date(previousYear, previousMonth, monthrange(previousYear, previousMonth)[1]))
-        elif today.day >= 16:
-            previousBillDate = date(today.year, today.month, 1)
-            weeklyStartPeriods = find_sundays_between(previousBillDate, date(today.year, today.month, 15))
-
-        for count, d in enumerate(weeklyStartPeriods):
-            endWeekly = d + timedelta(days=+6)
-            startPeriod = d.strftime("%m/%d/%y")
-            endPeriod = endWeekly.strftime("%m/%d/%y")
-            wiseStart = d.strftime("%y-%m-%d")
-            wiseEnd = endWeekly.strftime("%y-%m-%d")
-
-            bnpInvoice = getInvoice(bnpName, fac, startPeriod, endPeriod, accName, 'Weekly', False, '-' + str(count))
+            bnpInvoice = getInvoice(bnpName, fac, bnpStart, bnpEnd, accName, 'Bimonthly')
             wiseInvoice = False
-            
+
             if (bnpInvoice):
-                wiseInvoice = getInvoice(wiseName, fac, wiseStart, wiseEnd, accName, 'Weekly', True, '-' + str(count))
-                if(wiseInvoice):
+                wiseInvoice = getInvoice(wiseName, fac, wiseStart, wiseEnd, accName, 'Bimonthly', True)
+                if (wiseInvoice):
                     invoiceAccs['Downloaded'][index] = True
                     invoiceAccs.to_excel('AccountsDone.xlsx', sheet_name='Account_Fac_Freq', index=False)
                 else:
@@ -149,8 +134,31 @@ for index in invoiceAccs.index:
                 invoiceAccs.to_excel('AccountsDone.xlsx', sheet_name='Account_Fac_Freq', index=False)
                 continue
 
+        elif invoiceAccs['BillingFreq'][index] == 'Weekly':
 
-    else: continue
+            startWeekly, endWeekly = getWeeklyDate(today)
+
+            bnpStart = startWeekly.strftime("%m/%d/%y")
+            bnpEnd = endWeekly.strftime("%m/%d/%y")
+            wiseStart = startWeekly.strftime("%y-%m-%d")
+            wiseEnd = endWeekly.strftime("%y-%m-%d")
+
+            bnpInvoice = getInvoice(bnpName, fac, bnpStart, bnpEnd, accName, 'Weekly', False)
+            wiseInvoice = False
+                
+            if (bnpInvoice):
+                wiseInvoice = getInvoice(wiseName, fac, wiseStart, wiseEnd, accName, 'Weekly', True)
+                if(wiseInvoice):
+                    invoiceAccs['Downloaded'][index] = True
+                    invoiceAccs.to_excel('AccountsDone.xlsx', sheet_name='Account_Fac_Freq', index=False)
+                else:
+                    invoiceAccs['Downloaded'][index] = 'No Wise Invoice'
+                    invoiceAccs.to_excel('AccountsDone.xlsx', sheet_name='Account_Fac_Freq', index=False)
+                    continue
+            else:
+                invoiceAccs['Downloaded'][index] = 'No BNP Invoice'
+                invoiceAccs.to_excel('AccountsDone.xlsx', sheet_name='Account_Fac_Freq', index=False)
+                continue
 
 print("Invoices Downloaded!")
 print("--- %s seconds ---" % (time() - start_time))
