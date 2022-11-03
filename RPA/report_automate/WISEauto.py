@@ -48,7 +48,7 @@ def exportReport(acc, fac, start, end):
     interactor = WebDriverWait(driver, 120).until(EC.presence_of_element_located((By.XPATH, '/html/body/div1/header/div[1]/div[3]/ul/li/a')))
     action.move_to_element(interactor).click().perform()
     try:
-        interactor = WebDriverWait(driver, 10).until(EC.element_to_be_clickable((By.XPATH, '/html/body/div1/header/div[1]/div[3]/ul/li/ul/li/div/div/div/ul/li[7]')))
+        interactor = WebDriverWait(driver, 3).until(EC.element_to_be_clickable((By.XPATH, '/html/body/div1/header/div[1]/div[3]/ul/li/ul/li/div/div/div/ul/li[7]')))
     except:
         interactor = WebDriverWait(driver, 120).until(EC.presence_of_element_located((By.XPATH, '/html/body/div1/header/div[1]/div[3]/ul/li/a')))
         action.move_to_element(interactor).click().perform()
@@ -70,8 +70,9 @@ def exportReport(acc, fac, start, end):
         time.sleep(0.05)
         action.send_keys(letter).perform()
 
-    time.sleep(2)
+    time.sleep(4)
     action.send_keys(Keys.ENTER).perform()
+
     interactor = WebDriverWait(driver, 20).until(EC.presence_of_element_located((By.XPATH, '/html/body/div[1]/div[2]/div[2]/div/div/div/div/div/div/div/div/div/div[2]/form/div[1]/div[3]/lt-date-time/div/input')))
     action.click(interactor).send_keys(start).perform()
     interactor = WebDriverWait(driver, 20).until(EC.presence_of_element_located((By.XPATH, '/html/body/div[1]/div[2]/div[2]/div/div/div/div/div/div/div/div/div/div[2]/form/div[1]/div[4]/lt-date-time/div/input')))
@@ -83,11 +84,23 @@ def exportReport(acc, fac, start, end):
     interactor = driver.find_element(By.XPATH, '//*[@id="sitecontent"]/div/div/div/div[2]/form/div[2]/div[2]/unis-waitting-btn/button')
     action.move_to_element(interactor).click().perform()
 
+    timer = 0
+
     downloadWait = True
     while downloadWait:
         downloadFolderAfter = glob(userDownloadPath)
         if len(downloadFolderBefore) < len(downloadFolderAfter):
             downloadWait = False
+        if timer == 20:
+            interactor = WebDriverWait(driver, 20).until(EC.presence_of_element_located((By.XPATH, '/html/body/div[1]/div[2]/div[2]/div/div/div/div/div/div/div/div/div/div[2]/form/div[1]/div[1]/organization-auto-complete/div/div')))
+            action.click(interactor).perform()
+            time.sleep(2)
+            for letter in wiseacc:
+                time.sleep(0.05)
+                action.send_keys(letter).perform()
+
+            time.sleep(4)
+            action.send_keys(Keys.ENTER).perform()
 
         try:
             interactor = driver.find_element(By.XPATH, '/html/body/div[7]/md-dialog/md-dialog-actions/button')
