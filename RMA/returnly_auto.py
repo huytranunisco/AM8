@@ -1,9 +1,10 @@
-from multiprocessing.connection import wait
 import pandas as pd
 import imaplib
 import os
 import time
 import email
+import logging
+import json
 from datetime import datetime
 from selenium import webdriver
 from webdriver_manager.chrome import ChromeDriverManager
@@ -22,35 +23,29 @@ def exportReport():
     driver.maximize_window()
 
     element = WebDriverWait(driver, 20).until(EC.element_to_be_clickable((By.XPATH, '//*[@id="user_email"]')))
-    actions.move_to_element(element).perform()
     element.send_keys(userReturnly)
 
     element = WebDriverWait(driver, 20).until(EC.element_to_be_clickable((By.XPATH, '//*[@id="user_password"]')))
-    actions.move_to_element(element).perform()
     element.send_keys(passReturnly)
 
-    
     element = WebDriverWait(driver, 20).until(EC.element_to_be_clickable((By.XPATH, '//*[@id="new_user"]/div[3]/div/input')))
-    actions.move_to_element(element).perform()
-    element.click()
+    actions.move_to_element(element).click().perform()
 
     #Navigating to reports tab and exporting
     driver.get('https://dashboard.returnly.com/dashboard/reports')
     driver.maximize_window()
 
     element = WebDriverWait(driver, 20).until(EC.element_to_be_clickable((By.XPATH, '//*[@id="reconciliation-cards-container"]/article[4]/div/nav/ul/li[2]/span')))
-    actions.move_to_element(element).perform()
-    element.click()
+    actions.move_to_element(element).click().perform()
 
-    element = WebDriverWait(driver, 20).until(EC.element_to_be_clickable((By.XPATH, '//*[@id="js-reporting-modal-submit"]')))
-    actions.move_to_element(element).perform()
-    element.click()
+    #element = WebDriverWait(driver, 20).until(EC.element_to_be_clickable((By.XPATH, '//*[@id="js-reporting-modal-submit"]')))
+    #actions.move_to_element(element).click().perform()
 
     driver.quit()
 
 #Connecting to email domain through iMAP
 def loginEmail():
-    domain = 'webmail.unisco.com'
+    domain = data['domain']
     M = imaplib.IMAP4_SSL(domain)
     M.login(userEmail, passEmail)
 
@@ -87,13 +82,14 @@ def getNewestEmail(newest_data):
         keys = map(int, latest_emails)
         news_keys = sorted(keys, reverse=True)
         str_keys = [str(e) for e in news_keys]
+
         return str_keys
     except IndexError:
         pass
 
 #Downloading the email that was retrieved
 def downloadReport():
-    #Searching for an unread email from returnly if not found an index error arrises and it goes back into searching
+    #Searching for an unread email from returnly if not found an index error arrises and it gdoes back into searching
     search = False
     while (search == False):
         try:
@@ -150,18 +146,15 @@ def downloadReport():
     driver.maximize_window()
 
     element = WebDriverWait(driver, 20).until(EC.element_to_be_clickable((By.XPATH, '//*[@id="user_email"]')))
-    actions.move_to_element(element).perform()
     element.send_keys(userReturnly)
 
-    element = WebDriverWait(driver, 20).until(EC.element_to_be_clickable((By.XPATH, '//*[@id="user_password"]')))
-    actions.move_to_element(element).perform()
-    element.send_keys(passReturnly)
 
+    element = WebDriverWait(driver, 20).until(EC.element_to_be_clickable((By.XPATH, '//*[@id="user_password"]')))
+    element.send_keys(passReturnly)
     
     element = WebDriverWait(driver, 20).until(EC.element_to_be_clickable((By.XPATH, '//*[@id="new_user"]/div[3]/div/input')))
-    actions.move_to_element(element).perform()
-    element.click()
-
+    actions.move_to_element(element).click().perform()
+    
     driver.get(linksList[0])
     download_wait(30)
     driver.quit()
@@ -218,22 +211,28 @@ def formatReport():
     df.to_excel(f"C:\\Users\\{user}\\Downloads\\Transformed_{filename}_PDT.xlsx", index = False)
 
 if __name__ == '__main__':
+    with open(f'C:\\Users\\gcastellanos\\Documents\\GitHub\\AM8\\RMA\\config.json', 'r') as f:
+        data = json.loads(f.read())
+
+    logging.basicConfig(filename = "logs.txt", level = logging.DEBUG, format = "%(asctime)s %(message)s")
+
     user = os.getlogin()
-    userReturnly = 'FLAANT0001.rms@unisco.com'
-    passReturnly = 'Syst0002'
-    userEmail = 'FLAANT0001.rms@unisco.com'
-    passEmail = 'Syst0001'
+    userReturnly = data['userReturnly']
+    passReturnly = data['passReturnly']
+    userEmail = data['userEmail']
+    passEmail = data['passEmail']
 
     try:
-        print('Exporting report...')
+
+        logging.info('NEW LOG ' + str(datetime.now()) + '\n\n\n')
+
+        logging.info('Exporting report...')
         exportReport()
-        print('\nDownloading report...')
         M = loginEmail()
+        logging.info('Downloading report...')
         downloadReport()
-        print('\nFormatting report...')
-        formatReport()
-        print('\nProcess completed!\n')
+        logging.info('Formatting report...')
+        formatReport()    
         
     except Exception as e:
-        print('Erorr: ', e)
-        os.system('pause')
+        logging.error(e)
