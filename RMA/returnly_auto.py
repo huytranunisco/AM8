@@ -211,18 +211,17 @@ def formatReport():
     df.to_excel(f"C:\\Users\\{user}\\Downloads\\Transformed_{filename}_PDT.xlsx", index = False)
 
 if __name__ == '__main__':
-    logging.basicConfig(filename = "logs.txt", level = logging.DEBUG, format = "%(asctime)s %(message)s")
-    user = os.getlogin()
-
-    with open(f'C:\\Users\\{user}\\Desktop\\RPA Executables\\Returnly_Auto\\config.json', 'r') as f:
-        data = json.loads(f.read())
-
-    userReturnly = data['userReturnly']
-    passReturnly = data['passReturnly']
-    userEmail = data['userEmail']
-    passEmail = data['passEmail']
-
     try:
+        user = os.getlogin()
+
+        logging.basicConfig(filename = f"C:\\Users\\{user}\\Desktop\\Returnly_Auto\\logs.txt", level = logging.DEBUG, format = "%(asctime)s %(message)s")
+        with open(f'C:\\Users\\{user}\\Desktop\\Returnly_Auto\\config.json', 'r') as f:
+            data = json.loads(f.read())
+
+        userReturnly = data['userReturnly']
+        passReturnly = data['passReturnly']
+        userEmail = data['userEmail']
+        passEmail = data['passEmail']
 
         logging.info('-------------------------' + '\n\n\nNEW LOG ' + str(datetime.now()) + '\n\n\n-------------------------------------------------')
         
