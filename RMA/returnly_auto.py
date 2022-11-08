@@ -38,8 +38,8 @@ def exportReport():
     element = WebDriverWait(driver, 20).until(EC.element_to_be_clickable((By.XPATH, '//*[@id="reconciliation-cards-container"]/article[4]/div/nav/ul/li[2]/span')))
     actions.move_to_element(element).click().perform()
 
-    #element = WebDriverWait(driver, 20).until(EC.element_to_be_clickable((By.XPATH, '//*[@id="js-reporting-modal-submit"]')))
-    #actions.move_to_element(element).click().perform()
+    element = WebDriverWait(driver, 20).until(EC.element_to_be_clickable((By.XPATH, '//*[@id="js-reporting-modal-submit"]')))
+    actions.move_to_element(element).click().perform()
 
     driver.quit()
 
@@ -211,7 +211,7 @@ def formatReport():
     df.to_excel(f"C:\\Users\\{user}\\Downloads\\Transformed_{filename}_PDT.xlsx", index = False)
 
 if __name__ == '__main__':
-    with open(f'C:\\Users\\gcastellanos\\Documents\\GitHub\\AM8\\RMA\\config.json', 'r') as f:
+    with open(f'..\\Returnly_Auto\\config.json', 'r') as f:
         data = json.loads(f.read())
 
     logging.basicConfig(filename = "logs.txt", level = logging.DEBUG, format = "%(asctime)s %(message)s")
@@ -224,15 +224,16 @@ if __name__ == '__main__':
 
     try:
 
-        logging.info('NEW LOG ' + str(datetime.now()) + '\n\n\n')
-
-        logging.info('Exporting report...')
+        logging.info('-------------------------' + '\n\n\nNEW LOG ' + str(datetime.now()) + '\n\n\n-------------------------------------------------')
+        
+        logging.info('-------------------------' + '\n\n\nExporting report...' + str(datetime.now()) + '\n\n\n-------------------------------------------------')
         exportReport()
         M = loginEmail()
-        logging.info('Downloading report...')
+        logging.info('-------------------------' + '\n\n\nDownloading report...' + str(datetime.now()) + '\n\n\n-------------------------------------------------')
         downloadReport()
-        logging.info('Formatting report...')
-        formatReport()    
+        logging.info('-------------------------' + '\n\n\nFormatting report...' + str(datetime.now()) + '\n\n\n-------------------------------------------------')
+        formatReport()
+        logging.info('-------------------------' + '\n\n\nProcess Completed Successfully! ' + str(datetime.now()) + '\n\n\n-------------------------------------------------')
         
     except Exception as e:
         logging.error(e)
