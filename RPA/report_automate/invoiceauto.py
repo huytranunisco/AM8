@@ -14,19 +14,19 @@ start_time = time()
 def getInvoice(acc, facility, startP, endP, accName, cycle, wise = False):
     try:
         downloaddir = 'C:\\Users\\' + os.getlogin() + '\\Downloads'
-        accsdir = 'C:\\Users\\' + os.getlogin() +'\\Desktop\\Discrepancy Reports\\Accounts'
+        accsdir = 'C:\\Users\\' + os.getlogin() +'\\Desktop\\Discrepancy Reports\\' + cycle
 
         if wise:
             WISEauto.exportReport(acc, facility, startP, endP)
             newName = accName + '-' + facility + '-' + cycle + '-Activity_Report.xlsx'
-            copyPath = 'C:\\Users\\' + os.getlogin() + '\\Desktop\\Discrepancy Reports\\Accounts\\03 - Current Activity reports\\' + newName
+            copyPath = 'C:\\Users\\' + os.getlogin() + '\\Desktop\\Discrepancy Reports\\' +  cycle + '\\03 - Current Activity reports\\' + newName
         else:
             facility, invoiceName = BNPauto.exportHandle(acc, facility, startP, endP, accName)
             if facility == False or invoiceName == False: 
                 return False
 
             newName = accName + '-' + facility + '-' + cycle + '-Invoice.xlsx'
-            copyPath = 'C:\\Users\\' + os.getlogin() + '\\Desktop\\Discrepancy Reports\\Accounts\\02 - Current Invoices\\' + newName + '.xlsx'
+            copyPath = 'C:\\Users\\' + os.getlogin() + '\\Desktop\\Discrepancy Reports\\' + cycle + '\\02 - Current Invoices\\' + newName + '.xlsx'
         
         fileList = list(filter(os.path.isfile, glob(downloaddir + '\\*.xlsx')))
         fileList.sort(key=lambda x: os.path.getmtime(x))
