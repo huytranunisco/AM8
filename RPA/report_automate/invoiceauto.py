@@ -98,8 +98,8 @@ def getBimonthlyDate(todayDate):
 def getWeeklyDate(todayDate):
     idx = (todayDate.weekday() + 1) % 7 # MON = 0, SUN = 6 -> SUN = 0 .. SAT = 6
 
-    sun = today - timedelta(7+idx)
-    sat = today - timedelta(7+idx-6)
+    sun = todayDate - timedelta(7+idx)
+    sat = todayDate - timedelta(7+idx-6)
     
     return sun, sat
 
@@ -107,7 +107,8 @@ invoiceAccs = read_excel('BNP Excel Sheet.xlsx', sheet_name='Account_Fac_Freq')
 bimonthly = False
 weekly = False
 
-today = date(2022, 10, 30)
+today = date.today()
+#today = date(2022, 11, 6)
 dayName = today.strftime("%A")
 
 if dayName == 'Sunday' and (today.day == 16 or today.day == 1):
