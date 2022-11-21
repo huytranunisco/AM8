@@ -1,7 +1,8 @@
 import BNPauto
 import WISEauto
-from datetime import date, timedelta
+from datetime import date, timedelta, datetime
 import os.path
+import logging
 from os import rename
 from pandas import read_excel
 from calendar import monthrange, week
@@ -36,9 +37,11 @@ def getInvoice(acc, facility, startP, endP, accName, cycle, wise = False):
         if wise:
             move(os.path.join(downloaddir, fileEnd), os.path.join(accsdir, '01 - Historical Activity reports', fileEnd))
             copy(os.path.join(accsdir, '01 - Historical Activity reports', fileEnd), copyPath)
+            logging.info('-------------------------' + '\n\n\nDownloaded Wise ACtivity Report' + str(datetime.now()) + '\n\n\n-------------------------------------------------')
         else:
             move(os.path.join(downloaddir, fileEnd), os.path.join(accsdir, '00 - Historical Invoices', fileEnd))
             copy(os.path.join(accsdir, '00 - Historical Invoices', fileEnd), copyPath)
+            logging.info('-------------------------' + '\n\n\nDownloaded BNP Invoice' + str(datetime.now()) + '\n\n\n-------------------------------------------------')
 
             if fileEnd == 'Invoice[Multi].xlsx':
                 rename(os.path.join(accsdir, '00 - Historical Invoices', fileEnd), os.path.join(accsdir, '00 - Historical Invoices', accName + "-" + facility + "-" + fileEnd))
@@ -56,6 +59,9 @@ def getInvoice(acc, facility, startP, endP, accName, cycle, wise = False):
             print('An error occured at ', e.args, e.__doc__)
             invoiceAccs['Downloaded'][index] = e.args, e.__doc__
             invoiceAccs.to_excel('AccountsDone.xlsx', sheet_name='Account_Fac_Freq', index=False)
+        logging.info('-------------------------' + 'Downloaded Error' + str(datetime.now()) + '-------------------------------------------------')
+        logging.error(e)
+
 
 def excelOutput(bnpAcc, wiseAcc, facility, startP, endP, accName, cycle):
     bnpStart = startP.strftime("%m/%d/%y")
@@ -103,59 +109,64 @@ def getWeeklyDate(todayDate):
     
     return sun, sat
 
-invoiceAccs = read_excel('BNP Excel Sheet.xlsx', sheet_name='Account_Fac_Freq')
-bimonthly = False
-weekly = False
+if __name__ == '__main__':
 
-today = date.today()
-#today = date(2022, 11, 6)
-dayName = today.strftime("%A")
+    logging.basicConfig(filename = "logs.txt", level = logging.DEBUG, format = "%(asctime)s %(message)s")
 
-if dayName == 'Sunday' and (today.day == 16 or today.day == 1):
-    bimonthly = True
-    weekly = True
-elif dayName == 'Sunday':
-    invoiceAccs = invoiceAccs[invoiceAccs['BillingFreq'] == 'Weekly']
-    weekly = True
-elif today.day == 16 or today.day == 1:
-    invoiceAccs = invoiceAccs[invoiceAccs['BillingFreq'] == 'Bimonthly']
-    bimonthly = True
-else:
-    raise Exception("Not a valid day to run program!")
+    invoiceAccs = read_excel('BNP Excel Sheet.xlsx', sheet_name='Account_Fac_Freq')
+    bimonthly = False
+    weekly = False
+
+    #today = date.today()
+    today = date(2022, 11, 20)
+    dayName = today.strftime("%A")
+
+    if dayName == 'Sunday' and (today.day == 16 or today.day == 1):
+        bimonthly = True
+        weekly = True
+    elif dayName == 'Sunday':
+        invoiceAccs = invoiceAccs[invoiceAccs['BillingFreq'] == 'Weekly']
+        weekly = True
+    elif today.day == 16 or today.day == 1:
+        invoiceAccs = invoiceAccs[invoiceAccs['BillingFreq'] == 'Bimonthly']
+        bimonthly = True
+    else:
+        raise Exception("Not a valid day to run program!")
 
 
-for index in invoiceAccs.index:
-    fac = invoiceAccs['Facility Name'][index]
-    bnpName = invoiceAccs['BNP Account Name'][index]
-    wiseName = invoiceAccs['Wise Account Name'][index]
-    accName = invoiceAccs['AccountName'][index]
+    for index in invoiceAccs.index:
+        fac = invoiceAccs['Facility Name'][index]
+        bnpName = invoiceAccs['BNP Account Name'][index]
+        wiseName = invoiceAccs['Wise Account Name'][index]
+        accName = invoiceAccs['AccountName'][index]
 
-    print(f'Getting Invoice for {accName} ({fac})...')
+        
+        logging.info('-------------------------' + f'\n\n\nGetting Invoice for {accName}-{fac} ' + str(datetime.now()) + '\n\n\n-------------------------------------------------')
 
-    if bimonthly and weekly:
-        if invoiceAccs['BillingFreq'][index] == 'Bimonthly':
-            #Assuming is ran on 1st and 16th
+        if bimonthly and weekly:
+            if invoiceAccs['BillingFreq'][index] == 'Bimonthly':
+                #Assuming is ran on 1st and 16th
+                startPeriod, endPeriod = getBimonthlyDate(today)
+
+                downloadBool = excelOutput(bnpName, wiseName, fac, startPeriod, endPeriod, accName, 'Bimonthly')
+
+            elif invoiceAccs['BillingFreq'][index] == 'Weekly':
+                startPeriod, endPeriod = getWeeklyDate(today)
+
+                downloadBool = excelOutput(bnpName, wiseName, fac, startPeriod, endPeriod, accName, 'Weekly')
+
+        elif bimonthly:
             startPeriod, endPeriod = getBimonthlyDate(today)
 
             downloadBool = excelOutput(bnpName, wiseName, fac, startPeriod, endPeriod, accName, 'Bimonthly')
 
-        elif invoiceAccs['BillingFreq'][index] == 'Weekly':
+        elif weekly:
             startPeriod, endPeriod = getWeeklyDate(today)
 
             downloadBool = excelOutput(bnpName, wiseName, fac, startPeriod, endPeriod, accName, 'Weekly')
+            
 
-    elif bimonthly:
-        startPeriod, endPeriod = getBimonthlyDate(today)
-
-        downloadBool = excelOutput(bnpName, wiseName, fac, startPeriod, endPeriod, accName, 'Bimonthly')
-
-    elif weekly:
-        startPeriod, endPeriod = getWeeklyDate(today)
-
-        downloadBool = excelOutput(bnpName, wiseName, fac, startPeriod, endPeriod, accName, 'Weekly')
-        
-
-
-print("Invoices Downloaded!")
-print("--- %s seconds ---" % (time() - start_time))
-x = input("Press Enter to finish. ")
+    logging.info('-------------------------' + '\n\n\nInvoices Downloaded ' + str(datetime.now()) + '\n\n\n-------------------------------------------------')
+    logging.info('-------------------------' + ('\n\n\nCompletion Time - %s seconds' % (time() - start_time)) + '\n\n\n-------------------------------------------------')
+    print("--- %s seconds ---" % (time() - start_time))
+    x = input("Press Enter to finish. ")
