@@ -28,12 +28,15 @@ def Upload(file):
     driver.get('https://stage.logisticsteam.com/#/rms/returnManagement/rma')
     driver.maximize_window()
 
-    driver.switch_to().frame(1)
+    time.sleep(3)
+    print('trying to find')
+    driver.find_element(By.CSS_SELECTOR, "html>body>div>div>div>div>div:nth-of-type(2)>a:nth-of-type(2)")
 
-    element = WebDriverWait(driver, 20).until(EC.element_to_be_clickable((By.LINK_TEXT, 'Import RMA')))
-    actions.move_to_element(element).click().perform()
 
-    #element = WebDriverWait(driver, 20).until(EC.element_to_be_clickable((By.XPATH, ""xpath=//a[@onclick='ToImportRMA()']")))
+    #element = WebDriverWait(driver, 20).until(EC.element_to_be_clickable((By.LINK_TEXT, 'Import RMA')))
+    #actions.move_to_element(element).click().perform()
+
+    #element = WebDriverWait(driver, 20).until(EC.element_to_be_clickable((By.XPATH, "xpath=//a[@onclick='ToImportRMA()']")))
     #actions.move_to_element(element).click().perform()
 
     #uploadelement = webdriverwait(driver, 20).until(ec.element_to_be_clickable((by.xpath, "(xpath=//input[@id='files']"))));
