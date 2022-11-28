@@ -62,8 +62,8 @@ def exportReport(acc, fac, start, end):
     action.move_to_element(interactor).click().perform()
 
     #Inputting Customer, Time From, Time To
-    interactor = WebDriverWait(driver, 20).until(EC.presence_of_element_located((By.XPATH, '/html/body/div[1]/div[2]/div[2]/div/div/div/div/div/div/div/div/div/div[2]/form/div[1]/div[1]/organization-auto-complete/div/div')))
-    action.click(interactor).perform()
+    customer = WebDriverWait(driver, 20).until(EC.presence_of_element_located((By.XPATH, '/html/body/div[1]/div[2]/div[2]/div/div/div/div/div/div/div/div/div/div[2]/form/div[1]/div[1]/organization-auto-complete/div/div')))
+    action.click(customer).perform()
     wiseacc = acc[:10]
     time.sleep(2)
     for letter in wiseacc:
@@ -91,16 +91,28 @@ def exportReport(acc, fac, start, end):
         downloadFolderAfter = glob(userDownloadPath)
         if len(downloadFolderBefore) < len(downloadFolderAfter):
             downloadWait = False
-        if timer == 20:
-            interactor = WebDriverWait(driver, 20).until(EC.presence_of_element_located((By.XPATH, '/html/body/div[1]/div[2]/div[2]/div/div/div/div/div/div/div/div/div/div[2]/form/div[1]/div[1]/organization-auto-complete/div/div')))
-            action.click(interactor).perform()
-            time.sleep(2)
-            for letter in wiseacc:
-                time.sleep(0.05)
-                action.send_keys(letter).perform()
+        if timer == 15:
+            try:
+                action.click(customer).perform()
+                time.sleep(1)
+                for letter in wiseacc:
+                    time.sleep(0.05)
+                    action.send_keys(letter).perform()
 
-            time.sleep(4)
-            action.send_keys(Keys.ENTER).perform()
+                time.sleep(4)
+                action.send_keys(Keys.ENTER).perform()
+
+                interactor = driver.find_element(By.XPATH, '/html/body/div[1]/div[2]/div[2]/div/div/div/div/div/div/div/div/div/div[2]/form/div[2]/div[1]/input')
+                action.move_to_element(interactor).click().perform()
+                interactor = driver.find_element(By.XPATH, '//*[@id="sitecontent"]/div/div/div/div[2]/form/div[2]/div[2]/unis-waitting-btn/button')
+                action.move_to_element(interactor).click().perform()
+            except:
+                pass
+        elif timer == 60:
+            raise Exception("Could not locate account in WISE!")
+
+        timer += 1
+        time.sleep(1)
 
         try:
             interactor = driver.find_element(By.XPATH, '/html/body/div[7]/md-dialog/md-dialog-actions/button')

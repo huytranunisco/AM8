@@ -1,6 +1,5 @@
 import time
 from selenium import webdriver
-from selenium.webdriver.chrome.service import Service
 from webdriver_manager.chrome import ChromeDriverManager
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.common.by import By
@@ -13,6 +12,7 @@ from pandas import read_excel
 import facilities
 import os.path
 from glob import glob
+import json
 
 def facilityMatcher(givenF):
     highestratio = 0
@@ -29,13 +29,16 @@ def facilityMatcher(givenF):
         return facName
 
 def exportHandle(acc, fac, start, end, accName):
+    with open('accountconfigs.json', 'r') as f:
+        data = json.loads(f.read())
+
     billTo = acc
     facility = fac
     facility = facilityMatcher(facility)
     periodStart = start
     periodEnd = end
-    userbnp = 'wiserpa'
-    pwbnp = '#rpa#1234'
+    userbnp = data['bnpUser']
+    pwbnp = data['bnpPass']
 
     #Getting BNP
     chromeOptions = webdriver.ChromeOptions()
@@ -43,7 +46,7 @@ def exportHandle(acc, fac, start, end, accName):
     chromeOptions.add_experimental_option('prefs', prefs)
     driver = webdriver.Chrome(ChromeDriverManager().install(), chrome_options=chromeOptions)
     action = ActionChains(driver)
-    driver.get("http://bnp.unisco.com/")
+    driver.get(data['bnpDomain'])
 
     #Logging into BNP
     interactor = WebDriverWait(driver, 5).until(EC.presence_of_element_located((By.ID, 'inputUserName')))
@@ -132,10 +135,6 @@ def exportHandle(acc, fac, start, end, accName):
     action.move_to_element(interactor).perform()
     interactor.click()
 
-    user = os.getlogin()
-
-    path = 'C:\\Users\\' + user + '\\Downloads\\Invoice[' + invoiceName + '].xlsx'
-
     userDownloadPath = "C:\\Users\\" + os.getlogin() + "\\Downloads\\*.xlsx"
     downloadFolderBefore = glob(userDownloadPath)
 
@@ -146,7 +145,7 @@ def exportHandle(acc, fac, start, end, accName):
             downloadWait = False
         time.sleep(1)
         
-    return facility, path
+    return facility
 
 def invoiceToReport(acc, fac, billingPeriod, invoiceNum):
     reportName = acc + '-' + fac + '-' + billingPeriod + '.xlsx'
