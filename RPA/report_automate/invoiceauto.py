@@ -2,10 +2,10 @@ import BNPauto
 import WISEauto
 from datetime import date, timedelta, datetime
 import os.path
-import logging
+from logging import info, error, basicConfig, DEBUG
 from os import rename
 from pandas import read_excel
-from calendar import monthrange, week
+from calendar import monthrange
 from shutil import copy, move
 from glob import glob
 from time import time
@@ -22,8 +22,7 @@ def getInvoice(acc, facility, startP, endP, accName, cycle, wise = False):
             newName = accName + '-' + facility + '-' + cycle + '-Activity_Report.xlsx'
             copyPath = 'C:\\Users\\' + os.getlogin() + '\\Desktop\\Discrepancy Reports\\' +  cycle + '\\03 - Current Activity reports\\' + newName
         else:
-            facility, invoiceName = BNPauto.exportHandle(acc, facility, startP, endP, accName)
-            if facility == False or invoiceName == False: 
+            if BNPauto.exportHandle(acc, facility, startP, endP, accName) == False: 
                 return False
 
             newName = accName + '-' + facility + '-' + cycle + '-Invoice.xlsx'
@@ -37,11 +36,11 @@ def getInvoice(acc, facility, startP, endP, accName, cycle, wise = False):
         if wise:
             move(os.path.join(downloaddir, fileEnd), os.path.join(accsdir, '01 - Historical Activity reports', fileEnd))
             copy(os.path.join(accsdir, '01 - Historical Activity reports', fileEnd), copyPath)
-            logging.info('-------------------------' + '\n\n\nDownloaded Wise ACtivity Report' + str(datetime.now()) + '\n\n\n-------------------------------------------------')
+            info('-------------------------' + '\n\n\nDownloaded Wise ACtivity Report ' + str(datetime.now()) + '\n\n\n-------------------------------------------------')
         else:
             move(os.path.join(downloaddir, fileEnd), os.path.join(accsdir, '00 - Historical Invoices', fileEnd))
             copy(os.path.join(accsdir, '00 - Historical Invoices', fileEnd), copyPath)
-            logging.info('-------------------------' + '\n\n\nDownloaded BNP Invoice' + str(datetime.now()) + '\n\n\n-------------------------------------------------')
+            info('-------------------------' + '\n\n\nDownloaded BNP Invoice ' + str(datetime.now()) + '\n\n\n-------------------------------------------------')
 
             if fileEnd == 'Invoice[Multi].xlsx':
                 rename(os.path.join(accsdir, '00 - Historical Invoices', fileEnd), os.path.join(accsdir, '00 - Historical Invoices', accName + "-" + facility + "-" + fileEnd))
@@ -59,8 +58,9 @@ def getInvoice(acc, facility, startP, endP, accName, cycle, wise = False):
             print('An error occured at ', e.args, e.__doc__)
             invoiceAccs['Downloaded'][index] = e.args, e.__doc__
             invoiceAccs.to_excel('AccountsDone.xlsx', sheet_name='Account_Fac_Freq', index=False)
-        logging.info('-------------------------' + 'Downloaded Error' + str(datetime.now()) + '-------------------------------------------------')
-        logging.error(e)
+        info('-------------------------\n\n\n' + 'Downloaded Error ' + str(datetime.now()))
+        error(e)
+        info('\n\n\n-------------------------------------------------')
 
 
 def excelOutput(bnpAcc, wiseAcc, facility, startP, endP, accName, cycle):
@@ -111,14 +111,15 @@ def getWeeklyDate(todayDate):
 
 if __name__ == '__main__':
 
-    logging.basicConfig(filename = "logs.txt", level = logging.DEBUG, format = "%(asctime)s %(message)s")
+    basicConfig(filename = "logs.txt", level = DEBUG, format = "%(asctime)s %(message)s")
 
     invoiceAccs = read_excel('BNP Excel Sheet.xlsx', sheet_name='Account_Fac_Freq')
+    invoiceAccs['Downloaded'] = ''
     bimonthly = False
     weekly = False
 
     #today = date.today()
-    today = date(2022, 11, 20)
+    today = date(2022, 11, 16)
     dayName = today.strftime("%A")
 
     if dayName == 'Sunday' and (today.day == 16 or today.day == 1):
@@ -141,7 +142,7 @@ if __name__ == '__main__':
         accName = invoiceAccs['AccountName'][index]
 
         
-        logging.info('-------------------------' + f'\n\n\nGetting Invoice for {accName}-{fac} ' + str(datetime.now()) + '\n\n\n-------------------------------------------------')
+        info('-------------------------' + f'\n\n\nGetting Invoice for {accName}-{fac} ' + str(datetime.now()) + '\n\n\n-------------------------------------------------')
 
         if bimonthly and weekly:
             if invoiceAccs['BillingFreq'][index] == 'Bimonthly':
@@ -166,7 +167,7 @@ if __name__ == '__main__':
             downloadBool = excelOutput(bnpName, wiseName, fac, startPeriod, endPeriod, accName, 'Weekly')
             
 
-    logging.info('-------------------------' + '\n\n\nInvoices Downloaded ' + str(datetime.now()) + '\n\n\n-------------------------------------------------')
-    logging.info('-------------------------' + ('\n\n\nCompletion Time - %s seconds' % (time() - start_time)) + '\n\n\n-------------------------------------------------')
+    info('-------------------------' + '\n\n\nInvoices Downloaded ' + str(datetime.now()))
+    info(('Completion Time - %s seconds' % (time() - start_time)) + '\n\n\n-------------------------------------------------')
     print("--- %s seconds ---" % (time() - start_time))
     x = input("Press Enter to finish. ")

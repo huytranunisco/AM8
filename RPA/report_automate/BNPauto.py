@@ -12,6 +12,7 @@ from difflib import SequenceMatcher
 from pandas import read_excel
 import facilities
 import os.path
+from glob import glob
 
 def facilityMatcher(givenF):
     highestratio = 0
@@ -81,6 +82,8 @@ def exportHandle(acc, fac, start, end, accName):
     interactor.send_keys('Check')
     time.sleep(0.5)
     interactor.send_keys(Keys.ENTER)
+    interactor = driver.find_element(By.XPATH, '/html/body/div[1]/div/div/div[2]/div[2]/div[5]/div/div/ul/li[3]/span[2]')
+    action.move_to_element(interactor).click().perform()
 
     #Period Start
     interactor = driver.find_element(By.ID, 'inputPeriodStart')
@@ -133,10 +136,15 @@ def exportHandle(acc, fac, start, end, accName):
 
     path = 'C:\\Users\\' + user + '\\Downloads\\Invoice[' + invoiceName + '].xlsx'
 
-    while not os.path.exists(path):
+    userDownloadPath = "C:\\Users\\" + os.getlogin() + "\\Downloads\\*.xlsx"
+    downloadFolderBefore = glob(userDownloadPath)
+
+    downloadWait = True
+    while downloadWait:
+        downloadFolderAfter = glob(userDownloadPath)
+        if len(downloadFolderBefore) < len(downloadFolderAfter):
+            downloadWait = False
         time.sleep(1)
-        if os.path.isfile(path):
-            break
         
     return facility, path
 
