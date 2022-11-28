@@ -46,7 +46,7 @@ def Upload(file):
 if __name__ == '__main__':
     try:
         user = os.getlogin()
-        with open(f'C:\\Users\\gcastellanos\\Documents\\GitHub\\AM8\\RMA\\config.json', 'r') as f:
+        with open(f'C:\\Users\\{user}\\Documents\\GitHub\\AM8\\RMA\\config.json', 'r') as f:
             data = json.loads(f.read())
         userWISE = data['userWISE']
         passWISE = data['passWISE']

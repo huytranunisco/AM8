@@ -1,3 +1,4 @@
+import sys
 import pandas as pd
 import imaplib
 import os
@@ -13,6 +14,9 @@ from selenium.webdriver.common.action_chains import ActionChains
 from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
+
+def error():
+    logging.error(Exception)
 
 def exportReport():
     for attempt in range(5):
@@ -43,52 +47,51 @@ def exportReport():
             actions.move_to_element(element).click().perform()
 
             driver.quit()
-        except Exception as e:
-            logging.error(e)
+
+            attempt = 'complete'
+        except Exception:
+            error()
+
+        if attempt == 'complete':
+            break
     else:
-        logging.error(Exception)
+        error()
 
 #Connecting to email domain through iMAP
 def loginEmail():
-    for attempt in range(5):
-        try:
-            domain = data['domain']
-            M = imaplib.IMAP4_SSL(domain)
-            M.login(userEmail, passEmail)
+    try:
+        domain = data['domain']
+        M = imaplib.IMAP4_SSL(domain)
+        M.login(userEmail, passEmail)
 
-            return M
-        except Exception as e:
-            logging.error(e)
-    else:
-        logging.error(Exception)
+        return M
+    except Exception:
+        error()
 
 #Searching for specific email
 def searchEmail():
-    for attempt in range(5):
+    try:
+        M.select('Inbox')
+        status, data = M.search(None, '(UNSEEN FROM "help@returnly.com" SUBJECT "Your Returnly report is ready")')
+        newest_data = getNewestEmail(data)
+
+        #If no new email is found it searches repetitively
         try:
-            M.select('Inbox')
-            status, data = M.search(None, '(UNSEEN FROM "help@returnly.com" SUBJECT "Your Returnly report is ready")')
-            newest_data = getNewestEmail(data)
-
-            #If no new email is found it searches repetitively
-            try:
-                if newest_data[0].isdigit() == False:
-                    pass
-                while newest_data[0].isdigit() == False:
-                    newest_data = searchEmail()
-                    if newest_data[0].isdigit():
-                        break
-            except IndexError:
+            if newest_data[0].isdigit() == False:
                 pass
+            while newest_data[0].isdigit() == False:
+                newest_data = searchEmail()
+                if newest_data[0].isdigit():
+                    break
+        except IndexError:
+            pass
 
-            if status != 'OK':
-                print('Error occured while searching... ', e)
+        if status != 'OK':
+            print('Error occured while searching... ', e)
 
-            return newest_data
-        except Exception as e:
-            logging.error(e)
-    else:
-        logging.error(Exception)
+        return newest_data
+    except Exception:
+        error()
 
 #Retrieving the newest email
 def getNewestEmail(newest_data):
@@ -104,10 +107,8 @@ def getNewestEmail(newest_data):
             return str_keys
         except IndexError:
             pass
-        except Exception as e:
-            logging.error(e)
     else:
-        logging.error(Exception)
+        error()
 
 #Downloading the email that was retrieved
 def downloadReport():
@@ -182,10 +183,14 @@ def downloadReport():
             driver.get(linksList[0])
             download_wait(30)
             driver.quit()
-        except Exception as e:
-            logging.error(e)
+
+            attempt = 'complete'
+        except Exception:
+            error()
+        if attempt == 'complete':
+            break
     else:
-        logging.error(Exception)
+        error()
 
 #Checks download folder for file and waits a certain amount of time, if time is exceeded it times out
 def download_wait(timeout):
@@ -202,10 +207,10 @@ def download_wait(timeout):
                         dl_wait = True
                 seconds += 1
             return seconds
-        except Exception as e:
-            logging.error(e)
+        except Exception:
+            error()
     else:
-        logging.error(Exception)
+        error()
 
 #Formatting the report to liking
 def formatReport():
@@ -245,37 +250,40 @@ def formatReport():
             time = datetime.now()
             filename = time.strftime("%m-%d-%Y %H-%M-%S")
             df.to_excel(f"C:\\Users\\{user}\\Downloads\\Transformed_{filename}_PDT.xlsx", index = False)
-        except Exception as e:
-            logging.error(e)
+
+            attempt = 'complete'
+        except Exception:
+            error()
+        if attempt == 'complete':
+            break
     else:
-        logging.error(Exception)
+        error()
 
 if __name__ == '__main__':
-    for attempt in range(5):
-        try:
-            user = os.getlogin()
+    try:
+        user = os.getlogin()
 
-            logging.basicConfig(filename = f"C:\\Users\\{user}\\Desktop\\Returnly_Auto\\logs.txt", level = logging.DEBUG, format = "%(asctime)s %(message)s")
-            with open(f'C:\\Users\\{user}\\Desktop\\Returnly_Auto\\config.json', 'r') as f:
-                data = json.loads(f.read())
+        logging.basicConfig(filename = f"C:\\Users\\{user}\\Desktop\\logs.txt", level = logging.DEBUG, format = "%(asctime)s %(message)s")
+        with open(f'C:\\Users\\{user}\\Documents\\GitHub\\AM8\RMA\\config.json', 'r') as f:
+            data = json.loads(f.read())
 
-            userReturnly = data['userReturnly']
-            passReturnly = data['passReturnly']
-            userEmail = data['userEmail']
-            passEmail = data['passEmail']
 
-            logging.info('-------------------------' + '\n\n\nNEW LOG ' + str(datetime.now()) + '\n\n\n-------------------------------------------------')
+        userReturnly = data['userReturnly']
+        passReturnly = data['passReturnly']
+        userEmail = data['userEmail']
+        passEmail = data['passEmail']
+
+        logging.info('-------------------------' + '\n\n\nNEW LOG ' + str(datetime.now()) + '\n\n\n-------------------------------------------------')
         
-            logging.info('-------------------------' + '\n\n\nExporting report...' + str(datetime.now()) + '\n\n\n-------------------------------------------------')
-            exportReport()
-            M = loginEmail()
-            logging.info('-------------------------' + '\n\n\nDownloading report...' + str(datetime.now()) + '\n\n\n-------------------------------------------------')
-            downloadReport()
-            logging.info('-------------------------' + '\n\n\nFormatting report...' + str(datetime.now()) + '\n\n\n-------------------------------------------------')
-            formatReport()
-            logging.info('-------------------------' + '\n\n\nProcess Completed Successfully! ' + str(datetime.now()) + '\n\n\n-------------------------------------------------')
+        logging.info('-------------------------' + '\n\n\nExporting report...' + str(datetime.now()) + '\n\n\n-------------------------------------------------')
+        exportReport()
+        M = loginEmail()
+        logging.info('-------------------------' + '\n\n\nDownloading report...' + str(datetime.now()) + '\n\n\n-------------------------------------------------')
+        downloadReport()
+        logging.info('-------------------------' + '\n\n\nFormatting report...' + str(datetime.now()) + '\n\n\n-------------------------------------------------')
+        formatReport()
+        logging.info('-------------------------' + '\n\n\nProcess Completed Successfully! ' + str(datetime.now()) + '\n\n\n-------------------------------------------------')
+        sys.exit()
         
-        except Exception as e:
-            logging.error(e)
-    else:
-        logging.error(Exception)
+    except Exception:
+        error()
