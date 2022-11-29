@@ -2,5 +2,6 @@
     "bnpUser": "wiserpa",
     "bnpPass": "#rpa#1234",
     "bnpDomain": "http://bnp.unisco.com/",
+    "bnpTestDomain": "http://service.serviceapp.com/BillAndPay_Test/",
     "wiseDomain": "https://wise.logisticsteam.com/v2/#/login"
 }
