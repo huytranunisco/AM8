@@ -87,7 +87,7 @@ def searchEmail():
             pass
 
         if status != 'OK':
-            print('Error occured while searching... ', e)
+            print('Error occured while searching... ')
 
         return newest_data
     except Exception:
