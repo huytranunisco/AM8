@@ -10,8 +10,12 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver import ActionChains
 from pandas import read_excel
+from json import loads
 
 def exportReport(acc, fac, start, end):
+    with open('accountconfigs.json', 'r') as f:
+            data = loads(f.read())
+
     userDownloadPath = "C:\\Users\\" + os.getlogin() + "\\Downloads\\*.xlsx"
     downloadFolderBefore = glob(userDownloadPath)
 
@@ -31,7 +35,7 @@ def exportReport(acc, fac, start, end):
     #Opening Wise website through chrome
     driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), chrome_options=chromeOptions)
     action = ActionChains(driver)
-    driver.get("https://wise.logisticsteam.com/v2/#/login")
+    driver.get(data['wiseDomain'])
 
     #Maximizing window to see all elements
     driver.maximize_window()

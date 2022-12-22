@@ -12,7 +12,7 @@ from pandas import read_excel
 import facilities
 import os.path
 from glob import glob
-import json
+from json import loads
 
 def facilityMatcher(givenF):
     highestratio = 0
@@ -30,15 +30,13 @@ def facilityMatcher(givenF):
 
 def exportHandle(acc, fac, start, end, accName):
     with open('accountconfigs.json', 'r') as f:
-        data = json.loads(f.read())
+        data = loads(f.read())
 
     billTo = acc
     facility = fac
     facility = facilityMatcher(facility)
     periodStart = start
     periodEnd = end
-    userbnp = data['bnpUser']
-    pwbnp = data['bnpPass']
 
     #Getting BNP
     chromeOptions = webdriver.ChromeOptions()
@@ -50,9 +48,9 @@ def exportHandle(acc, fac, start, end, accName):
 
     #Logging into BNP
     interactor = WebDriverWait(driver, 5).until(EC.presence_of_element_located((By.ID, 'inputUserName')))
-    interactor.send_keys(userbnp)
+    interactor.send_keys(data['bnpUser'])
     interactor = WebDriverWait(driver, 5).until(EC.presence_of_element_located((By.ID, 'inputPassword')))
-    interactor.send_keys(pwbnp)
+    interactor.send_keys(data['bnpPass'])
     interactor = driver.find_element(By.XPATH,"/html/body/div/footer/div/button")
     interactor.click()
 
@@ -117,13 +115,7 @@ def exportHandle(acc, fac, start, end, accName):
             interactor = driver.find_element(By.XPATH, xpath)
             action.move_to_element(interactor).perform()
             interactor.click()
-        
-        invoiceName = 'Multi'
     else:
-        row = rows[0]
-        col = row.find_elements(By.TAG_NAME, 'td')[3]
-        invoiceName = col.text
-
         #Checking first invoice
         interactor = driver.find_element(By.XPATH, '//*[@id=\"invoicegrid\"]/div[3]/table/tbody/tr[1]/td[1]/label')
         action.move_to_element(interactor).perform()
