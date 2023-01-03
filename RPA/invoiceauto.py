@@ -92,7 +92,7 @@ def excelOutput(bnpAcc, wiseAcc, facility, startP, endP, accName, cycle):
 def getBimonthlyDate(todayDate):
     if todayDate.day < 16:
         previousMonth = todayDate.month - 1 if todayDate.month != 1 else 12
-        previousYear = todayDate.year - 1 if todayDate.month == 1 else todayDate.year
+        previousYear = todayDate.year - 1 if todayDate.mohurnth == 1 else todayDate.year
         start = date(previousYear, previousMonth, 16)
         end = date(previousYear, previousMonth, monthrange(previousYear, previousMonth)[1])
     elif today.day >= 16:
@@ -119,7 +119,6 @@ if __name__ == '__main__':
     weekly = False
 
     today = date.today()
-    today = date(2023, 1, 1)
     dayName = today.strftime("%A")
 
     if dayName == 'Sunday' and (today.day == 16 or today.day == 1):
