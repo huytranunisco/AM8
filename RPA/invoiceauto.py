@@ -26,7 +26,7 @@ def getInvoice(acc, facility, startP, endP, accName, cycle, wise = False):
                 return False
 
             newName = accName + '-' + facility + '-' + cycle + '-Invoice.xlsx'
-            copyPath = 'C:\\Users\\' + os.getlogin() + '\\Desktop\\Discrepancy Reports\\' + cycle + '\\02 - Current Invoices\\' + newName + '.xlsx'
+            copyPath = 'C:\\Users\\' + os.getlogin() + '\\Desktop\\Discrepancy Reports\\' + cycle + '\\02 - Current Invoices\\' + newName
         
         fileList = list(filter(os.path.isfile, glob(downloaddir + '\\*.xlsx')))
         fileList.sort(key=lambda x: os.path.getmtime(x))
@@ -118,8 +118,7 @@ if __name__ == '__main__':
     bimonthly = False
     weekly = False
 
-    #today = date.today()
-    today = date(2022, 11, 16)
+    today = date.today()
     dayName = today.strftime("%A")
 
     if dayName == 'Sunday' and (today.day == 16 or today.day == 1):
