@@ -33,7 +33,7 @@ def exportReport(acc, fac, start, end):
     chromeOptions.add_experimental_option("prefs", prefs)
 
     #Opening Wise website through chrome
-    driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), chrome_options=chromeOptions)
+    driver = webdriver.Chrome(ChromeDriverManager().install(), chrome_options=chromeOptions)
     action = ActionChains(driver)
     driver.get(data['wiseDomain'])
 
@@ -70,7 +70,7 @@ def exportReport(acc, fac, start, end):
     action.click(customer).perform()
     wiseacc = acc[:10]
     time.sleep(2)
-    for letter in wiseacc:
+    for letter in acc:
         time.sleep(0.05)
         action.send_keys(letter).perform()
 
@@ -99,7 +99,7 @@ def exportReport(acc, fac, start, end):
             try:
                 action.click(customer).perform()
                 time.sleep(1)
-                for letter in wiseacc:
+                for letter in acc:
                     time.sleep(0.05)
                     action.send_keys(letter).perform()
 
