@@ -112,7 +112,7 @@ def exportReport(acc, fac, start, end):
                 action.move_to_element(interactor).click().perform()
             except:
                 pass
-        elif timer == 60:
+        elif timer == 120:
             raise Exception("Could not locate account in WISE!")
 
         timer += 1
@@ -121,6 +121,6 @@ def exportReport(acc, fac, start, end):
         try:
             interactor = driver.find_element(By.XPATH, '/html/body/div[7]/md-dialog/md-dialog-actions/button')
             interactor.click()
-            return Exception("No Data Found!")
+            raise Exception("No Data Found!")
         except:
             pass
