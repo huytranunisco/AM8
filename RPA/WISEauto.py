@@ -67,8 +67,7 @@ def exportReport(acc, fac, start, end):
 
     #Inputting Customer, Time From, Time To
     customer = WebDriverWait(driver, 20).until(EC.presence_of_element_located((By.XPATH, '/html/body/div[1]/div[2]/div[2]/div/div/div/div/div/div/div/div/div/div[2]/form/div[1]/div[1]/organization-auto-complete/div/div')))
-    action.click(customer).perform()
-    wiseacc = acc[:10]
+    action.click(customer)
     time.sleep(2)
     for letter in acc:
         time.sleep(0.05)
@@ -88,39 +87,22 @@ def exportReport(acc, fac, start, end):
     interactor = driver.find_element(By.XPATH, '//*[@id="sitecontent"]/div/div/div/div[2]/form/div[2]/div[2]/unis-waitting-btn/button')
     action.move_to_element(interactor).click().perform()
 
-    timer = 0
-
     downloadWait = True
+    skip = False
+
     while downloadWait:
+        if skip == True:
+                raise Exception("No data found!")
+        
         downloadFolderAfter = glob(userDownloadPath)
         if len(downloadFolderBefore) < len(downloadFolderAfter):
             downloadWait = False
-        if timer == 15:
-            try:
-                action.click(customer).perform()
-                time.sleep(1)
-                for letter in acc:
-                    time.sleep(0.05)
-                    action.send_keys(letter).perform()
-
-                time.sleep(4)
-                action.send_keys(Keys.ENTER).perform()
-
-                interactor = driver.find_element(By.XPATH, '/html/body/div[1]/div[2]/div[2]/div/div/div/div/div/div/div/div/div/div[2]/form/div[2]/div[1]/input')
-                action.move_to_element(interactor).click().perform()
-                interactor = driver.find_element(By.XPATH, '//*[@id="sitecontent"]/div/div/div/div[2]/form/div[2]/div[2]/unis-waitting-btn/button')
-                action.move_to_element(interactor).click().perform()
-            except:
-                pass
-        elif timer == 120:
-            raise Exception("Could not locate account in WISE!")
-
-        timer += 1
+            
         time.sleep(1)
 
         try:
             interactor = driver.find_element(By.XPATH, '/html/body/div[7]/md-dialog/md-dialog-actions/button')
             interactor.click()
-            raise Exception("No Data Found!")
+            skip = True
         except:
             pass
