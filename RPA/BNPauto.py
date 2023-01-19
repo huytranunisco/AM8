@@ -55,7 +55,7 @@ def exportHandle(acc, fac, start, end, accName):
     interactor.click()
 
     #Clicking Sales Module from Module Dropdown Menu
-    select = WebDriverWait(driver, 20).until(EC.element_to_be_clickable((By.ID, 'TS_span_menu')))
+    select = WebDriverWait(driver, 100).until(EC.element_to_be_clickable((By.ID, 'TS_span_menu')))
     select.click()
     select = WebDriverWait(driver, 5).until(EC.presence_of_element_located((By.XPATH, '//*[@id="headmenu_mn_active"]/div/ul/li[1]')))
     select.click()

@@ -89,6 +89,7 @@ def exportReport(acc, fac, start, end):
 
     downloadWait = True
     skip = False
+    timer = 0
 
     while downloadWait:
         if skip == True:
@@ -97,6 +98,20 @@ def exportReport(acc, fac, start, end):
         downloadFolderAfter = glob(userDownloadPath)
         if len(downloadFolderBefore) < len(downloadFolderAfter):
             downloadWait = False
+        
+        if timer == 15:
+            try:
+                customer = WebDriverWait(driver, 20).until(EC.presence_of_element_located((By.XPATH, '/html/body/div[1]/div[2]/div[2]/div/div/div/div/div/div/div/div/div/div[2]/form/div[1]/div[1]/organization-auto-complete/div/div')))
+                action.click(customer)
+                time.sleep(2)
+                for letter in acc:
+                    time.sleep(0.05)
+                    action.send_keys(letter).perform()
+
+                time.sleep(4)
+                action.send_keys(Keys.ENTER).perform()
+            except:
+                pass
             
         time.sleep(1)
 

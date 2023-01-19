@@ -119,13 +119,14 @@ if __name__ == '__main__':
     weekly = False
 
     today = date.today()
+    today = date(2023, 1, 16)
     dayName = today.strftime("%A")
 
     if dayName == 'Sunday' and (today.day == 16 or today.day == 1):
         bimonthly = True
         weekly = True
     elif dayName == 'Sunday':
-        invoiceAccs = invoiceAccs[invoiceAccs['BillingFreq'] == 'Weekly']
+        invoiceAccs = invoiceAccs[invoiceAccs['BillingFreq']== 'Weekly']
         weekly = True
     elif today.day == 16 or today.day == 1:
         invoiceAccs = invoiceAccs[invoiceAccs['BillingFreq'] == 'Bimonthly']
