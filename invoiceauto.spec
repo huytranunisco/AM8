@@ -5,7 +5,7 @@ block_cipher = None
 
 
 a = Analysis(
-    ['RPA\\report_automate\\invoiceauto.py'],
+    ['RPA\\invoiceauto.py'],
     pathex=[],
     binaries=[],
     datas=[],
