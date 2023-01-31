@@ -119,7 +119,7 @@ if __name__ == '__main__':
     weekly = False
 
     today = date.today()
-    today = date(2023, 1, 22)
+    today = date(2023, 1, 29)
     dayName = today.strftime("%A")
 
     if dayName == 'Sunday' and (today.day == 16 or today.day == 1):
